@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.36105.23 d17.13
+VisualStudioVersion = 17.13.36105.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
@@ -22,6 +22,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportHelper.Exceptions", "src\shared\SupportHelper.Exceptions\SupportHelper.Exceptions.csproj", "{A5FB0BD2-4221-4FCC-887B-45B647AF2739}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportHelper.WebApi", "src\backend\SupportHelper.WebApi\SupportHelper.WebApi.csproj", "{E0227325-F2DE-46D5-A8B7-24CC98445092}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportHelper.RabbitMQ", "src\shared\SupportHelper.RabbitMQ\SupportHelper.RabbitMQ.csproj", "{2F9257B9-484B-4883-94C0-84F1B3D4CE74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{E0227325-F2DE-46D5-A8B7-24CC98445092}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0227325-F2DE-46D5-A8B7-24CC98445092}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0227325-F2DE-46D5-A8B7-24CC98445092}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F9257B9-484B-4883-94C0-84F1B3D4CE74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F9257B9-484B-4883-94C0-84F1B3D4CE74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F9257B9-484B-4883-94C0-84F1B3D4CE74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F9257B9-484B-4883-94C0-84F1B3D4CE74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +72,7 @@ Global
 		{4B316A45-2005-4F70-92E3-2C9B4621DF25} = {17E22CD4-E35A-4095-8E29-6A09650357BC}
 		{A5FB0BD2-4221-4FCC-887B-45B647AF2739} = {17E22CD4-E35A-4095-8E29-6A09650357BC}
 		{E0227325-F2DE-46D5-A8B7-24CC98445092} = {8561095C-DF8A-4E61-9922-8F3971C9FBDA}
+		{2F9257B9-484B-4883-94C0-84F1B3D4CE74} = {17E22CD4-E35A-4095-8E29-6A09650357BC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {572313D8-E578-473B-AB1C-DA25ACE9B823}

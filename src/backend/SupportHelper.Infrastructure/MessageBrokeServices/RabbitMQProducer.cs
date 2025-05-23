@@ -1,26 +1,33 @@
 ﻿using RabbitMQ.Client;
 using SupportHelper.Domain.Interfaces.MessageBrokerServices;
+using SupportHelper.RabbitMQ.Interfaces;
 using System.Text;
 
 namespace SupportHelper.Infrastructure.MessageBrokeServices
 {
     public class RabbitMQProducer : IRabbitMQProducer
     {
-        public async Task Publisher(string messageJson, IDictionary<string, object> headers = null)
+        private readonly IRabbitMQConnection _connection;
+
+        public RabbitMQProducer(IRabbitMQConnection connection)
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
+            _connection = connection;
+        }
 
-            using var connection = await factory.CreateConnectionAsync();
-            using var channel = await connection.CreateChannelAsync();
-            await channel.ExchangeDeclareAsync(exchange: "headers_exchange",
-                                               type: ExchangeType.Headers,
-                                               durable: true);
+        public Task Publisher(string messageJson, IDictionary<string, string> headers = null)
+        {
+            throw new NotImplementedException();
+        }
 
-            var messageBody = Encoding.UTF8.GetBytes(messageJson);
-            await channel.BasicPublishAsync(exchange: "headers_exchange",
-                                            routingKey: string.Empty,
-                                            mandatory: true,
-                                            body: messageBody);
+        public async Task Publisher(string exchange, string routingKey, string message)
+        {
+            using var channel = await _connection.Connection.CreateChannelAsync();
+            var body = Encoding.UTF8.GetBytes(message);
+
+            await channel.BasicPublishAsync(exchange: exchange,
+                                            routingKey: routingKey,
+                                            mandatory: false,
+                                            body: body);
         }
     }
 }

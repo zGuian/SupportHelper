@@ -1,24 +1,28 @@
 ﻿using SupportHelper.Application.Interfaces;
 using SupportHelper.Communication.Requests;
 using SupportHelper.Communication.Responses;
+using SupportHelper.Domain.Entities;
+using SupportHelper.Domain.Interfaces.MessageBrokerServices;
+using System.Text;
+using System.Text.Json;
 
 namespace SupportHelper.Application.UseCases.MachineUC
 {
     public class GetMachineInformation : IGetMachineInformation
     {
-        public GetMachineInformation() 
+        private readonly IRabbitMQProducer _producer;
+        public GetMachineInformation(IRabbitMQProducer producer) 
         {
-
+            _producer = producer;
         }
 
-        public async ValueTask<MachineInformationResponse> ExecuteAsync(MachineInformationRequest request)
+        public async Task<MachineInformationResponse> ExecuteAsync(MachineInformationRequest request)
         {
-            throw new NotImplementedException();
-        }
-
-        private void ConvertToEntity()
-        {
-            throw new NotImplementedException();
+            var json = JsonSerializer.Serialize(request);
+            var headers = new Dictionary<string, string>();
+            headers.TryAdd("Hostname", request.Hostname);
+            headers.TryAdd("IPV4", request.Ipv4 ?? throw new ArgumentNullException());
+            await _producer.Publisher(json, headers);
         }
     }
 }
