@@ -2,7 +2,7 @@
 using RabbitMQ.Client;
 using SupportHelper.RabbitMQ.Interfaces;
 
-namespace SupportHelper.RabbitMQ
+namespace SupportHelper.RabbitMQ.Implementation
 {
     public class RabbitMQConnection : IRabbitMQConnection, IDisposable
     {
@@ -24,16 +24,16 @@ namespace SupportHelper.RabbitMQ
                 VirtualHost = virtualHost ?? throw new ArgumentNullException(virtualHost, nameof(virtualHost)),
                 Port = int.Parse(port ?? throw new ArgumentNullException(null, nameof(port))),
             };
-            _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
+            _connection = factory.CreateConnection();
         }
 
-        public IConnection Connection => _connection;
+        public IModel CreateChannel() => _connection.CreateModel();
 
         public void Dispose()
         {
             if (_connection.IsOpen)
             {
-                _connection.CloseAsync().GetAwaiter().GetResult();
+                _connection.Close();
             }
             _connection.Dispose();
         }
