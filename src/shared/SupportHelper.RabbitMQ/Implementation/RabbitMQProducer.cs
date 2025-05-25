@@ -1,4 +1,5 @@
 ﻿using RabbitMQ.Client;
+using SupportHelper.RabbitMQ.Exceptions;
 using SupportHelper.RabbitMQ.Interfaces;
 using System.Text;
 
@@ -13,12 +14,32 @@ namespace SupportHelper.RabbitMQ.Implementation
             _channel = connection.CreateChannel();
         }
 
-        public void Publisher(string exchange, string routingKey, IBasicProperties properties, string message)
+        public IModel Channel => _channel;
+
+        public async Task PublishAsync(string exchange, string routingKey, IBasicProperties properties, string message, CancellationToken cancellationToken = default)
         {
-            var body = Encoding.UTF8.GetBytes(message);
-            _channel.BasicPublish(exchange, routingKey, properties, body);
+            try
+            {
+                var body = Encoding.UTF8.GetBytes(message);
+                await Task.Run(() => _channel.BasicPublish(exchange, routingKey, properties, body), cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new RabbitMQPublishException(ex.Message, ex.InnerException);
+            }
         }
-        
-        public IModel channel => _channel;
+
+        public async Task PublishAsync(string exchange, IBasicProperties properties, string message, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var body = Encoding.UTF8.GetBytes(message);
+                await Task.Run(() => _channel.BasicPublish(exchange, string.Empty, properties, body), cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new RabbitMQPublishException(ex.Message, ex.InnerException);
+            }
+        }
     }
 }

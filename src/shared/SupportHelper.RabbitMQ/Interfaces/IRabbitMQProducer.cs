@@ -4,7 +4,9 @@ namespace SupportHelper.RabbitMQ.Interfaces
 {
     public interface IRabbitMQProducer
     {
-        IModel channel { get; }
-        void Publisher(string exchange, string routingKey, IBasicProperties properties, string message);
+        IModel Channel { get; }
+        Task PublishAsync(string exchange, string routingKey, IBasicProperties properties, 
+            string message, CancellationToken cancellationToken = default);
+        Task PublishAsync(string exchange, IBasicProperties properties, string message, CancellationToken cancellationToken = default);
     }
 }
