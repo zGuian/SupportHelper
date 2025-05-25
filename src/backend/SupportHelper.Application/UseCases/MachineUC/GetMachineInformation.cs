@@ -1,6 +1,7 @@
 ﻿using SupportHelper.Application.Interfaces;
 using SupportHelper.Communication.Requests;
 using SupportHelper.Communication.Responses;
+using SupportHelper.Domain.Entities;
 using SupportHelper.Domain.Interfaces.MessageBrokerServices;
 using System.Text.Json;
 
@@ -20,12 +21,25 @@ namespace SupportHelper.Application.UseCases.MachineUC
         public async Task<MachineInformationResponse> ExecuteAsync(MachineInformationRequest request)
         {
             var message = JsonSerializer.Serialize(request);
-            var headers = new Dictionary<string, string>();
-            headers.TryAdd("Hostname", request.Hostname);
-            headers.TryAdd("IPV4", request.Ipv4 ?? throw new ArgumentNullException());
-            _producer.PublishMessage(message);
-            return JsonSerializer.Deserialize<MachineInformationResponse>(_consume.ConsumeMessage())
-                ?? throw new ArgumentNullException();
+            await _producer.PublishMessage(request.Hostname, message);
+            if (request.ReplyToQueueName != null)
+            {
+                var machine = await _consume.ConsumeMessageAsync(request.ReplyToQueueName, true);
+                var net = ConvertTo(machine).ToArray();
+                return new MachineInformationResponse(machine.Hostname, Guid.NewGuid().ToString(), net);
+            }
+            return JsonSerializer.Deserialize<MachineInformationResponse>(message)
+                ?? throw new ArgumentNullException(message);
+        }
+
+        private List<NetworkBoad> ConvertTo(Machine machine)
+        {
+            var networkBoard = new List<NetworkBoad>();
+            foreach (var item in machine.NetworkBoard)
+            {
+                networkBoard.Add(new NetworkBoad(item.Ipv4, item.Ipv6, item.MacAddress));
+            }
+            return networkBoard;
         }
     }
 }

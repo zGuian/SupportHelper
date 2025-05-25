@@ -10,7 +10,7 @@ namespace SupportHelper.WebApi.Controllers
     {
         [HttpGet("Information")]
         public async Task<IActionResult> GetMachineInformation([FromServices] IGetMachineInformation getMachineInformation,
-            MachineInformationRequest request)
+            [FromBody] MachineInformationRequest request)
         {
             var response = await getMachineInformation.ExecuteAsync(request);
             return Ok(response);

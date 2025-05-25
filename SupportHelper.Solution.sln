@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportHelper.WebApi", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportHelper.RabbitMQ", "src\shared\SupportHelper.RabbitMQ\SupportHelper.RabbitMQ.csproj", "{2F9257B9-484B-4883-94C0-84F1B3D4CE74}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportHelper.Tests", "tests\SupportHelper.Tests\SupportHelper.Tests.csproj", "{836B22FC-8C4A-4F28-AE6D-2A3A9D2396F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{2F9257B9-484B-4883-94C0-84F1B3D4CE74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F9257B9-484B-4883-94C0-84F1B3D4CE74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F9257B9-484B-4883-94C0-84F1B3D4CE74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{836B22FC-8C4A-4F28-AE6D-2A3A9D2396F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{836B22FC-8C4A-4F28-AE6D-2A3A9D2396F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{836B22FC-8C4A-4F28-AE6D-2A3A9D2396F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{836B22FC-8C4A-4F28-AE6D-2A3A9D2396F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +79,7 @@ Global
 		{A5FB0BD2-4221-4FCC-887B-45B647AF2739} = {17E22CD4-E35A-4095-8E29-6A09650357BC}
 		{E0227325-F2DE-46D5-A8B7-24CC98445092} = {8561095C-DF8A-4E61-9922-8F3971C9FBDA}
 		{2F9257B9-484B-4883-94C0-84F1B3D4CE74} = {17E22CD4-E35A-4095-8E29-6A09650357BC}
+		{836B22FC-8C4A-4F28-AE6D-2A3A9D2396F9} = {07DA150D-69B6-4107-8C3F-B241C4F7872C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {572313D8-E578-473B-AB1C-DA25ACE9B823}

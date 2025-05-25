@@ -7,7 +7,7 @@ namespace SupportHelper.Domain.Entities
     {
         public string Id { get; private set; }
         public string Hostname { get; private set; }
-        public NetworkBoard? NetworkBoard { get; private set; }
+        public NetworkBoard[]? NetworkBoard { get; private set; }
 
         public Machine(string hostname)
         {
