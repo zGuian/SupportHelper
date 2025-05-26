@@ -15,7 +15,7 @@ namespace SupportHelper.RabbitMQ.Implementation
             _channel = connection.CreateChannel();
         }
 
-        public void StartConsuming<T>(string queueName, bool autoAck)
+        public async Task<string> StartConsuming<T>(string queueName, bool autoAck)
         {
             var consumer = new AsyncEventingBasicConsumer(_channel);
             consumer.Received += async (model, ea) =>
@@ -26,8 +26,14 @@ namespace SupportHelper.RabbitMQ.Implementation
 
                 _channel.BasicAck(ea.DeliveryTag, multiple: false);
             };
-
             _channel.BasicConsume(queueName, autoAck, consumer);
+            await Task.CompletedTask;
+            throw new NotImplementedException();
+        }
+
+        public Task<string> StartConsuming(string queueName, bool autoAck)
+        {
+            throw new NotImplementedException();
         }
     }
 }
