@@ -1,5 +1,7 @@
 ﻿using Bogus;
 using Moq;
+using SupportHelper.Communication.Requests;
+using SupportHelper.Communication.Responses;
 using SupportHelper.WebApi.Controllers;
 
 namespace SupportHelper.Tests.ControllersTest
@@ -17,6 +19,11 @@ namespace SupportHelper.Tests.ControllersTest
         public async Task GetMachineInformation_ShouldBeMachine()
         {
             var faker = new Faker("pt-BR");
+            var hostname = faker.Random.String();
+            var ipv4 = faker.Internet.Ip();
+            var replyToQueueName = faker.Random.String();
+            var request = new MachineInformationRequest(hostname, ipv4, replyToQueueName);
+            var response = new Mock<MachineInformationResponse>(hostname, Guid.NewGuid().ToString());
         }
     }
 }

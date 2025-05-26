@@ -6,6 +6,12 @@
         public string Hostname { get; init; }
         public NetworkBoad[]? NetworkBoads { get; init; }
 
+        public MachineInformationResponse(string hostname, string? idServiceWindows) 
+        {
+            Hostname = hostname;
+            IdServiceWindows = idServiceWindows;
+        }
+
         public MachineInformationResponse(string hostname, string? idServiceWindows, NetworkBoad[]? networkBoads)
         {
             IdServiceWindows = idServiceWindows;

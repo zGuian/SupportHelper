@@ -25,21 +25,25 @@ namespace SupportHelper.Application.UseCases.MachineUC
             if (request.ReplyToQueueName != null)
             {
                 var machine = await _consume.ConsumeMessageAsync(request.ReplyToQueueName, true);
-                var net = ConvertTo(machine).ToArray();
+                var net = ConvertTo(machine);
                 return new MachineInformationResponse(machine.Hostname, Guid.NewGuid().ToString(), net);
             }
             return JsonSerializer.Deserialize<MachineInformationResponse>(message)
                 ?? throw new ArgumentNullException(message);
         }
 
-        private List<NetworkBoad> ConvertTo(Machine machine)
+        private NetworkBoad[] ConvertTo(Machine machine)
         {
             var networkBoard = new List<NetworkBoad>();
+            if (machine.NetworkBoard == null)
+            {
+                throw new Exception();
+            }
             foreach (var item in machine.NetworkBoard)
             {
                 networkBoard.Add(new NetworkBoad(item.Ipv4, item.Ipv6, item.MacAddress));
             }
-            return networkBoard;
+            return networkBoard.ToArray();
         }
     }
 }
