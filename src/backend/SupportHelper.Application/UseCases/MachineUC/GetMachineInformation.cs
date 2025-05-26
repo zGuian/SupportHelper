@@ -32,7 +32,7 @@ namespace SupportHelper.Application.UseCases.MachineUC
                 ?? throw new ArgumentNullException(message);
         }
 
-        private NetworkBoad[] ConvertTo(Machine machine)
+        private static NetworkBoad[] ConvertTo(Machine machine)
         {
             var networkBoard = new List<NetworkBoad>();
             if (machine.NetworkBoard == null)
