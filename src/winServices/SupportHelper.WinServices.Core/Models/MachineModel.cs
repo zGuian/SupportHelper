@@ -1,4 +1,6 @@
-﻿namespace SupportHelper.WinServices.Core.Models
+﻿using SupportHelper.WinServices.Core.ValueObjects;
+
+namespace SupportHelper.WinServices.Core.Models
 {
     public sealed class MachineModel
     {
