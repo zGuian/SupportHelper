@@ -1,45 +1,78 @@
-﻿using RabbitMQ.Client;
-using SupportHelper.RabbitMQ.Exceptions;
+﻿using Microsoft.Extensions.Logging;
+using RabbitMQ.Client;
 using SupportHelper.RabbitMQ.Interfaces;
 using System.Text;
+using System.Text.Json;
 
 namespace SupportHelper.RabbitMQ.Implementation
 {
     public class RabbitMQProducer : IRabbitMQProducer
     {
-        private readonly IModel _channel;
+        public readonly ILogger<RabbitMQProducer> _logger;
+        private readonly IRabbitMQConnection _connection;
 
-        public RabbitMQProducer(IRabbitMQConnection connection)
+        public RabbitMQProducer(IRabbitMQConnection connection, ILogger<RabbitMQProducer> logger)
         {
-            _channel = connection.CreateChannel();
+            _logger = logger;
+            _connection = connection;
         }
 
-        public IModel Channel => _channel;
-
-        public async Task PublishAsync(string exchange, string routingKey, IBasicProperties properties, string message, CancellationToken cancellationToken = default)
+        public async Task PublishAsync<T>(string exchange, string routingKey, T message,
+            bool persistent = true, IDictionary<string, object?>? headers = null)
         {
+            if (message == null) throw new ArgumentNullException(nameof(message));
             try
             {
-                var body = Encoding.UTF8.GetBytes(message);
-                await Task.Run(() => _channel.BasicPublish(exchange, routingKey, properties, body), cancellationToken);
+                using var channel = await _connection.Connection.CreateChannelAsync();
+                var json = JsonSerializer.Serialize(message);
+                var body = Encoding.UTF8.GetBytes(json);
+
+                await channel.ExchangeDeclareAsync(exchange, type: ExchangeType.Direct,
+                    durable: true, autoDelete: false);
+
+                var properties = new BasicProperties
+                {
+                    DeliveryMode = DeliveryModes.Persistent,
+                    ContentType = "application/json",
+                    ContentEncoding = "UTF8"
+                };
+
+                properties = CreateReplyToProperties("Reply-To-Information", persistent);
+
+                if (headers != null)
+                {
+                    properties.Headers = headers;
+                }
+
+                await channel.BasicPublishAsync(exchange, routingKey, mandatory: true, properties, body);
+                _logger.LogInformation("Mensagem publicada na exchange '{Exchange}' com routingKey '{RoutingKey}'",
+                exchange, routingKey);
             }
             catch (Exception ex)
             {
-                throw new RabbitMQPublishException(ex.Message, ex.InnerException);
+                _logger.LogError(ex, "Erro ao publicar mensagem no RabbitMQ.");
+                throw;
             }
         }
 
-        public async Task PublishAsync(string exchange, IBasicProperties properties, string message, CancellationToken cancellationToken = default)
+        private BasicProperties CreateReplyToProperties(string replyToQueue, bool persistence = true)
         {
-            try
+            var properties = new BasicProperties
             {
-                var body = Encoding.UTF8.GetBytes(message);
-                await Task.Run(() => _channel.BasicPublish(exchange, string.Empty, properties, body), cancellationToken);
-            }
-            catch (Exception ex)
+                ReplyTo = replyToQueue,
+                ContentType = "application/json",
+                CorrelationId = Guid.NewGuid().ToString(),
+            };
+
+            if (persistence)
             {
-                throw new RabbitMQPublishException(ex.Message, ex.InnerException);
+                properties.DeliveryMode = DeliveryModes.Persistent;
             }
+            else
+            {
+                properties.DeliveryMode = DeliveryModes.Transient;
+            }
+            return properties;
         }
     }
 }

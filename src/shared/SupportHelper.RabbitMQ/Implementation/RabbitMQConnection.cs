@@ -1,17 +1,29 @@
 ﻿using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Exceptions;
 using SupportHelper.RabbitMQ.Interfaces;
 
 namespace SupportHelper.RabbitMQ.Implementation
 {
-    public class RabbitMQConnection : IRabbitMQConnection, IDisposable
+    public class RabbitMQConnection : IRabbitMQConnection, IAsyncDisposable
     {
         private readonly IConnection _connection;
-        private bool _disposed = false;
+        private bool _disposed;
 
-        public bool IsConnected => _connection?.IsOpen ?? false;
+        private RabbitMQConnection(IConnection connection)
+        {
+            _connection = connection;
+        }
 
-        public RabbitMQConnection(IConfiguration configuration)
+        public IConnection Connection
+        {
+            get
+            {
+                return _disposed ? throw new ObjectDisposedException(GetType().FullName) : _connection;
+            }
+        }
+
+        public static async Task<RabbitMQConnection> CreateConnectionToRabbitMQ(IConfiguration configuration)
         {
             var section = configuration.GetSection("RabbitMQ:Config");
             if (section == null || !section.Exists())
@@ -36,48 +48,31 @@ namespace SupportHelper.RabbitMQ.Implementation
                 Password = password,
                 VirtualHost = virtualHost ?? "/",
                 Port = port != null ? int.Parse(port) : AmqpTcpEndpoint.UseDefaultPort,
+                AutomaticRecoveryEnabled = true,
+                NetworkRecoveryInterval = TimeSpan.FromSeconds(10)
             };
             try
             {
-                _connection = factory.CreateConnection();
+                var connection = await factory.CreateConnectionAsync();
+                return new RabbitMQConnection(connection);
             }
-            catch (Exception ex)
+            catch (BrokerUnreachableException ex)
             {
-                throw new Exception("Failed to create RabbitMQ connection", ex);
+                throw new Exception("Failed to create RabbitMQ connection", ex.InnerException);
             }
         }
 
-        public IModel CreateChannel()
+        public async ValueTask DisposeAsync()
         {
-            if (!IsConnected)
-                throw new InvalidOperationException("No RabbitMQ connections are available to perform this action");
+            if (_disposed) return;
 
-            return _connection.CreateModel();
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposed)
+            if (_connection.IsOpen)
             {
-                if (disposing)
-                {
-                    if (_connection != null)
-                    {
-                        if (_connection.IsOpen)
-                        {
-                            _connection.Close();
-                        }
-                        _connection.Dispose();
-                    }
-                }
-                _disposed = true;
+                await _connection.CloseAsync();
             }
-        }
+            await _connection.DisposeAsync();
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            _disposed = true;
         }
     }
 }
