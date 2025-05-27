@@ -2,35 +2,29 @@
 {
     public record MachineInformationResponse
     {
-        public string? IdServiceWindows { get; init; }
         public string Hostname { get; init; }
-        public NetworkBoad[]? NetworkBoads { get; init; }
+        public string CurrentUsername { get; init; }
+        public string DomainName { get; init; }
+        public string OperationalSystem { get; init; }
+        public NetworkBoardResponse[]? NetworkBoards { get; init; }
 
-        public MachineInformationResponse(string hostname, string? idServiceWindows) 
+        private MachineInformationResponse()
         {
-            Hostname = hostname;
-            IdServiceWindows = idServiceWindows;
+            Hostname = string.Empty;
+            DomainName = string.Empty;
+            CurrentUsername = string.Empty;
+            OperationalSystem = string.Empty;
+            NetworkBoards = [];
         }
 
-        public MachineInformationResponse(string hostname, string? idServiceWindows, NetworkBoad[]? networkBoads)
+        public MachineInformationResponse(string hostname, string currentUsername, string domainName, 
+            string operationalSystem, ICollection<NetworkBoardResponse> networkBoards)
         {
-            IdServiceWindows = idServiceWindows;
             Hostname = hostname;
-            NetworkBoads = networkBoads;
-        }
-    }
-
-    public record NetworkBoad
-    {
-        public string? Ipv4 { get; private set; }
-        public string? Ipv6 { get; private set; }
-        public string? MacAddress { get; private set; }
-
-        public NetworkBoad(string? ipv4, string? ipv6, string? macAddress)
-        {
-            Ipv4 = ipv4;
-            Ipv6 = ipv6;
-            MacAddress = macAddress;
+            CurrentUsername = currentUsername;
+            DomainName = domainName;
+            OperationalSystem = operationalSystem;
+            NetworkBoards = [..networkBoards];
         }
     }
 }
