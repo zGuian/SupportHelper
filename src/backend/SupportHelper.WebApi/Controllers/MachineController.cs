@@ -8,10 +8,11 @@ namespace SupportHelper.WebApi.Controllers
     [Route("api/{version}/[controller]")]
     public sealed class MachineController : ControllerBase
     {
-        [HttpGet("Information")]
+        [HttpGet("Information/{hostname}")]
         public async Task<IActionResult> GetMachineInformation([FromServices] IGetMachineInformation getMachineInformation,
-            [FromBody] MachineInformationRequest request)
+            [FromRoute] string hostname, [FromHeader] string nameQueueResponse)
         {
+            var request = new MachineInformationRequest(hostname, nameQueueResponse);
             var response = await getMachineInformation.ExecuteAsync(request);
             return Ok(response);
         }
