@@ -15,10 +15,11 @@ namespace SupportHelper.Infrastructure
             return services;
         }
 
-        private static async void AddMqServices(IServiceCollection services, IConfiguration configuration)
+        private static void AddMqServices(IServiceCollection services, IConfiguration configuration)
         {
-            var rabbitConnection = await RabbitMQConnection.CreateConnectionToRabbitMQ(configuration);
-            services.AddSingleton<IRabbitMQConnection>(rabbitConnection);
+            services.AddSingleton<IRabbitMQConnection>(sp => sp.GetRequiredService<RabbitMQConnection>());
+            services.AddSingleton<RabbitMQConnection>();
+            services.AddHostedService(sp => sp.GetRequiredService<RabbitMQConnection>());
             services.AddSingleton<IRabbitMQProducer, RabbitMQProducer>();
             services.AddSingleton<IRabbitMQConsumer, RabbitMQConsumer>();
 
