@@ -8,7 +8,9 @@ using SupportHelper.WinServices.Core.Workers;
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<Worker>();
 builder.Services.AddHostedService<MachineWorker>();
-
+builder.Services.AddSingleton<IRabbitMQConnection>(sp => sp.GetRequiredService<RabbitMQConnection>());
+builder.Services.AddSingleton<RabbitMQConnection>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<RabbitMQConnection>());
 builder.Services.AddSingleton<IRabbitMQConsumer, RabbitMQConsumer>();
 builder.Services.AddSingleton<IRabbitMQProducer, RabbitMQProducer>();
 builder.Services.AddTransient<IMachineService, MachineService>();

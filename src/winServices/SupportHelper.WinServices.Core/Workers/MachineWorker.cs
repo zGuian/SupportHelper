@@ -24,10 +24,10 @@ namespace SupportHelper.WinServices.Core.Workers
             {
                 throw new ArgumentNullException("RabbitMQ:Config section not found in configuration");
             }
-            var exchange = section["Exchange"]!;
+            var exchange = section["ExchangeDefault"]!;
             var replyTo = section["ReplyTo"]!;
             var queueNameDefault = section["QueueNameDefault"]!;
-            await _machineService.GetInformationFromMachineAsync(exchange, replyTo, queueNameDefault, stoppingToken);
+            await _machineService.GetInformationFromMachineAsync(exchange, queueNameDefault, cancellationToken: stoppingToken);
             _logger.LogInformation("MachineWorker finalizado.");
         }
     }

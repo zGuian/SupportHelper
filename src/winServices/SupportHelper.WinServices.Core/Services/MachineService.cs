@@ -23,7 +23,7 @@ namespace SupportHelper.WinServices.Core.Services
             _consumer = consumer;
         }
 
-        public async Task GetInformationFromMachineAsync(string exchange, string routingKey, string queueName,
+        public async Task GetInformationFromMachineAsync(string exchange, string queueName, string routingKey = "",
             CancellationToken cancellationToken = default)
         {
             await _consumer.ListenAsync(exchange, routingKey, queueName,
