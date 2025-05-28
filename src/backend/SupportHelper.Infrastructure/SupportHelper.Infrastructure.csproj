@@ -13,4 +13,8 @@
     <ProjectReference Include="..\SupportHelper.Domain\SupportHelper.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="HttpServices\" />
+  </ItemGroup>
+
 </Project>
