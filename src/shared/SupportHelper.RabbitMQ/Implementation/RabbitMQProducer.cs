@@ -35,7 +35,46 @@ namespace SupportHelper.RabbitMQ.Implementation
                     DeliveryMode = persistent ? DeliveryModes.Persistent : DeliveryModes.Transient,
                     ContentType = "application/json",
                     ContentEncoding = "UTF8",
-                    CorrelationId =
+                    CorrelationId = correlationId
+                };
+
+                if (headers != null)
+                {
+                    properties.Headers = headers;
+                }
+
+                await channel.BasicPublishAsync(exchange, routingKey, mandatory: true, properties, body);
+                _logger.LogInformation("Mensagem publicada na exchange '{Exchange}' com routingKey '{RoutingKey}'",
+                exchange, routingKey);
+                return correlationId;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao publicar mensagem no RabbitMQ.");
+                throw;
+            }
+        }
+
+        public async Task<string> PublishAsync(string exchange, string routingKey, string message, 
+            string? correlationId = null, bool persistent = true, IDictionary<string, object?>? headers = null)
+        {
+            ArgumentNullException.ThrowIfNull(message);            
+            try
+            {
+                using var channel = await _connection.Connection.CreateChannelAsync();
+                correlationId ??= Guid.NewGuid().ToString();
+                var body = Encoding.UTF8.GetBytes(message);
+
+                await channel.ExchangeDeclareAsync(exchange, type: ExchangeType.Direct,
+                    durable: true, autoDelete: false);
+
+                var properties = new BasicProperties
+                {
+                    ReplyTo = "Reply-To-Information",
+                    DeliveryMode = persistent ? DeliveryModes.Persistent : DeliveryModes.Transient,
+                    ContentType = "application/json",
+                    ContentEncoding = "UTF8",
+                    CorrelationId = correlationId
                 };
 
                 if (headers != null)
