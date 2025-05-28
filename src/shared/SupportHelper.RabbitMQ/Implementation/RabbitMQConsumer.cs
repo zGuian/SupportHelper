@@ -1,39 +1,80 @@
-﻿using RabbitMQ.Client;
+﻿using Microsoft.Extensions.Logging;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using SupportHelper.RabbitMQ.Interfaces;
-using System.Text;
-using System.Text.Json;
 
 namespace SupportHelper.RabbitMQ.Implementation
 {
     public class RabbitMQConsumer : IRabbitMQConsumer
     {
-        private readonly IModel _channel;
+        private readonly ILogger<RabbitMQConsumer> _logger;
+        private readonly IRabbitMQConnection _connection;
 
-        public RabbitMQConsumer(IRabbitMQConnection connection)
+        public RabbitMQConsumer(IRabbitMQConnection connection, ILogger<RabbitMQConsumer> logger)
         {
-            _channel = connection.CreateChannel();
+            _logger = logger;
+            _connection = connection;
         }
 
-        public async Task<string> StartConsuming<T>(string queueName, bool autoAck)
+        public async Task ConsumeAllMessagesAsync(string queueName,
+            Func<ReadOnlyMemory<byte>, IReadOnlyBasicProperties, Task> onMessageReceived,
+        CancellationToken cancellationToken)
         {
-            var consumer = new AsyncEventingBasicConsumer(_channel);
-            consumer.Received += async (model, ea) =>
+            using var channel = await _connection.Connection.CreateChannelAsync();
+            var consumer = new AsyncEventingBasicConsumer(channel);
+            consumer.ReceivedAsync += async (sender, args) =>
             {
-                var body = ea.Body.ToArray();
-                var json = JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(body));
-                await Task.CompletedTask;
-
-                _channel.BasicAck(ea.DeliveryTag, multiple: false);
+                try
+                {
+                    await onMessageReceived(args.Body, args.BasicProperties);
+                    await channel.BasicAckAsync(args.DeliveryTag, multiple: true);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Erro ao processar mensagem da fila '{QueueName}'", queueName);
+                    await channel.BasicNackAsync(args.DeliveryTag, multiple: false, requeue: true);
+                    throw;
+                }
             };
-            _channel.BasicConsume(queueName, autoAck, consumer);
-            await Task.CompletedTask;
-            throw new NotImplementedException();
+
+            var consumerTag = await channel.BasicConsumeAsync(queue: queueName,
+                                                              autoAck: false,
+                                                              consumer: consumer,
+                                                              cancellationToken);
+            try
+            {
+                await Task.Delay(Timeout.Infinite, cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+                _logger.LogInformation("Cancelando consumo da fila '{QueueName}'", queueName);
+                await channel.BasicCancelAsync(consumerTag);
+            }
         }
 
-        public Task<string> StartConsuming(string queueName, bool autoAck)
+        public async Task<(ReadOnlyMemory<byte> Body, IReadOnlyBasicProperties Props)> WaitForMessageAsync(
+            string queueName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var tcs = new TaskCompletionSource<(ReadOnlyMemory<byte>, IReadOnlyBasicProperties)>();
+
+            await using var channel = await _connection.Connection.CreateChannelAsync(cancellationToken: cancellationToken);
+
+            var consumer = new AsyncEventingBasicConsumer(channel);
+
+            consumer.ReceivedAsync += async (sender, args) =>
+            {
+                tcs.SetResult((args.Body, args.BasicProperties));
+                await channel.BasicAckAsync(args.DeliveryTag, false);
+            };
+
+            var consumerTag = await channel.BasicConsumeAsync(queueName, false, consumer, cancellationToken);
+
+            await using (cancellationToken.Register(() => tcs.TrySetCanceled()))
+            {
+                var result = await tcs.Task;
+                await channel.BasicCancelAsync(consumerTag, cancellationToken: cancellationToken);
+                return result;
+            }
         }
     }
 }

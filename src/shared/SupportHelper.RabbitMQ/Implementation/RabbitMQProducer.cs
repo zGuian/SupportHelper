@@ -2,7 +2,6 @@
 using RabbitMQ.Client;
 using SupportHelper.RabbitMQ.Interfaces;
 using System.Text;
-using System.Text.Json;
 
 namespace SupportHelper.RabbitMQ.Implementation
 {
@@ -17,27 +16,27 @@ namespace SupportHelper.RabbitMQ.Implementation
             _connection = connection;
         }
 
-        public async Task PublishAsync<T>(string exchange, string routingKey, T message,
+        public async Task<string> PublishAsync(string exchange, string routingKey, string message,
             bool persistent = true, IDictionary<string, object?>? headers = null)
         {
-            if (message == null) throw new ArgumentNullException(nameof(message));
+            ArgumentNullException.ThrowIfNull(message);
             try
             {
                 using var channel = await _connection.Connection.CreateChannelAsync();
-                var json = JsonSerializer.Serialize(message);
-                var body = Encoding.UTF8.GetBytes(json);
+                var correlationId = Guid.NewGuid().ToString();
+                var body = Encoding.UTF8.GetBytes(message);
 
                 await channel.ExchangeDeclareAsync(exchange, type: ExchangeType.Direct,
                     durable: true, autoDelete: false);
 
                 var properties = new BasicProperties
                 {
-                    DeliveryMode = DeliveryModes.Persistent,
+                    ReplyTo = "Reply-To-Information",
+                    DeliveryMode = persistent ? DeliveryModes.Persistent : DeliveryModes.Transient,
                     ContentType = "application/json",
-                    ContentEncoding = "UTF8"
+                    ContentEncoding = "UTF8",
+                    CorrelationId =
                 };
-
-                properties = CreateReplyToProperties("Reply-To-Information", persistent);
 
                 if (headers != null)
                 {
@@ -47,32 +46,13 @@ namespace SupportHelper.RabbitMQ.Implementation
                 await channel.BasicPublishAsync(exchange, routingKey, mandatory: true, properties, body);
                 _logger.LogInformation("Mensagem publicada na exchange '{Exchange}' com routingKey '{RoutingKey}'",
                 exchange, routingKey);
+                return correlationId;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao publicar mensagem no RabbitMQ.");
                 throw;
             }
-        }
-
-        private BasicProperties CreateReplyToProperties(string replyToQueue, bool persistence = true)
-        {
-            var properties = new BasicProperties
-            {
-                ReplyTo = replyToQueue,
-                ContentType = "application/json",
-                CorrelationId = Guid.NewGuid().ToString(),
-            };
-
-            if (persistence)
-            {
-                properties.DeliveryMode = DeliveryModes.Persistent;
-            }
-            else
-            {
-                properties.DeliveryMode = DeliveryModes.Transient;
-            }
-            return properties;
         }
     }
 }
