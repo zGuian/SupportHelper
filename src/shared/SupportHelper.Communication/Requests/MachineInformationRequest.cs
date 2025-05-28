@@ -4,10 +4,12 @@
     {
         public string Hostname { get; init; }
         public string ReplyToQueueName { get; init; }
+        public string Exchange { get; init; }
 
-        public MachineInformationRequest(string hostname, string replyToQueueName)
+        public MachineInformationRequest(string hostname, string exchange, string replyToQueueName)
         {
             Hostname = hostname;
+            Exchange = exchange;
             ReplyToQueueName = replyToQueueName;
         }
     }
