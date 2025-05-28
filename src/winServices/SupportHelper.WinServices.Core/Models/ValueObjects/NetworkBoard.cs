@@ -1,7 +1,7 @@
 ﻿using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
-namespace SupportHelper.WinServices.Core.ValueObjects
+namespace SupportHelper.WinServices.Core.Models.ValueObjects
 {
     public class NetworkBoard
     {

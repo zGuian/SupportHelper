@@ -1,4 +1,4 @@
-﻿using SupportHelper.WinServices.Core.ValueObjects;
+﻿using SupportHelper.WinServices.Core.Models.ValueObjects;
 
 namespace SupportHelper.WinServices.Core.Models
 {
