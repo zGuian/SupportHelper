@@ -1,5 +1,4 @@
-﻿
-namespace SupportHelper.Domain.Interfaces.MessageBrokerServices
+﻿namespace SupportHelper.Domain.Interfaces.MQServices
 {
     public interface IProducerServices
     {

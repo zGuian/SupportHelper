@@ -3,30 +3,29 @@ using SupportHelper.Application.Interfaces;
 using SupportHelper.Communication.Requests;
 using SupportHelper.Communication.Responses;
 using SupportHelper.Domain.Entities;
-using SupportHelper.Domain.Interfaces.MessageBrokerServices;
+using SupportHelper.Domain.Interfaces.MQServices;
+using SupportHelper.Exceptions;
+using SupportHelper.Exceptions.ExceptionsBase;
 using System.Text.Json;
 
 namespace SupportHelper.Application.UseCases.MachineUC
 {
     public class GetMachineInformation : IGetMachineInformation
     {
-        private readonly IProducerServices _producer;
-        private readonly IConsumeServices _consume;
         private readonly ILogger<GetMachineInformation> _logger;
+        private readonly IMachineMQServices _machineMQ;
 
-        public GetMachineInformation(IProducerServices producer, IConsumeServices consume,
-            ILogger<GetMachineInformation> logger)
+        public GetMachineInformation(ILogger<GetMachineInformation> logger, IMachineMQServices machineMQ)
         {
-            _producer = producer;
-            _consume = consume;
             _logger = logger;
+            _machineMQ = machineMQ;
         }
 
         public async Task<MachineInformationResponse> ExecuteAsync(MachineInformationRequest request)
         {
             var message = JsonSerializer.Serialize(request);
-            await _producer.PublishMessage(request.Hostname, message);
-            var machine = await _consume.ConsumeMessageAsync(request.ReplyToQueueName, true);
+            var machine = await _machineMQ.GetInformationOnlyMachineAsync(request.Exchange,
+                request.ReplyToQueueName, message) ?? throw new GenericErrorException([ResourceMessagesException.GENERIC_ERROR]);
             _logger.LogInformation("Lido os seguintes valores {}", machine.ToString());
             var networkBoardResponse = ConvertInNetworkBoardResponse(machine);
             return new MachineInformationResponse(machine.Hostname, machine.CurrentUsername,
