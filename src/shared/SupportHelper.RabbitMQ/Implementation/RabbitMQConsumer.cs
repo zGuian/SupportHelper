@@ -56,7 +56,7 @@ namespace SupportHelper.RabbitMQ.Implementation
             Func<ReadOnlyMemory<byte>, IReadOnlyBasicProperties, Task> onMessageReceived, 
             CancellationToken cancellationToken = default)
         {
-            await using var channel = await _connection.Connection.CreateChannelAsync(cancellationToken: cancellationToken);
+            await using var channel = await _connection.CreateQueueInExchange(routingKey, cancellationToken);
 
             await channel.ExchangeDeclareAsync(
                 exchange: exchange,
