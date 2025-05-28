@@ -68,5 +68,14 @@ namespace SupportHelper.Exceptions {
                 return ResourceManager.GetString("EMAIL_ALREADY_REGISTERED", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Ocorreu um erro inesperado. Erro não tratado..
+        /// </summary>
+        public static string GENERIC_ERROR {
+            get {
+                return ResourceManager.GetString("GENERIC_ERROR", resourceCulture);
+            }
+        }
     }
 }

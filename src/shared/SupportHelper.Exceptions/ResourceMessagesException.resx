@@ -120,4 +120,7 @@
   <data name="EMAIL_ALREADY_REGISTERED" xml:space="preserve">
     <value>E-mail já registrado na plataforma.</value>
   </data>
+  <data name="GENERIC_ERROR" xml:space="preserve">
+    <value>Ocorreu um erro inesperado. Erro não tratado.</value>
+  </data>
 </root>
