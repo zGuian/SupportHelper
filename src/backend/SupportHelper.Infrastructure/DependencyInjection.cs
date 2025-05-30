@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SupportHelper.Domain.Interfaces.MQServices;
 using SupportHelper.Infrastructure.MQServices;
-using SupportHelper.RabbitMQ.Implementation;
-using SupportHelper.RabbitMQ.Interfaces;
 
 namespace SupportHelper.Infrastructure
 {
@@ -17,13 +14,14 @@ namespace SupportHelper.Infrastructure
 
         private static void AddMqServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<RabbitMQConnection>();
-            services.AddSingleton<IRabbitMQConnection>(sp => sp.GetRequiredService<RabbitMQConnection>());
-            services.AddHostedService(sp => sp.GetRequiredService<RabbitMQConnection>());
-            services.AddSingleton<IRabbitMQProducer, RabbitMQProducer>();
-            services.AddSingleton<IRabbitMQConsumer, RabbitMQConsumer>();
+            //services.AddSingleton<RabbitMQConnection>();
+            //services.AddSingleton<IRabbitMQConnection>(sp => sp.GetRequiredService<RabbitMQConnection>());
+            //services.AddHostedService(sp => sp.GetRequiredService<RabbitMQConnection>());
+            //services.AddSingleton<IRabbitMQProducer, RabbitMQProducer>();
+            //services.AddSingleton<IRabbitMQConsumer, RabbitMQConsumer>();
 
-            services.AddScoped<IMachineMQServices, MachineMQServices>();
+            //services.AddScoped<IMachineMQServices_old, MachineMQServices_old>();
+            services.MassTransitService(configuration);
         }
     }
 }

@@ -8,15 +8,15 @@ using System.Text.Json;
 
 namespace SupportHelper.Infrastructure.MQServices
 {
-    public class MachineMQServices : IMachineMQServices
+    public class MachineMQServices_old : IMachineMQServices_old
     {
-        private readonly ILogger<MachineMQServices> _logger;
+        private readonly ILogger<MachineMQServices_old> _logger;
         private readonly IRabbitMQConsumer _rabbitConsumer;
         private readonly IRabbitMQProducer _rabbitProducer;
         private readonly IConfiguration _configuration;
 
-        public MachineMQServices(IRabbitMQConsumer rabbitConsumer, IRabbitMQProducer rabbitProducer,
-            ILogger<MachineMQServices> logger, IConfiguration configuration)
+        public MachineMQServices_old(IRabbitMQConsumer rabbitConsumer, IRabbitMQProducer rabbitProducer,
+            ILogger<MachineMQServices_old> logger, IConfiguration configuration)
         {
             _logger = logger;
             _configuration = configuration;

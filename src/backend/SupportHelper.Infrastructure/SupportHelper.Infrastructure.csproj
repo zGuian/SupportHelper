@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\shared\SupportHelper.Communication\SupportHelper.Communication.csproj" />
     <ProjectReference Include="..\..\shared\SupportHelper.Exceptions\SupportHelper.Exceptions.csproj" />
     <ProjectReference Include="..\..\shared\SupportHelper.RabbitMQ\SupportHelper.RabbitMQ.csproj" />
     <ProjectReference Include="..\SupportHelper.Domain\SupportHelper.Domain.csproj" />
@@ -15,6 +14,10 @@
 
   <ItemGroup>
     <Folder Include="HttpServices\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.4.1" />
   </ItemGroup>
 
 </Project>

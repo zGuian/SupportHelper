@@ -1,8 +1,7 @@
-using SupportHelper.Application;
 using SupportHelper.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddApplicationContext(builder.Configuration);
+//builder.Services.AddApplicationContext(builder.Configuration);
 builder.Services.AddInfrastructureContext(builder.Configuration);
 builder.Services.AddControllers();
 

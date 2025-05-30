@@ -1,16 +1,12 @@
 ﻿namespace SupportHelper.Communication.Requests
 {
-    public record MachineInformationRequest
+    public sealed record MachineInformationRequest
     {
-        public string Hostname { get; init; }
-        public string ReplyToQueueName { get; init; }
-        public string Exchange { get; init; }
+        public RabbitMQRequest RabbitMQRequest { get; init; }
 
-        public MachineInformationRequest(string hostname, string exchange, string replyToQueueName)
+        public MachineInformationRequest(RabbitMQRequest mqRequest)
         {
-            Hostname = hostname;
-            Exchange = exchange;
-            ReplyToQueueName = replyToQueueName;
+            RabbitMQRequest = mqRequest;
         }
     }
 }

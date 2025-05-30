@@ -23,13 +23,8 @@ namespace SupportHelper.Application.UseCases.MachineUC
 
         public async Task<MachineInformationResponse> ExecuteAsync(MachineInformationRequest request)
         {
-            var message = JsonSerializer.Serialize(request);
-            var machine = await _machineMQ.GetInformationOnlyMachineAsync(request.Exchange,
-                request.ReplyToQueueName, message) ?? throw new GenericErrorException([ResourceMessagesException.GENERIC_ERROR]);
-            _logger.LogInformation("Lido os seguintes valores {}", machine.ToString());
-            var networkBoardResponse = ConvertInNetworkBoardResponse(machine);
-            return new MachineInformationResponse(machine.Hostname, machine.CurrentUsername,
-                machine.DomainName, machine.OperationalSystem, networkBoardResponse);
+            var correlationId = await _machineMQ.PublishGetMachineInformation(request);
+            
         }
 
         private static HashSet<NetworkBoardResponse> ConvertInNetworkBoardResponse(Machine machine)
