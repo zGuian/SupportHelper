@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using SupportHelper.WinServices.Core.Interfaces;
+﻿using SupportHelper.WinServices.Core.Interfaces;
 
 namespace SupportHelper.WinServices.Core.Workers
 {
@@ -19,10 +18,10 @@ namespace SupportHelper.WinServices.Core.Workers
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("MachineWorker iniciado.");
-            var section = _configuration.GetSection("RabbitMQ:Config");
+            var section = _configuration.GetSection("RabbitMQ:Configuration");
             if (section == null || !section.Exists())
             {
-                throw new ArgumentNullException("RabbitMQ:Config section not found in configuration");
+                throw new ArgumentNullException("RabbitMQ:Configuration section not found in configuration");
             }
             var exchange = section["ExchangeDefault"]!;
             var replyTo = section["ReplyTo"]!;
