@@ -6,6 +6,6 @@ namespace SupportHelper.RabbitMQ.Interfaces
     {
         IConnection Connection { get; }
 
-        Task<IChannel> CreateQueueInExchange(string hostname, CancellationToken  cancellationToken = default);
+        Task<IChannel> CreateQueueAndExchange(string hostname, CancellationToken  cancellationToken = default);
     }
 }

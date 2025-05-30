@@ -20,7 +20,7 @@ namespace SupportHelper.RabbitMQ.Implementation
             Func<ReadOnlyMemory<byte>, IReadOnlyBasicProperties, Task> onMessageReceived,
         CancellationToken cancellationToken)
         {
-            using var channel = await _connection.Connection.CreateChannelAsync();
+            using var channel = await _connection.Connection.CreateChannelAsync(cancellationToken: cancellationToken);
             var consumer = new AsyncEventingBasicConsumer(channel);
             consumer.ReceivedAsync += async (sender, args) =>
             {
@@ -56,7 +56,7 @@ namespace SupportHelper.RabbitMQ.Implementation
             Func<ReadOnlyMemory<byte>, IReadOnlyBasicProperties, Task> onMessageReceived, 
             CancellationToken cancellationToken = default)
         {
-            await using var channel = await _connection.CreateQueueInExchange(routingKey, cancellationToken);
+            await using var channel = await _connection.CreateQueueAndExchange(routingKey, cancellationToken);
 
             await channel.ExchangeDeclareAsync(
                 exchange: exchange,
