@@ -17,8 +17,8 @@ namespace SupportHelper.Infrastructure
 
         private static void AddMqServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<IRabbitMQConnection>(sp => sp.GetRequiredService<RabbitMQConnection>());
             services.AddSingleton<RabbitMQConnection>();
+            services.AddSingleton<IRabbitMQConnection>(sp => sp.GetRequiredService<RabbitMQConnection>());
             services.AddHostedService(sp => sp.GetRequiredService<RabbitMQConnection>());
             services.AddSingleton<IRabbitMQProducer, RabbitMQProducer>();
             services.AddSingleton<IRabbitMQConsumer, RabbitMQConsumer>();
