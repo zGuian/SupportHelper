@@ -1,0 +1,40 @@
+﻿@model IEnumerable<MachineModel>
+
+@Html.Partial("SearchField")
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Hostname</th>
+            <th scope="col">Dominio</th>
+            <th scope="col">Usuario</th>
+            <th scope="col">Dominio</th>
+            <th scope="col">Sistema Operacional</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Id)</td>
+            <td>@Html.DisplayFor(modelItem => item.Hostname)</td>
+            <td>@Html.DisplayFor(modelItem => item.CurrentUsername)</td>
+            <td>@Html.DisplayFor(modelItem => item.DomainName)</td>
+            <td>@Html.DisplayFor(modelItem => item.OperationalSystem)</td>
+            <td>
+                @Html.ActionLink("Detalhes de Rede", "NetworkDetails", new { item.Id }) |
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+<div class="pagination">
+    <a href="#">&laquo;</a>
+    <a href="#">1</a>
+    <a class="active" href="#">2</a>
+    <a href="#">3</a>
+    <a href="#">4</a>
+    <a href="#">5</a>
+    <a href="#">6</a>
+    <a href="#">&raquo;</a>
+</div>
