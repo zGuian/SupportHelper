@@ -35,7 +35,6 @@ namespace SupportHelper.RabbitMQ.Implementation
                     DeliveryMode = persistent ? DeliveryModes.Persistent : DeliveryModes.Transient,
                     ContentType = "application/json",
                     ContentEncoding = "UTF8",
-                    CorrelationId = correlationId
                 };
 
                 if (headers != null)

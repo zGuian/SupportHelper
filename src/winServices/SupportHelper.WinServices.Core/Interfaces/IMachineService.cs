@@ -4,7 +4,6 @@ namespace SupportHelper.WinServices.Core.Interfaces
 {
     public interface IMachineService
     {
-        Task GetInformationFromMachineAsync(string exchange, string queueName, string routingKey = "",
-            CancellationToken cancellationToken = default);
+        Task GetInformationFromMachineAsync(IConfiguration configuration, CancellationToken cancellationToken);
     }
 }

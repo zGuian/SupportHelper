@@ -4,27 +4,24 @@ using SupportHelper.Communication.Requests;
 using SupportHelper.Communication.Responses;
 using SupportHelper.Domain.Entities;
 using SupportHelper.Domain.Interfaces.MQServices;
-using SupportHelper.Exceptions;
-using SupportHelper.Exceptions.ExceptionsBase;
-using System.Text.Json;
 
 namespace SupportHelper.Application.UseCases.MachineUC
 {
     public class GetMachineInformation : IGetMachineInformation
     {
         private readonly ILogger<GetMachineInformation> _logger;
-        private readonly IMachineMQServices _machineMQ;
+        private readonly IMachineMQServices _machineMQServices;
 
-        public GetMachineInformation(ILogger<GetMachineInformation> logger, IMachineMQServices machineMQ)
+        public GetMachineInformation(ILogger<GetMachineInformation> logger, IMachineMQServices machineMQServices)
         {
             _logger = logger;
-            _machineMQ = machineMQ;
+            _machineMQServices = machineMQServices;
         }
 
         public async Task<MachineInformationResponse> ExecuteAsync(MachineInformationRequest request)
         {
-            var correlationId = await _machineMQ.PublishGetMachineInformation(request);
-            
+            var correlationId = await _machineMQServices.PublishByRouteKey(request);
+
         }
 
         private static HashSet<NetworkBoardResponse> ConvertInNetworkBoardResponse(Machine machine)
