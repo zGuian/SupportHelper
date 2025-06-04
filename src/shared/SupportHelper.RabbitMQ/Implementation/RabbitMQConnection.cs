@@ -15,7 +15,7 @@ namespace SupportHelper.RabbitMQ.Implementation
             _configuration = configuration;
         }
 
-        public async Task<IChannel> CreateQueueAndExchange(string hostname, CancellationToken cancellationToken = default)
+        public async Task<IChannel> DeclareQueueAndExchange(string hostname, CancellationToken cancellationToken = default)
         {
             var section = _configuration.GetSection("RabbitMQ:ConfigExchange");
             if (section == null || !section.Exists())
@@ -29,10 +29,63 @@ namespace SupportHelper.RabbitMQ.Implementation
             await channel.ExchangeDeclareAsync(exchange, ExchangeType.Direct, durable: true,
                 autoDelete: false, cancellationToken: cancellationToken);
 
-            await channel.QueueDeclareAsync(queue: queueDefault, autoDelete: false, 
+            await channel.QueueDeclareAsync(queue: queueDefault, autoDelete: false,
                 cancellationToken: cancellationToken);
 
             var routingKey = $"worker.machine.{hostname.ToLower()}";
+
+            await channel.QueueBindAsync(queueDefault, exchange, routingKey, cancellationToken: cancellationToken);
+
+            return channel;
+        }
+
+        public async Task<(IChannel, string)> DeclareQueueForReplyTo(CancellationToken cancellationToken = default)
+        {
+            var section = _configuration.GetSection("RabbitMQ:ConfigExchange");
+            if (section == null || !section.Exists())
+            {
+                throw new ArgumentNullException("RabbitMQ:Config section not found in configuration");
+            }
+            var exchange = section["ExchangeDefault"]!;
+            var queueReplyTo = section["ReplyToDefault"]!;
+            var channel = await Connection.CreateChannelAsync(cancellationToken: cancellationToken);
+
+            await channel.ExchangeDeclareAsync(exchange: exchange,
+                                               type: ExchangeType.Direct,
+                                               durable: true,
+                                               autoDelete: false,
+                                               cancellationToken: cancellationToken);
+
+            await channel.QueueDeclareAsync(queue: queueReplyTo,
+                                            autoDelete: false,
+                                            cancellationToken: cancellationToken);
+
+            await channel.QueueBindAsync(queue: queueReplyTo,
+                                         exchange: exchange,
+                                         routingKey: "",
+                                         cancellationToken: cancellationToken);
+
+            return (channel, queueReplyTo);
+        }
+
+        public async Task<IChannel> DeclareQueueAndExchange(CancellationToken cancellationToken = default)
+        {
+            var section = _configuration.GetSection("RabbitMQ:ConfigExchange");
+            if (section == null || !section.Exists())
+            {
+                throw new ArgumentNullException("RabbitMQ:Config section not found in configuration");
+            }
+            var exchange = section["ExchangeDefault"]!;
+            var queueDefault = section["QueueNameDefault"]!;
+            var channel = await Connection.CreateChannelAsync(cancellationToken: cancellationToken);
+
+            await channel.ExchangeDeclareAsync(exchange, ExchangeType.Direct, durable: true,
+                autoDelete: false, cancellationToken: cancellationToken);
+
+            await channel.QueueDeclareAsync(queue: queueDefault, autoDelete: false,
+                cancellationToken: cancellationToken);
+
+            var routingKey = $"worker.machine.console";
 
             await channel.QueueBindAsync(queueDefault, exchange, routingKey, cancellationToken: cancellationToken);
 
@@ -47,12 +100,10 @@ namespace SupportHelper.RabbitMQ.Implementation
 
             var factory = new ConnectionFactory
             {
-                Uri = new Uri("amqp://localhost:5672"),
-                HostName = section["Hostname"]!,
+                Uri = new Uri(section["Url"]!),
                 UserName = section["Username"]!,
                 Password = section["Password"]!,
                 VirtualHost = section["VirtualHost"]!,
-                Port = int.TryParse(section["Port"]!, out var parsedPort) ? parsedPort : AmqpTcpEndpoint.UseDefaultPort,
                 AutomaticRecoveryEnabled = true,
                 NetworkRecoveryInterval = TimeSpan.FromSeconds(30)
             };

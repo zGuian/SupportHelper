@@ -1,6 +1,6 @@
 ﻿namespace SupportHelper.Communication.Responses
 {
-    public sealed class ResponseBase<T> where T : class
+    public sealed class ResponseBase<T>
     {
         public bool IsSuccess { get; private set; }
         public string? MessageError { get; private set; }

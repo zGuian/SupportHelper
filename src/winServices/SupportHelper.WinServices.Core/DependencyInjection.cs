@@ -9,7 +9,7 @@ namespace SupportHelper.WinServices.Core
     {
         public static IServiceCollection AddDependencyInjection(this IServiceCollection services)
         {
-            services.AddSingleton<RabbitMQConnection>(); // Instância única do serviço
+            services.AddSingleton<RabbitMQConnection>();
             services.AddSingleton<IRabbitMQConnection>(sp => sp.GetRequiredService<RabbitMQConnection>());
             services.AddHostedService(sp => sp.GetRequiredService<RabbitMQConnection>());
 

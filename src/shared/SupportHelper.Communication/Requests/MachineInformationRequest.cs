@@ -2,6 +2,7 @@
 {
     public sealed record MachineInformationRequest
     {
+        public Guid Id { get; init; }
         public RabbitMQRequest RabbitMQRequest { get; init; }
 
         public MachineInformationRequest(RabbitMQRequest mqRequest)

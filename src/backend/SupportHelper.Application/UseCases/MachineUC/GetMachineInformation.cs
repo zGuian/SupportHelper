@@ -4,6 +4,7 @@ using SupportHelper.Communication.Requests;
 using SupportHelper.Communication.Responses;
 using SupportHelper.Domain.Entities;
 using SupportHelper.Domain.Interfaces.MQServices;
+using SupportHelper.Domain.Interfaces.Repositories;
 
 namespace SupportHelper.Application.UseCases.MachineUC
 {
@@ -11,29 +12,20 @@ namespace SupportHelper.Application.UseCases.MachineUC
     {
         private readonly ILogger<GetMachineInformation> _logger;
         private readonly IMachineMQServices _machineMQServices;
+        private readonly IMachineRepository _machineRepository;
 
-        public GetMachineInformation(ILogger<GetMachineInformation> logger, IMachineMQServices machineMQServices)
+        public GetMachineInformation(ILogger<GetMachineInformation> logger, IMachineMQServices machineMQServices,
+            IMachineRepository machineRepository)
         {
             _logger = logger;
             _machineMQServices = machineMQServices;
+            _machineRepository = machineRepository;
         }
 
-        public async Task<MachineInformationResponse> ExecuteAsync(MachineInformationRequest request)
+        public async Task ExecuteAsync(MachineInformationRequest request)
         {
-            var correlationId = await _machineMQServices.PublishByRouteKey(request);
-
-        }
-
-        private static HashSet<NetworkBoardResponse> ConvertInNetworkBoardResponse(Machine machine)
-        {
-            var networkBoard = new HashSet<NetworkBoardResponse>();
-            if (machine.NetworkBoards == null) return [];
-            foreach (var adpter in machine.NetworkBoards)
-            {
-                networkBoard.Add(new NetworkBoardResponse(adpter.Description, adpter.Ipv4, adpter.Ipv6,
-                    adpter.MacAddress, adpter.InUse));
-            }
-            return networkBoard;
+            var correlationId = await _machineMQServices.GetInformationPublishAsync(request);
+            
         }
     }
 }

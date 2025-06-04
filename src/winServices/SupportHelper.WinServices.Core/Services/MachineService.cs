@@ -23,7 +23,7 @@ namespace SupportHelper.WinServices.Core.Services
 
         public async Task GetInformationFromMachineAsync(IConfiguration configuration, CancellationToken cancellationToken)
         {
-            var channel = await _connection.Connection.CreateChannelAsync(cancellationToken: cancellationToken);
+            var channel = await _connection.DeclareQueueAndExchange(Environment.MachineName, cancellationToken);
             var consumer = new AsyncEventingBasicConsumer(channel);
             consumer.ReceivedAsync += async (model, ea) =>
             {
