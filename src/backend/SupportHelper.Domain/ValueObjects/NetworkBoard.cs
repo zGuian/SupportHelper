@@ -1,6 +1,6 @@
 ﻿namespace SupportHelper.Domain.ValueObjects
 {
-    public class NetworkBoard
+    public struct NetworkBoard
     {
         public string Description { get; private set; }
         public string Ipv4 { get; private set; }

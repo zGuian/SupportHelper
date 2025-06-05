@@ -9,13 +9,16 @@ namespace SupportHelper.WebApi.Controllers
     public sealed class MachineController : ControllerBase
     {
         [HttpGet("Information/{hostname}")]
-        public async Task<IActionResult> GetMachineInformation([FromServices] IGetMachineInformation getMachineInformation,
+        public async Task<IActionResult> GetMachineInformation([FromServices] IRequestMachineInformation getMachineInformation,
             [FromRoute] string hostname, [FromHeader] string nameQueueResponse, [FromHeader] string exchange)
         {
-            var request = new MachineInformationRequest(new 
-                RabbitMQRequest(hostname, exchange, nameQueueResponse));
-            var response = await getMachineInformation.ExecuteAsync(request);
-            return Ok(response);
+            var request = new MachineInformationRequest(new RabbitMQRequest(
+                                                        hostname, 
+                                                        exchange, 
+                                                        nameQueueResponse));
+
+            await getMachineInformation.ExecuteAsync(request);
+            return Ok();
         }
     }
 }

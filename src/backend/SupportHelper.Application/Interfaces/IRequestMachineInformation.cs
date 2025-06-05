@@ -2,7 +2,7 @@
 
 namespace SupportHelper.Application.Interfaces
 {
-    public interface IGetMachineInformation
+    public interface IRequestMachineInformation
     {
         Task ExecuteAsync(MachineInformationRequest request);
     }

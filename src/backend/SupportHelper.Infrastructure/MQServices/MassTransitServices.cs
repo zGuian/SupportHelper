@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SupportHelper.Communication.Requests;
+using SupportHelper.Infrastructure.MQServices.Responses;
 
 namespace SupportHelper.Infrastructure.MQServices
 {
@@ -12,7 +13,7 @@ namespace SupportHelper.Infrastructure.MQServices
             services.AddMassTransit(x =>
             {
                 x.AddRequestClient<MachineInformationRequest>(TimeSpan.FromMinutes(1));
-
+                x.AddConsumer<MachineResponseConsumer>();
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.Host(new Uri(configuration["RabbitMQ:Configuration:Hostname"]!), h =>
@@ -21,7 +22,10 @@ namespace SupportHelper.Infrastructure.MQServices
                         h.Password(configuration["RabbitMQ:Configuration:Password"]!);
                     });
 
-                    cfg.ConfigureEndpoints(context);
+                    cfg.ReceiveEndpoint(configuration["RabbitMQ:ConfigExchange:ReplyToDefault"]!, e =>
+                    {
+                        e.ConfigureConsumer<MachineResponseConsumer>(context);
+                    });
                 });
             });
         }
