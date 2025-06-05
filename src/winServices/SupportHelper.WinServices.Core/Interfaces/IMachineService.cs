@@ -1,9 +1,9 @@
-﻿using RabbitMQ.Client;
+﻿using SupportHelper.WinServices.Core.Models;
 
 namespace SupportHelper.WinServices.Core.Interfaces
 {
     public interface IMachineService
     {
-        Task GetInformationFromMachineAsync(IConfiguration configuration, CancellationToken cancellationToken);
+        MachineModel GetInformationMachine(CancellationToken cancellationToken = default);
     }
 }

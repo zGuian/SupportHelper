@@ -1,7 +1,9 @@
-﻿using SupportHelper.RabbitMQ.Implementation;
-using SupportHelper.RabbitMQ.Interfaces;
+﻿using SupportHelper.WinServices.Core.Events;
 using SupportHelper.WinServices.Core.Interfaces;
+using SupportHelper.WinServices.Core.Interfaces.RabbitMQService;
 using SupportHelper.WinServices.Core.Services;
+using SupportHelper.WinServices.Core.Services.RabbitMQServices;
+using SupportHelper.WinServices.Core.Workers;
 
 namespace SupportHelper.WinServices.Core
 {
@@ -9,9 +11,10 @@ namespace SupportHelper.WinServices.Core
     {
         public static IServiceCollection AddDependencyInjection(this IServiceCollection services)
         {
-            services.AddSingleton<RabbitMQConnection>();
-            services.AddSingleton<IRabbitMQConnection>(sp => sp.GetRequiredService<RabbitMQConnection>());
-            services.AddHostedService(sp => sp.GetRequiredService<RabbitMQConnection>());
+            services.AddSingleton<IRabbitConnectionService,RabbitConnectionService>();
+            services.AddSingleton<RabbitMQEvent>();
+
+            services.AddHostedService<RabbitEventWorker>();
 
             services.AddTransient<IMachineService, MachineService>();
             return services;
