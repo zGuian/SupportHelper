@@ -16,6 +16,7 @@ namespace SupportHelper.WebApi.Controllers
                                                         hostname, 
                                                         exchange, 
                                                         nameQueueResponse));
+
             await getMachineInformation.ExecuteAsync(request);
             return Ok();
         }

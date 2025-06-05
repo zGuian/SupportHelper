@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\shared\SupportHelper.Exceptions\SupportHelper.Exceptions.csproj" />
-    <ProjectReference Include="..\..\shared\SupportHelper.RabbitMQ\SupportHelper.RabbitMQ.csproj" />
     <ProjectReference Include="..\SupportHelper.Domain\SupportHelper.Domain.csproj" />
   </ItemGroup>
 
