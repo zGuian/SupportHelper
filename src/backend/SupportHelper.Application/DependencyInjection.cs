@@ -16,7 +16,7 @@ namespace SupportHelper.Application
 
         private static void AddUseCases(IServiceCollection services)
         {
-            services.AddScoped<IGetMachineInformation, GetMachineInformation>();
+            services.AddScoped<IRequestMachineInformation, RequestMachineInformation>();
         }
     }
 }

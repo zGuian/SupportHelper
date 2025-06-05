@@ -4,6 +4,9 @@ namespace SupportHelper.Domain.Interfaces.Repositories
 {
     public interface IMachineRepository
     {
-        Task<Machine> GetMachineAsync(Guid id);
+        Task<HashSet<Machine>> GetAllMachinesAsync(int pageSize, int count);
+        Task<Machine?> GetMachineAsync(string id);
+        Task InsertMachineByProcedure(Machine machine);
+        Task UpdateMachineAsync(Machine machine);
     }
 }

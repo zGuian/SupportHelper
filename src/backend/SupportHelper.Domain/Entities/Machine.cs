@@ -22,7 +22,7 @@ namespace SupportHelper.Domain.Entities
             NetworkBoards = [];
         }
 
-        private static string GenerateId()
+        public static string GenerateId()
         {
             string guid = Guid.NewGuid().ToString();
             string[] split = guid.Split('-');
