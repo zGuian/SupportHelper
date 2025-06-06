@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
 using SupportHelper.Application.Interfaces;
 using SupportHelper.Communication.Requests;
 
 namespace SupportHelper.WebApi.Controllers
 {
     [ApiController]
-    [Route("api/{version}/[controller]")]
+    [ApiVersion(1)]
+    [Route("api/v{v:apiVersion}/[controller]")]
     public sealed class MachineController : ControllerBase
     {
         [HttpGet("Information/{hostname}")]
@@ -13,8 +15,8 @@ namespace SupportHelper.WebApi.Controllers
             [FromRoute] string hostname, [FromHeader] string nameQueueResponse, [FromHeader] string exchange)
         {
             var request = new MachineInformationRequest(new RabbitMQRequest(
-                                                        hostname, 
-                                                        exchange, 
+                                                        hostname,
+                                                        exchange,
                                                         nameQueueResponse));
 
             await getMachineInformation.ExecuteAsync(request);
