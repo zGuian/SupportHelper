@@ -69,7 +69,7 @@ namespace SupportHelper.WinServices.Core.Services.RabbitMQServices
                 Uri = new Uri(section["Url"]!),
                 UserName = section["Username"]!,
                 Password = section["Password"]!,
-                VirtualHost = section["VirtualHost"]!,
+                //VirtualHost = section["VirtualHost"]!,
                 AutomaticRecoveryEnabled = true,
                 NetworkRecoveryInterval = TimeSpan.FromSeconds(30)
             };
