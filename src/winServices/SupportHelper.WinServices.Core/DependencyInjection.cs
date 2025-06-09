@@ -1,5 +1,6 @@
 ﻿using SupportHelper.WinServices.Core.Events;
 using SupportHelper.WinServices.Core.Interfaces;
+using SupportHelper.WinServices.Core.Interfaces.Events;
 using SupportHelper.WinServices.Core.Interfaces.RabbitMQService;
 using SupportHelper.WinServices.Core.Services;
 using SupportHelper.WinServices.Core.Services.RabbitMQServices;
@@ -11,8 +12,8 @@ namespace SupportHelper.WinServices.Core
     {
         public static IServiceCollection AddDependencyInjection(this IServiceCollection services)
         {
-            services.AddSingleton<IRabbitConnectionService,RabbitConnectionService>();
-            services.AddSingleton<RabbitMQEvent>();
+            services.AddSingleton<IRabbitConnectionService, RabbitConnectionService>();
+            services.AddSingleton<IRabbitMQEvent, RabbitMQEvent>();
 
             services.AddHostedService<RabbitEventWorker>();
 
