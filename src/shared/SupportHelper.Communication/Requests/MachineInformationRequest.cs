@@ -6,8 +6,9 @@
         public string Command { get; init; }
         public RabbitMQRequest RabbitMQRequest { get; init; }
 
-        public MachineInformationRequest(RabbitMQRequest mqRequest)
+        public MachineInformationRequest(string command, RabbitMQRequest mqRequest)
         {
+            Command = command;
             RabbitMQRequest = mqRequest;
         }
     }
