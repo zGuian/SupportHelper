@@ -3,13 +3,14 @@ using RabbitMQ.Client.Events;
 using SupportHelper.Communication.Requests;
 using SupportHelper.Communication.Responses;
 using SupportHelper.WinServices.Core.Interfaces;
+using SupportHelper.WinServices.Core.Interfaces.Events;
 using SupportHelper.WinServices.Core.Interfaces.RabbitMQService;
 using System.Text;
 using System.Text.Json;
 
 namespace SupportHelper.WinServices.Core.Events
 {
-    public class RabbitMQEvent
+    public class RabbitMQEvent : IRabbitMQEvent
     {
         private readonly IRabbitConnectionService _connection;
         private readonly ILogger<RabbitMQEvent> _logger;

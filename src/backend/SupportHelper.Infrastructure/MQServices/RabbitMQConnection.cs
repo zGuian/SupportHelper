@@ -1,20 +1,21 @@
-﻿using RabbitMQ.Client;
-using SupportHelper.WinServices.Core.Interfaces.RabbitMQService;
+﻿using Microsoft.Extensions.Configuration;
+using RabbitMQ.Client;
+using SupportHelper.Infrastructure.Contracts;
 
-namespace SupportHelper.WinServices.Core.Services.RabbitMQServices
+namespace SupportHelper.Infrastructure.MQServices
 {
-    public class RabbitConnectionService : IRabbitConnectionService, IDisposable
+    public class RabbitMQConnection : IRabbitMQConnection
     {
         private readonly IConfiguration _configuration;
         private readonly Lazy<Task<IConnection>> _lazyConnection;
 
-        public RabbitConnectionService(IConfiguration configuration)
+        public RabbitMQConnection(IConfiguration configuration)
         {
             _configuration = configuration;
             _lazyConnection = new Lazy<Task<IConnection>>(CreateConnectionAsync);
         }
 
-        public async Task<IChannel> DeclareQueueAndExchange(string hostname, CancellationToken cancellationToken = default)
+        public async Task<IChannel> DeclareExchangeAndQueueDefaultAsync(CancellationToken cancellationToken = default)
         {
             var connection = await _lazyConnection.Value;
             var section = GetSection("ConfigExchange");
@@ -31,39 +32,7 @@ namespace SupportHelper.WinServices.Core.Services.RabbitMQServices
                                             autoDelete: false,
                                             cancellationToken: cancellationToken);
 
-            var routingKey = $"worker.machine.{hostname.ToLower()}";
-
-            await channel.QueueBindAsync(queueDefault, exchange, routingKey, cancellationToken: cancellationToken);
-
             return channel;
-        }
-
-        public async Task<(IChannel, string)> DeclareQueueForReplyTo(CancellationToken cancellationToken = default)
-        {
-            var connection = await _lazyConnection.Value;
-            var section = GetSection("ConfigExchange");
-            var exchange = section["ExchangeDefault"]!;
-            var queueReplyTo = section["ReplyToDefault"]!;
-            var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
-
-            await channel.ExchangeDeclareAsync(exchange: exchange,
-                                               type: ExchangeType.Direct,
-                                               durable: true,
-                                               autoDelete: false,
-                                               cancellationToken: cancellationToken);
-
-            await channel.QueueDeclareAsync(queue: queueReplyTo,
-                                            durable: false,
-                                            exclusive: false,
-                                            autoDelete: false,
-                                            cancellationToken: cancellationToken);
-
-            await channel.QueueBindAsync(queue: queueReplyTo,
-                                         exchange: exchange,
-                                         routingKey: "",
-                                         cancellationToken: cancellationToken);
-
-            return (channel, queueReplyTo);
         }
 
         private async Task<IConnection> CreateConnectionAsync()

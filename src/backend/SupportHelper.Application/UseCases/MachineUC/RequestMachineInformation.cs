@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SupportHelper.Application.Interfaces;
 using SupportHelper.Communication.Requests;
-using SupportHelper.Domain.Entities;
 using SupportHelper.Domain.Interfaces.MQServices;
 using SupportHelper.Domain.Interfaces.Repositories;
 
@@ -26,7 +25,7 @@ namespace SupportHelper.Application.UseCases.MachineUC
             await PublishRabbitMQ(request);
         }
 
-        private async Task PublishRabbitMQ(MachineInformationRequest request) => 
+        private async Task PublishRabbitMQ(MachineInformationRequest request) =>
             await _machineMQServices.PublishGetInformationAsync(request);
     }
 }

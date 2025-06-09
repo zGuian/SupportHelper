@@ -3,8 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SupportHelper.Domain.Interfaces.MQServices;
 using SupportHelper.Domain.Interfaces.Repositories;
+using SupportHelper.Infrastructure.Contracts;
 using SupportHelper.Infrastructure.MQServices;
-using SupportHelper.Infrastructure.MQServices.Responses;
+using SupportHelper.Infrastructure.MQServices.MQResponses;
 using SupportHelper.Infrastructure.Persistence.Context;
 using SupportHelper.Infrastructure.Persistence.Repositories;
 
@@ -21,8 +22,8 @@ namespace SupportHelper.Infrastructure
 
         private static void AddMqServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.MassTransitService(configuration);
-            services.AddScoped<MachineResponseConsumer>();
+            services.AddSingleton<IRabbitMQConnection, RabbitMQConnection>();
+            services.AddSingleton<IMachineConsumer, MachineConsumer>();
             services.AddScoped<IMachineMQServices, MachineMQService>();
         }
 
