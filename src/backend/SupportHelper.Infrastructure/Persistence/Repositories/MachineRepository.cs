@@ -1,7 +1,7 @@
 ﻿using Dapper;
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 using SupportHelper.Domain.Entities;
 using SupportHelper.Domain.Interfaces.Repositories;
 using System.Data;
@@ -16,7 +16,7 @@ namespace SupportHelper.Infrastructure.Persistence.Repositories
         public MachineRepository(ILogger<MachineRepository> logger, IConfiguration configuration)
         {
             _logger = logger;
-            _dbConnection = new SqlConnection(configuration.GetConnectionString("Default"));
+            _dbConnection = new NpgsqlConnection(configuration.GetConnectionString("Default"));
         }
 
         public async Task<HashSet<Machine>> GetAllMachinesAsync(int pageSize, int count)
@@ -87,12 +87,12 @@ namespace SupportHelper.Infrastructure.Persistence.Repositories
                 const string procedure = "sp_ValidateAndUpdateMachine";
                 var line = await _dbConnection.ExecuteAsync(procedure, new
                 {
-                    @id = machine.Id,
-                    @hostname = machine.Hostname,
-                    @currentUsername = machine.CurrentUsername,
-                    @domainName = machine.DomainName,
-                    @operationalSystem = machine.OperationalSystem,
-                    @newId = Machine.GenerateId()
+                    m_id = machine.Id,
+                    m_hostname = machine.Hostname,
+                    m_currentUsername = machine.CurrentUsername,
+                    m_domainName = machine.DomainName,
+                    m_operationalSystem = machine.OperationalSystem,
+                    m_newId = Machine.GenerateId()
                 }, commandType: CommandType.StoredProcedure);
                 _logger.LogInformation("Adicionado com sucesso via STORED PROCEDURE");
             }
