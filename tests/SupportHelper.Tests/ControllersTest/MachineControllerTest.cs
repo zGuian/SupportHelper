@@ -23,7 +23,7 @@ namespace SupportHelper.Tests.ControllersTest
             var ipv4 = faker.Internet.Ip();
             var replyToQueueName = faker.Random.String();
             var rabbit = new RabbitMQRequest(hostname, ipv4, replyToQueueName);
-            var request = new MachineInformationRequest(rabbit);
+            var request = new MachineInformationRequest("", rabbit);
             var response = new Mock<MachineInformationResponse>(hostname, Guid.NewGuid().ToString());
         }
     }
