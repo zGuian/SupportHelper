@@ -25,8 +25,11 @@ namespace SupportHelper.WinServices.Core.Services.RabbitMQServices
             await channel.ExchangeDeclareAsync(exchange, ExchangeType.Direct, durable: true,
                 autoDelete: false, cancellationToken: cancellationToken);
 
-            await channel.QueueDeclareAsync(queue: queueDefault, autoDelete: false,
-                cancellationToken: cancellationToken);
+            await channel.QueueDeclareAsync(queue: queueDefault,
+                                            durable: false,
+                                            exclusive: false,
+                                            autoDelete: false,
+                                            cancellationToken: cancellationToken);
 
             var routingKey = $"worker.machine.{hostname.ToLower()}";
 
@@ -50,6 +53,8 @@ namespace SupportHelper.WinServices.Core.Services.RabbitMQServices
                                                cancellationToken: cancellationToken);
 
             await channel.QueueDeclareAsync(queue: queueReplyTo,
+                                            durable: false,
+                                            exclusive: false,
                                             autoDelete: false,
                                             cancellationToken: cancellationToken);
 
@@ -69,7 +74,6 @@ namespace SupportHelper.WinServices.Core.Services.RabbitMQServices
                 Uri = new Uri(section["Url"]!),
                 UserName = section["Username"]!,
                 Password = section["Password"]!,
-                VirtualHost = section["VirtualHost"]!,
                 AutomaticRecoveryEnabled = true,
                 NetworkRecoveryInterval = TimeSpan.FromSeconds(30)
             };
