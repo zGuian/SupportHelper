@@ -1,35 +1,42 @@
-﻿using MassTransit;
-using Microsoft.Extensions.Configuration;
+﻿using RabbitMQ.Client;
 using SupportHelper.Communication.Requests;
 using SupportHelper.Domain.Interfaces.MQServices;
-using System.Net.Mime;
+using SupportHelper.Infrastructure.Contracts;
+using System.Text;
+using System.Text.Json;
 
 namespace SupportHelper.Infrastructure.MQServices
 {
     public class MachineMQService : IMachineMQServices
     {
-        private readonly IBus _bus;
-        private readonly IConfiguration _configuration;
 
-        public MachineMQService(IBus bus, IConfiguration configuration)
+        private readonly IRabbitMQConnection _connection;
+
+        public MachineMQService(IRabbitMQConnection connection)
         {
-            _bus = bus;
-            _configuration = configuration;
+            _connection = connection;
         }
 
         public async Task PublishGetInformationAsync(MachineInformationRequest request)
         {
-            var routingKey = $"machine.worker.{request.RabbitMQRequest.Hostname}";
-
-            var endpoint = await _bus.GetSendEndpoint(new Uri(
-                $"exchange:{request.RabbitMQRequest.Exchange}?bind=true&bindRoutingKey={routingKey}"));
-
-            await endpoint.Send(request, context =>
+            var channel = await _connection.DeclareExchangeAndQueueDefaultAsync();
+            var correlationId = Guid.NewGuid().ToString();
+            var jsonString = JsonSerializer.Serialize(request);
+            var body = Encoding.UTF8.GetBytes(jsonString);
+            var properties = new BasicProperties
             {
-                context.ContentType = new ContentType("application/json");
-                context.ResponseAddress = new Uri(_configuration["RabbitMQ:ConfigExchange:ReplyToDefault"]!);
-                context.Headers.Set("routingKey", routingKey);
-            });
+                CorrelationId = correlationId,
+                ContentType = "application/json",
+                ContentEncoding = "UTF8"
+            };
+
+            var routingKey = $"machine.information.{request.RabbitMQRequest.Hostname.ToLower()}";
+
+            await channel.BasicPublishAsync(exchange: request.RabbitMQRequest.Exchange,
+                                            routingKey: routingKey,
+                                            mandatory: true,
+                                            basicProperties: properties,
+                                            body: body);
         }
     }
 }

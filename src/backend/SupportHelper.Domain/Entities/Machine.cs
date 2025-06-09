@@ -3,9 +3,8 @@ using System.Text;
 
 namespace SupportHelper.Domain.Entities
 {
-    public class Machine
+    public class Machine : EntityBase
     {
-        public string Id { get; private set; }
         public string Hostname { get; private set; }
         public string CurrentUsername { get; private set; }
         public string DomainName { get; private set; }
@@ -20,18 +19,6 @@ namespace SupportHelper.Domain.Entities
             CurrentUsername = string.Empty;
             OperationalSystem = string.Empty;
             NetworkBoards = [];
-        }
-
-        public static string GenerateId()
-        {
-            string guid = Guid.NewGuid().ToString();
-            string[] split = guid.Split('-');
-            string id = string.Join("", split);
-            var date = DateTime.Now.ToString("dd/MM/yyyy");
-            var sb = new StringBuilder();
-            sb.Append(id);
-            sb.Append(date);
-            return sb.ToString();
         }
 
         public override string ToString()
