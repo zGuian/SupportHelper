@@ -28,7 +28,7 @@ namespace SupportHelper.WinServices.Core.Events
         {
             var channel = await _connection.DeclareQueueAndExchange(Environment.MachineName, cancellationToken);
             var consumer = new AsyncEventingBasicConsumer(channel);
-            consumer.ReceivedAsync += async (model, ea) =>
+            consumer.ReceivedAsync += async (_, ea) =>
             {
                 try
                 {
@@ -46,7 +46,38 @@ namespace SupportHelper.WinServices.Core.Events
                 await Task.Yield();
             };
 
-            await channel.BasicConsumeAsync(configuration["RabbitMQ:ConfigExchange:QueueNameDefault"]!, autoAck: false, consumer, cancellationToken);
+            await channel.BasicConsumeAsync(queue: "queue.workers",
+                                            autoAck: false,
+                                            consumer: consumer,
+                                            cancellationToken: cancellationToken);
+        }
+
+        public async Task ListenRabbitQueueDefault(IChannel channel, IConfiguration configuration, CancellationToken cancellationToken)
+        {
+            var consumer = new AsyncEventingBasicConsumer(channel);
+            consumer.ReceivedAsync += async (_, ea) =>
+            {
+                try
+                {
+                    var body = ea.Body.ToArray();
+                    var messageJson = Encoding.UTF8.GetString(body);
+                    var request = JsonSerializer.Deserialize<MachineInformationRequest>(messageJson) ?? throw new Exception();
+                    await channel.BasicAckAsync(ea.DeliveryTag, false);
+                    _logger.LogInformation("Recebida mensagem com CorrelationId: {CorrelationId}", ea.BasicProperties.CorrelationId);
+                    await ValidateCommand(channel, ea, request);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Erro ao processar a mensagem");
+                }
+                await Task.Yield();
+            };
+
+            await channel.BasicConsumeAsync(queue: "queue.workers",
+                                            autoAck: false,
+                                            consumerTag: $"machine-{Environment.MachineName.ToLower()}",
+                                            consumer: consumer,
+                                            cancellationToken: cancellationToken);
         }
 
         private async Task ValidateCommand(IChannel channel, BasicDeliverEventArgs ea,
