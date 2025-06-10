@@ -23,6 +23,7 @@ namespace SupportHelper.Application.UseCases.MachineUC
         public async Task ExecuteAsync(MachineInformationRequest request)
         {
             await PublishRabbitMQ(request);
+            _logger.LogInformation("Publicado mensagem. Retornando OK para controller");
         }
 
         private async Task PublishRabbitMQ(MachineInformationRequest request) =>

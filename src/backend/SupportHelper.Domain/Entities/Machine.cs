@@ -1,5 +1,6 @@
 ﻿using SupportHelper.Domain.ValueObjects;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace SupportHelper.Domain.Entities
 {
@@ -19,6 +20,17 @@ namespace SupportHelper.Domain.Entities
             CurrentUsername = string.Empty;
             OperationalSystem = string.Empty;
             NetworkBoards = [];
+        }
+
+        [JsonConstructor]
+        public Machine(string hostname, string currentUsername, string domainName, 
+            string operationalSystem, NetworkBoard[] networkBoards)
+        {
+            Hostname = hostname;
+            CurrentUsername = currentUsername;
+            DomainName = domainName;
+            OperationalSystem = operationalSystem;
+            NetworkBoards = networkBoards;
         }
 
         public override string ToString()
