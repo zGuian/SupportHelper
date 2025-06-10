@@ -19,12 +19,13 @@ namespace SupportHelper.WinServices.Core.Workers
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
-            await _connection.DeclareQueueAndExchange(Environment.MachineName.ToLower(), cancellationToken);
+            await base.StartAsync(cancellationToken);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await _rabbitEvent.ListenRabbitQueueDefault(_configuration, stoppingToken);
+            var channel = await _connection.DeclareQueueAndExchange(Environment.MachineName.ToLower(), stoppingToken);
+            await _rabbitEvent.ListenRabbitQueueDefault(channel, _configuration, stoppingToken);
         }
     }
 }
