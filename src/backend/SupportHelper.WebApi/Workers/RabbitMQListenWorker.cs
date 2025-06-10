@@ -16,13 +16,6 @@ namespace SupportHelper.WebApi.Workers
             _factory = factory;
         }
 
-        public override async Task StartAsync(CancellationToken cancellationToken)
-        {
-            using var scope = _factory.CreateScope();
-            var connection = scope.ServiceProvider.GetRequiredService<IRabbitMQConnection>();
-            await connection.DeclareExchangeAndQueueDefaultAsync(cancellationToken);
-        }
-
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using var scope = _factory.CreateScope();
