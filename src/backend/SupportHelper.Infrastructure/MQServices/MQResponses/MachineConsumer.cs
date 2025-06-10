@@ -28,7 +28,7 @@ namespace SupportHelper.Infrastructure.MQServices.MQResponses
 
         public async Task ListenRabbitQueueDefault(IConfiguration configuration, CancellationToken cancellationToken)
         {
-            var channel = await _connection.DeclareExchangeAndQueueDefaultAsync(cancellationToken);
+            var channel = await _connection.DeclareExchangeAndQueueReplyTo(cancellationToken);
             var consumer = new AsyncEventingBasicConsumer(channel);
             consumer.ReceivedAsync += async (_, ea) =>
             {
@@ -51,6 +51,7 @@ namespace SupportHelper.Infrastructure.MQServices.MQResponses
 
             await channel.BasicConsumeAsync(queue: configuration["RabbitMQ:ConfigExchange:ReplyToDefault"]!,
                                             autoAck: false,
+                                            consumerTag: "consumer-api-console",
                                             consumer: consumer,
                                             cancellationToken: cancellationToken);
         }
