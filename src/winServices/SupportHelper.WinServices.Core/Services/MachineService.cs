@@ -1,6 +1,7 @@
 ﻿using SupportHelper.WinServices.Core.Interfaces;
 using SupportHelper.WinServices.Core.Interfaces.UseCases;
 using SupportHelper.WinServices.Core.Models;
+using SupportHelper.WinServices.Core.Models.Enums;
 
 namespace SupportHelper.WinServices.Core.Services
 {
@@ -23,10 +24,10 @@ namespace SupportHelper.WinServices.Core.Services
             return machine;
         }
 
-        public async Task MakeAvailableLogSgpClient()
+        public void MakeAvailableLogSgpClient(SGPClientLine productionLine)
         {
-            throw new NotImplementedException();
-            //await _getLoggerUseCase.ExecuteAsync();
+            _logger.LogInformation("Iniciando processo de copiar arquivos");
+            _getLoggerUseCase.Execute(productionLine);
         } 
     }
 }
