@@ -89,6 +89,8 @@ namespace SupportHelper.WinServices.Core.Events
                     var result = _machineService.GetInformationMachine();
                     await PublishReplyTo(channel, ea, result, true);
                     break;
+                case "GET_LOG_SGPCLIENT":
+                    break;
                 default:
                     break;
             }
