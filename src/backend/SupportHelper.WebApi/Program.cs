@@ -1,8 +1,13 @@
 using SupportHelper.Application;
 using SupportHelper.Infrastructure;
+using SupportHelper.WebApi.Configurations;
 using SupportHelper.WebApi.Workers;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 builder.Services.AddApplicationContext(builder.Configuration);
 builder.Services.AddInfrastructureContext(builder.Configuration);
 builder.Services.AddHostedService<RabbitMQListenWorker>();

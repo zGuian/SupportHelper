@@ -8,6 +8,8 @@ namespace SupportHelper.Infrastructure.MQServices
     {
         private readonly IConfiguration _configuration;
         private readonly Lazy<Task<IConnection>> _lazyConnection;
+        private IChannel? Channel { get; set; }
+        Dictionary<string, string> IRabbitMQConnection.ConfigurationValue => ExchangeConfiguration();
 
         public RabbitMQConnection(IConfiguration configuration)
         {
@@ -18,26 +20,58 @@ namespace SupportHelper.Infrastructure.MQServices
         public async Task<IChannel> DeclareExchangeAndQueueDefaultAsync(CancellationToken cancellationToken = default)
         {
             var connection = await _lazyConnection.Value;
-            var section = GetSection("ConfigExchange");
-            var exchange = section["ExchangeDefault"]!;
-            var queueDefault = section["QueueNameDefault"]!;
-            var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+            var dict = ExchangeConfiguration();
 
-            await channel.ExchangeDeclareAsync(exchange, ExchangeType.Direct, durable: true,
+            if (Channel == null)
+            {
+                var newChannel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+                Channel = newChannel;
+            }
+
+            await Channel.ExchangeDeclareAsync(dict["exchange"],
+                                               type: ExchangeType.Direct,
+                                               durable: true,
+                                               autoDelete: false,
+                                               cancellationToken: cancellationToken);
+
+            await Channel.QueueDeclareAsync(queue: dict["queueDefault"],
+                                            durable: false,
+                                            exclusive: false,
+                                            autoDelete: false,
+                                            cancellationToken: cancellationToken);
+            return Channel;
+        }
+
+        public async Task<IChannel> DeclareExchangeAndQueueReplyTo(CancellationToken cancellationToken = default)
+        {
+            var connection = await _lazyConnection.Value;
+            var dict = ExchangeConfiguration();
+
+            if (Channel == null)
+            {
+                var newChannel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+                Channel = newChannel;
+            }
+
+            await Channel.ExchangeDeclareAsync(dict["exchange"], ExchangeType.Direct, durable: true,
                 autoDelete: false, cancellationToken: cancellationToken);
 
-            await channel.QueueDeclareAsync(queue: queueDefault,
+            await Channel.QueueDeclareAsync(queue: dict["queueReplyto"],
                                             durable: false,
                                             exclusive: false,
                                             autoDelete: false,
                                             cancellationToken: cancellationToken);
 
-            return channel;
+            return Channel;
         }
 
         private async Task<IConnection> CreateConnectionAsync()
         {
-            var section = GetSection("Configuration");
+            var section = _configuration.GetSection($"RabbitMQ:Configuration");
+            if (section == null || !section.Exists())
+            {
+                throw new ArgumentNullException("RabbitMQ:Config section not found in configuration");
+            }
             var factory = new ConnectionFactory
             {
                 Uri = new Uri(section["Url"]!),
@@ -52,14 +86,23 @@ namespace SupportHelper.Infrastructure.MQServices
             return connection;
         }
 
-        private IConfigurationSection GetSection(string s)
+        public Dictionary<string, string> ExchangeConfiguration()
         {
-            var section = _configuration.GetSection($"RabbitMQ:{s}");
+            var section = _configuration.GetSection("RabbitMQ:ConfigExchange");
             if (section == null || !section.Exists())
             {
                 throw new ArgumentNullException("RabbitMQ:Config section not found in configuration");
             }
-            return section;
+            var exchange = section["ExchangeDefault"]!;
+            var queueDefault = section["QueueNameDefault"]!;
+            var queueReplyto = section["ReplyToDefault"]!;
+
+            return new Dictionary<string, string>
+            {
+                { nameof(exchange), exchange },
+                { nameof(queueDefault), queueDefault },
+                { nameof(queueReplyto), queueReplyto },
+            };
         }
 
         public void Dispose()

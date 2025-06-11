@@ -44,8 +44,8 @@ namespace SupportHelper.Infrastructure.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("Não encontrado nenhuma maquina com esse ID [{}]", id);
-                _logger.LogWarning("Erro: {}", ex.Message);
+                _logger.LogWarning("Não encontrado nenhuma maquina com esse ID [{id}]", id);
+                _logger.LogWarning("Erro: {message}", ex.Message);
                 return null;
             }
         }
@@ -84,8 +84,8 @@ namespace SupportHelper.Infrastructure.Persistence.Repositories
         {
             try
             {
-                const string procedure = "sp_ValidateAndUpdateMachine";
-                var line = await _dbConnection.ExecuteAsync(procedure, new
+                const string function = "SELECT sp_ValidateAndUpdateMachine(@m_id, @m_hostname, @m_currentUsername, @m_domainName, @m_operationalSystem, @m_newId)";
+                var line = await _dbConnection.ExecuteAsync(function, new
                 {
                     m_id = machine.Id,
                     m_hostname = machine.Hostname,
@@ -93,8 +93,8 @@ namespace SupportHelper.Infrastructure.Persistence.Repositories
                     m_domainName = machine.DomainName,
                     m_operationalSystem = machine.OperationalSystem,
                     m_newId = Machine.GenerateId()
-                }, commandType: CommandType.StoredProcedure);
-                _logger.LogInformation("Adicionado com sucesso via STORED PROCEDURE");
+                }, commandType: CommandType.Text);
+                _logger.LogInformation("Adicionado com sucesso via Function");
             }
             catch (Exception ex)
             {

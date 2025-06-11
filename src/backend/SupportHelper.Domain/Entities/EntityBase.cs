@@ -4,17 +4,18 @@ namespace SupportHelper.Domain.Entities
 {
     public abstract class EntityBase
     {
-        public string Id { get; protected set; }
+        public string Id { get; protected set; } = string.Empty;
 
         public static string GenerateId()
         {
-            string guid = Guid.NewGuid().ToString();
-            string[] split = guid.Split('-');
-            string id = string.Join("", split);
-            var date = DateTime.Now.ToString("dd/MM/yyyy");
+            var guid = Guid.NewGuid();
+            byte[] bytes = guid.ToByteArray();
+            int integerValue = BitConverter.ToInt32(bytes, 0);
+            var split = guid.ToString().Split('-');
+            var guidString = string.Join("", split);
             var sb = new StringBuilder();
-            sb.Append(id);
-            sb.Append(date);
+            sb.Append(guidString);
+            sb.Append(integerValue);
             return sb.ToString();
         }
     }
