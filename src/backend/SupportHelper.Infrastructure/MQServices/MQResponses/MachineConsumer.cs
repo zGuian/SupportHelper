@@ -32,6 +32,7 @@ namespace SupportHelper.Infrastructure.MQServices.MQResponses
             var consumer = new AsyncEventingBasicConsumer(channel);
             consumer.ReceivedAsync += async (_, ea) =>
             {
+                await Task.Yield();
                 try
                 {
                     var body = ea.Body.ToArray();
@@ -46,7 +47,6 @@ namespace SupportHelper.Infrastructure.MQServices.MQResponses
                 {
                     _logger.LogError(ex, "Erro ao enviar mensagem");
                 }
-                await Task.Yield();
             };
 
             await channel.BasicConsumeAsync(queue: configuration["RabbitMQ:ConfigExchange:ReplyToDefault"]!,
