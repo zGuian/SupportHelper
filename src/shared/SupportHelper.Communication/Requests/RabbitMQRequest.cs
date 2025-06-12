@@ -6,7 +6,7 @@
         public string? Exchange { get; init; }
         public string? ReplyToQueueName { get; init; }
 
-        public RabbitMQRequest(string hostname, string? exchange, string? replyToQueueName = null)
+        public RabbitMQRequest(string hostname, string? exchange = "supporthelper.exchange", string? replyToQueueName = null)
         {
             Hostname = hostname.ToLower();
             if (!string.IsNullOrWhiteSpace(exchange))
