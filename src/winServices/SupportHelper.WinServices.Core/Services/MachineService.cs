@@ -1,4 +1,4 @@
-﻿using SupportHelper.WinServices.Core.Interfaces;
+﻿using SupportHelper.WinServices.Core.Interfaces.Services;
 using SupportHelper.WinServices.Core.Interfaces.UseCases;
 using SupportHelper.WinServices.Core.Models;
 using SupportHelper.WinServices.Core.Models.Enums;

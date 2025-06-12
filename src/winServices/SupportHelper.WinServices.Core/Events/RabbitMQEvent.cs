@@ -2,9 +2,9 @@
 using RabbitMQ.Client.Events;
 using SupportHelper.Communication.Requests;
 using SupportHelper.Communication.Responses;
-using SupportHelper.WinServices.Core.Interfaces;
 using SupportHelper.WinServices.Core.Interfaces.Events;
 using SupportHelper.WinServices.Core.Interfaces.RabbitMQService;
+using SupportHelper.WinServices.Core.Interfaces.Services;
 using System.Text;
 using System.Text.Json;
 

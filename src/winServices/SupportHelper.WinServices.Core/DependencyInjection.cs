@@ -1,7 +1,7 @@
 ﻿using SupportHelper.WinServices.Core.Events;
-using SupportHelper.WinServices.Core.Interfaces;
 using SupportHelper.WinServices.Core.Interfaces.Events;
 using SupportHelper.WinServices.Core.Interfaces.RabbitMQService;
+using SupportHelper.WinServices.Core.Interfaces.Services;
 using SupportHelper.WinServices.Core.Interfaces.UseCases;
 using SupportHelper.WinServices.Core.Services;
 using SupportHelper.WinServices.Core.Services.RabbitMQServices;
