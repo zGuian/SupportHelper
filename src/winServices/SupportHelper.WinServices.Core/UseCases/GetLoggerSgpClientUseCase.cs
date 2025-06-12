@@ -1,6 +1,5 @@
 ﻿using SupportHelper.WinServices.Core.Interfaces.UseCases;
 using SupportHelper.WinServices.Core.Models.Enums;
-using System.IO;
 using System.Text;
 
 namespace SupportHelper.WinServices.Core.UseCases
@@ -14,7 +13,7 @@ namespace SupportHelper.WinServices.Core.UseCases
             string destinyBase = @"\\SERVIDOR\";
             string destiny = Path.Combine(destinyBase, AppointedFolder());
 
-            if (!Directory.Exists(folderName)) 
+            if (!Directory.Exists(folderName))
                 throw new Exception();
 
             string userLogIn = Environment.UserName;
@@ -23,7 +22,7 @@ namespace SupportHelper.WinServices.Core.UseCases
                 ConnectToSmb(destinyBase);
             }
 
-            CopyFolder(folderName, destiny);
+            CopyFolderAndArchives(folderName, destiny);
         }
 
         private static string AppointedFolder()
@@ -45,7 +44,7 @@ namespace SupportHelper.WinServices.Core.UseCases
             throw new NotImplementedException();
         }
 
-        private static void CopyFolder(string origin, string destiny)
+        private static void CopyFolderAndArchives(string origin, string destiny)
         {
             if (Path.GetFullPath(destiny).StartsWith(Path.GetFullPath(origin), StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException("A pasta de destino não pode estar dentro da pasta de origem, senão causará recursão infinita.");
@@ -53,26 +52,18 @@ namespace SupportHelper.WinServices.Core.UseCases
             if (!Directory.Exists(destiny))
                 Directory.CreateDirectory(destiny);
 
-            CopyFileInFolder(origin, destiny);
-
-            foreach (string item in Directory.GetDirectories(origin))
-            {
-                string subFolderName = Path.GetFileName(item);
-                string destinyFolder = Path.Combine(destiny, subFolderName);
-                CopyFileInFolder(origin, destinyFolder);
-            }
-        }
-
-        private static void CopyFileInFolder(string origin, string destiny)
-        {
-            if (!Directory.Exists(destiny))
-                Directory.CreateDirectory(destiny);
-
-            foreach (string item in Directory.GetFiles(origin))
+            foreach (var item in Directory.GetFiles(origin))
             {
                 string archiveName = Path.GetFileName(item);
                 string archivedestiny = Path.Combine(destiny, archiveName);
                 File.Copy(item, archivedestiny, true);
+            }
+
+            foreach (var item in Directory.GetDirectories(origin))
+            {
+                string subFolderName = Path.GetFileName(item);
+                string destinyFolder = Path.Combine(destiny, subFolderName);
+                CopyFolderAndArchives(item, destinyFolder);
             }
         }
     }

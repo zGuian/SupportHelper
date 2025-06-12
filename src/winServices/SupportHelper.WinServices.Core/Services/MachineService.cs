@@ -26,8 +26,16 @@ namespace SupportHelper.WinServices.Core.Services
 
         public void MakeAvailableLogSgpClient(SGPClientLine productionLine)
         {
-            _logger.LogInformation("Iniciando processo de copiar arquivos");
-            _getLoggerUseCase.Execute(productionLine);
+            try
+            {
+                _logger.LogInformation("Iniciando processo de copiar arquivos");
+                _getLoggerUseCase.Execute(productionLine);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError("Houve um problema: {message}", ex.Message);
+                //IMPLEMENTAR LOGICA PARA ENVIAR ERRO PARA UMA FILA TEMPORARIA CRIADA
+            }            
         } 
     }
 }
