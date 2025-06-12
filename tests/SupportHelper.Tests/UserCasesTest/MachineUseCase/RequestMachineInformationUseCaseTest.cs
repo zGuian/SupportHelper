@@ -15,11 +15,11 @@ namespace SupportHelper.Tests.UserCasesTest.MachineUseCase
             var request = MachineInformationRequestBuilder.Build();
             var mockMqService = new Mock<IMachineMQServices>();
             var useCase = CreateUseCase();
-            mockMqService.Setup(x => x.PublishGetInformationAsync(request));
+            mockMqService.Setup(x => x.PublishMessageAsync(request));
 
             await useCase.ExecuteAsync(request);
 
-            mockMqService.Verify(x => x.PublishGetInformationAsync(request), Times.Once);
+            mockMqService.Verify(x => x.PublishMessageAsync(request), Times.Once);
         }
 
         private static RequestMachineInformationUseCase CreateUseCase()
