@@ -1,5 +1,7 @@
 ﻿using SupportHelper.WinServices.Core.Interfaces.UseCases;
 using SupportHelper.WinServices.Core.Models.Enums;
+using System.IO;
+using System.Text;
 
 namespace SupportHelper.WinServices.Core.UseCases
 {
@@ -10,9 +12,11 @@ namespace SupportHelper.WinServices.Core.UseCases
             string originBase = @$"C:\ProgramData\MBBras\SGP\SGPClient3";
             string folderName = Path.Combine(originBase, productionLine.ToString());
             string destinyBase = @"\\SERVIDOR\";
-            string destiny = Path.Combine(destinyBase, $"Logs-{DateTime.Now:g}");
+            string destiny = Path.Combine(destinyBase, AppointedFolder());
 
-            VerifyFolderExists(folderName);
+            if (!Directory.Exists(folderName)) 
+                throw new Exception();
+
             string userLogIn = Environment.UserName;
             if (!userLogIn.StartsWith("D154_YSBC_"))
             {
@@ -22,10 +26,17 @@ namespace SupportHelper.WinServices.Core.UseCases
             CopyFolder(folderName, destiny);
         }
 
-        private static void VerifyFolderExists(string path)
+        private static string AppointedFolder()
         {
-            if (!Directory.Exists(path))
-                throw new Exception();
+            string date = DateTime.Now.ToString("dd/MM/yyyy:HH:mm");
+            string[] split = date.Split('/');
+            string value = string.Join("", split);
+            split = value.Split(':');
+            value = string.Join("", split);
+            var sb = new StringBuilder();
+            sb.Append("logs_");
+            sb.Append(value);
+            return sb.ToString();
         }
 
         private bool ConnectToSmb(string serverDestin)
