@@ -24,34 +24,6 @@ namespace SupportHelper.WinServices.Core.Events
             _machineService = machineService;
         }
 
-        public async Task ListenRabbitQueueDefault(IConfiguration configuration, CancellationToken cancellationToken)
-        {
-            var channel = await _connection.DeclareQueueAndExchange(Environment.MachineName, cancellationToken);
-            var consumer = new AsyncEventingBasicConsumer(channel);
-            consumer.ReceivedAsync += async (_, ea) =>
-            {
-                try
-                {
-                    var body = ea.Body.ToArray();
-                    var messageJson = Encoding.UTF8.GetString(body);
-                    var request = JsonSerializer.Deserialize<MachineInformationRequest>(messageJson) ?? throw new Exception();
-                    await channel.BasicAckAsync(ea.DeliveryTag, false);
-                    _logger.LogInformation("Recebida mensagem com CorrelationId: {CorrelationId}", ea.BasicProperties.CorrelationId);
-                    await ValidateCommand(channel, ea, request);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Erro ao processar a mensagem");
-                }
-                await Task.Yield();
-            };
-
-            await channel.BasicConsumeAsync(queue: "queue.workers",
-                                            autoAck: false,
-                                            consumer: consumer,
-                                            cancellationToken: cancellationToken);
-        }
-
         public async Task ListenRabbitQueueDefault(IChannel channel, IConfiguration configuration, CancellationToken cancellationToken)
         {
             var consumer = new AsyncEventingBasicConsumer(channel);
