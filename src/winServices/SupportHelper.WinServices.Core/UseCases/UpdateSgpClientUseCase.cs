@@ -1,6 +1,7 @@
 ﻿using SupportHelper.WinServices.Core.Interfaces.UseCases;
 using SupportHelper.WinServices.Core.Models.Enums;
 using System.Diagnostics;
+using System.Text;
 
 namespace SupportHelper.WinServices.Core.UseCases
 {
@@ -10,28 +11,60 @@ namespace SupportHelper.WinServices.Core.UseCases
 
         public void Execute(SGPClientLine sgpClientLine)
         {
-            StopSgpIfRunning();
-            var originPathBase = @"C:\ProgramData\MBBras\SGP";
-            var origin = Path.Combine(originPathBase, sgpClientLine.ToString());
-            if (Directory.Exists(origin))
+            Process[] processes = Process.GetProcesses(Environment.MachineName);
+
+            string originPathBase = @"C:\ProgramData\MBBras\SGP";
+            string? origin = Path.Combine(originPathBase, sgpClientLine.ToString());
+
+            if (!Directory.Exists(origin))
             {
-                var pathFile = Path.Combine(origin, "DCX.ITLC.SGPClient_Start.exe");
-                _process.StartInfo.FileName = origin;
+                SearchSgpByProcessesOpen(processes, sgpClientLine, ref origin);
             }
+
+            StopSgpIfRunning(processes);
+
+            string pathFile = Path.Combine(origin, "DCX.ITLC.SGPClient_Start.exe");
+            _process.StartInfo.FileName = pathFile;
         }
 
-        private void StopSgpIfRunning()
+        private void StopSgpIfRunning(Process[] processes)
         {
-            var processes = Process.GetProcesses(Environment.MachineName);
-            foreach (var item in processes)
+            foreach (Process item in processes)
             {
                 if (item.ProcessName.StartsWith("DCX.ITLC"))
                 {
-                    item.Kill(true);
+                    item.CloseMainWindow();
                     _process = item;
-                    return;
+                }
+
+                if (!_process.HasExited)
+                    _process.Kill();
+            }
+        }
+
+        private static void SearchSgpByProcessesOpen(Process[] processes, SGPClientLine sgpCLientLine, ref string pathDirectory)
+        {
+            foreach (Process process in processes)
+            {
+                if (!process.ProcessName.StartsWith("DCX.ITLC"))
+                {
+                    continue;
+                }
+
+                string path = process.MainModule.FileName;
+                string[] array = path.Split('\\');
+                StringBuilder sb = new();
+                foreach (string item in array)
+                {
+                    sb.Append(Path.Combine("\\", item));
+                    if (item == sgpCLientLine.ToString())
+                    {
+                        pathDirectory = sb.ToString();
+                        break;
+                    }
                 }
             }
+            throw new Exception("SGP NÃO ESTA RODANDO NA MÁQUINA");
         }
     }
 }
