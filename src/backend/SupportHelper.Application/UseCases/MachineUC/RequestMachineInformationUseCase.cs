@@ -6,18 +6,16 @@ using SupportHelper.Domain.Interfaces.Repositories;
 
 namespace SupportHelper.Application.UseCases.MachineUC
 {
-    public class RequestMachineInformation : IRequestMachineInformation
+    public class RequestMachineInformationUseCase : IRequestMachineInformation
     {
-        private readonly ILogger<RequestMachineInformation> _logger;
+        private readonly ILogger<RequestMachineInformationUseCase> _logger;
         private readonly IMachineMQServices _machineMQServices;
-        private readonly IMachineRepository _machineRepository;
 
-        public RequestMachineInformation(ILogger<RequestMachineInformation> logger, IMachineMQServices machineMQServices,
-            IMachineRepository machineRepository)
+        public RequestMachineInformationUseCase(ILogger<RequestMachineInformationUseCase> logger, 
+            IMachineMQServices machineMQServices)
         {
             _logger = logger;
             _machineMQServices = machineMQServices;
-            _machineRepository = machineRepository;
         }
 
         public async Task ExecuteAsync(MachineInformationRequest request)
