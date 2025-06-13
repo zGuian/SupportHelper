@@ -1,11 +1,11 @@
-﻿using SupportHelper.WinServices.Core.Events;
-using SupportHelper.WinServices.Core.Interfaces.Events;
-using SupportHelper.WinServices.Core.Interfaces.RabbitMQService;
-using SupportHelper.WinServices.Core.Interfaces.Services;
-using SupportHelper.WinServices.Core.Interfaces.UseCases;
-using SupportHelper.WinServices.Core.Services;
-using SupportHelper.WinServices.Core.Services.RabbitMQServices;
-using SupportHelper.WinServices.Core.UseCases;
+﻿using SupportHelper.WinServices.Application.Interfaces.Events;
+using SupportHelper.WinServices.Application.Interfaces.RabbitMQService;
+using SupportHelper.WinServices.Application.Interfaces.Services;
+using SupportHelper.WinServices.Application.Interfaces.UseCases;
+using SupportHelper.WinServices.Application.Services;
+using SupportHelper.WinServices.Application.Services.RabbitMQServices;
+using SupportHelper.WinServices.Application.UseCases;
+using SupportHelper.WinServices.Core.Events;
 using SupportHelper.WinServices.Core.Workers;
 
 namespace SupportHelper.WinServices.Core
