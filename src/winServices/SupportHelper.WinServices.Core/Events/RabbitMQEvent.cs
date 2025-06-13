@@ -55,14 +55,31 @@ namespace SupportHelper.WinServices.Core.Events
         private async Task ValidateCommand(IChannel channel, BasicDeliverEventArgs ea,
             MachineInformationRequest request)
         {
+            dynamic result;
             switch (request.Command)
             {
                 case "GET_INFORMATION_MACHINE":
-                    var result = _machineService.GetInformationMachine();
+                    result = _machineService.GetInformationMachine();
                     await PublishReplyTo(channel, ea, result, true);
                     break;
+
                 case "GET_LOG_SGPCLIENT":
+                    result = await _machineService.MakeAvailableLogSgpClient(
+                        ea.BasicProperties.Headers!.Keys.FirstOrDefault(x => x.Equals("ProductionLine")) ??
+                        throw new Exception("Linha de produção não encontrada"));
+
+                    if (!result)
+                        await PublishReplyTo(channel, ea, new { }, false);
                     break;
+
+                case "UPDATE_SGPCLIENT":
+                    result = await _machineService.UpdateSgpClient(ea.BasicProperties.Headers!.Keys.FirstOrDefault(x => x.Equals("ProductionLine")) ??
+                        throw new Exception("Linha de produção não encontrada"));
+
+                    if (!result)
+                        await PublishReplyTo(channel, ea, new { }, false);
+                    break;
+
                 default:
                     break;
             }
@@ -80,7 +97,7 @@ namespace SupportHelper.WinServices.Core.Events
                 ContentEncoding = "UTF8"
             };
 
-            await channel.BasicPublishAsync("", ea.BasicProperties.ReplyTo, false, properties, responseBody);
+            await channel.BasicPublishAsync("", ea.BasicProperties.ReplyTo!, false, properties, responseBody);
             _logger.LogInformation("Resposta enviada para fila '{ReplyTo}'", ea.BasicProperties.ReplyTo);
         }
     }
