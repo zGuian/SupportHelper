@@ -21,6 +21,7 @@ namespace SupportHelper.WinServices.Core
 
             services.AddTransient<IMachineService, MachineService>();
             services.AddTransient<IGetLoggerSgpClientUseCase, GetLoggerSgpClientUseCase>();
+            services.AddTransient<IUpdateSgpClientUseCase, UpdateSgpClientUseCase>();
             return services;
         }
     }

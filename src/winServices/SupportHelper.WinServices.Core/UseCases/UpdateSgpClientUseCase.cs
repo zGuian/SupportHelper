@@ -1,5 +1,4 @@
 ﻿using SupportHelper.WinServices.Core.Interfaces.UseCases;
-using SupportHelper.WinServices.Core.Models.Enums;
 using System.Diagnostics;
 using System.Text;
 
@@ -9,12 +8,13 @@ namespace SupportHelper.WinServices.Core.UseCases
     {
         Process _process = new();
 
-        public void Execute(SGPClientLine sgpClientLine)
+        public void Execute(string sgpClientLine)
         {
             Process[] processes = Process.GetProcesses(Environment.MachineName);
 
             string originPathBase = @"C:\ProgramData\MBBras\SGP";
-            string? origin = Path.Combine(originPathBase, sgpClientLine.ToString());
+            string? origin = Path.Combine(originPathBase, sgpClientLine);
+            //origin = C:\ProgramData\MBBras\SGP\SGPClient3_TR
 
             if (!Directory.Exists(origin))
             {
@@ -24,7 +24,10 @@ namespace SupportHelper.WinServices.Core.UseCases
             StopSgpIfRunning(processes);
 
             string pathFile = Path.Combine(origin, "DCX.ITLC.SGPClient_Start.exe");
+            //pathFile = C:\ProgramData\MBBras\SGP\SGPClient3_TR\DCX.ITLC.SGPClient_Start.exe
+
             _process.StartInfo.FileName = pathFile;
+            _process.Start();
         }
 
         private void StopSgpIfRunning(Process[] processes)
@@ -42,7 +45,7 @@ namespace SupportHelper.WinServices.Core.UseCases
             }
         }
 
-        private static void SearchSgpByProcessesOpen(Process[] processes, SGPClientLine sgpCLientLine, ref string pathDirectory)
+        private static void SearchSgpByProcessesOpen(Process[] processes, string sgpCLientLine, ref string pathDirectory)
         {
             foreach (Process process in processes)
             {
@@ -57,7 +60,7 @@ namespace SupportHelper.WinServices.Core.UseCases
                 foreach (string item in array)
                 {
                     sb.Append(Path.Combine("\\", item));
-                    if (item == sgpCLientLine.ToString())
+                    if (item == sgpCLientLine)
                     {
                         pathDirectory = sb.ToString();
                         break;
