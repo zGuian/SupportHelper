@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SupportHelper.Application\SupportHelper.Application.csproj" />
+    <ProjectReference Include="..\SupportHelper.Infrastructure.SignalR\SupportHelper.Infrastructure.SignalR.csproj" />
     <ProjectReference Include="..\SupportHelper.Infrastructure\SupportHelper.Infrastructure.csproj" />
   </ItemGroup>
 
