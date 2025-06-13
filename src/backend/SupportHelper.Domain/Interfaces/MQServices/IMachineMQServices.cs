@@ -4,6 +4,7 @@ namespace SupportHelper.Domain.Interfaces.MQServices
 {
     public interface IMachineMQServices
     {
-        Task PublishGetInformationAsync(MachineInformationRequest request);
+        Task PublishMessageAsync(RequestBase<RequestMachine> request, RabbitMQRequest rabbitMQRequest);
+        Task PublishMessageAsync(MachineInformationRequest request);
     }
 }

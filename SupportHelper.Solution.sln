@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportHelper.FrontEnd.MVC"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportHelper.Test.Common.Utilities", "tests\SupportHelper.Test.Common.Utilities\SupportHelper.Test.Common.Utilities.csproj", "{5A70243F-E155-4B84-9F96-4D7ED25B278A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportHelper.WinServices.Application", "src\winServices\SupportHelper.WinServices.Application\SupportHelper.WinServices.Application.csproj", "{C30103C3-31FC-4F5A-B4ED-F79B9EFAF6D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{5A70243F-E155-4B84-9F96-4D7ED25B278A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A70243F-E155-4B84-9F96-4D7ED25B278A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A70243F-E155-4B84-9F96-4D7ED25B278A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C30103C3-31FC-4F5A-B4ED-F79B9EFAF6D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C30103C3-31FC-4F5A-B4ED-F79B9EFAF6D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C30103C3-31FC-4F5A-B4ED-F79B9EFAF6D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C30103C3-31FC-4F5A-B4ED-F79B9EFAF6D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -100,6 +106,7 @@ Global
 		{CCB4189B-BC50-446B-989C-F568229C5036} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{A858CC20-7C2C-47F9-83F4-39F98F90FED8} = {CCB4189B-BC50-446B-989C-F568229C5036}
 		{5A70243F-E155-4B84-9F96-4D7ED25B278A} = {07DA150D-69B6-4107-8C3F-B241C4F7872C}
+		{C30103C3-31FC-4F5A-B4ED-F79B9EFAF6D9} = {F420B026-CEC2-4EC6-8907-2AD9511B8DAA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {572313D8-E578-473B-AB1C-DA25ACE9B823}

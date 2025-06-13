@@ -1,6 +1,6 @@
 ﻿using RabbitMQ.Client;
 
-namespace SupportHelper.WinServices.Core.Interfaces.RabbitMQService
+namespace SupportHelper.WinServices.Application.Interfaces.RabbitMQService
 {
     public interface IRabbitConnectionService
     {

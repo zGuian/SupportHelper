@@ -2,16 +2,15 @@
 using SupportHelper.Application.Interfaces;
 using SupportHelper.Communication.Requests;
 using SupportHelper.Domain.Interfaces.MQServices;
-using SupportHelper.Domain.Interfaces.Repositories;
 
 namespace SupportHelper.Application.UseCases.MachineUC
 {
-    public class RequestMachineInformationUseCase : IRequestMachineInformation
+    public class RequestMachineInformationUseCase : IRequestMachineInformationUseCase
     {
         private readonly ILogger<RequestMachineInformationUseCase> _logger;
         private readonly IMachineMQServices _machineMQServices;
 
-        public RequestMachineInformationUseCase(ILogger<RequestMachineInformationUseCase> logger, 
+        public RequestMachineInformationUseCase(ILogger<RequestMachineInformationUseCase> logger,
             IMachineMQServices machineMQServices)
         {
             _logger = logger;
@@ -25,6 +24,6 @@ namespace SupportHelper.Application.UseCases.MachineUC
         }
 
         private async Task PublishRabbitMQ(MachineInformationRequest request) =>
-            await _machineMQServices.PublishGetInformationAsync(request);
+            await _machineMQServices.PublishMessageAsync(request);
     }
 }

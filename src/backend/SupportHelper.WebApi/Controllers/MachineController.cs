@@ -10,14 +10,22 @@ namespace SupportHelper.WebApi.Controllers
     [Route("api/v{v:apiVersion}/[controller]")]
     public sealed class MachineController : ControllerBase
     {
-        [HttpGet("Information/{hostname}")]
-        public async Task<IActionResult> GetMachineInformation([FromServices] IRequestMachineInformation getMachineInformation,
+        [HttpGet("Information/{hostname:required}")]
+        public async Task<IActionResult> GetMachineInformation([FromServices] IRequestMachineInformationUseCase getMachineInformation,
             [FromRoute] string hostname, [FromHeader] string? exchange)
         {
             var request = new MachineInformationRequest("GET_INFORMATION_MACHINE",
                                                         new RabbitMQRequest(hostname, exchange));
 
             await getMachineInformation.ExecuteAsync(request);
+            return Ok();
+        }
+
+        [HttpPost("LogSgpClient/{hostname:required}")]
+        public async Task<IActionResult> GetLogsForSgpClientAsync([FromServices] IRequestLogsSgpClientUseCase sgpClientUseCase,
+            [FromBody] RequestBase<RequestMachine> request, [FromRoute] string hostname, [FromHeader] string? exchange)
+        {
+            await sgpClientUseCase.ExecuteAsync(request, new RabbitMQRequest(hostname, exchange));
             return Ok();
         }
     }
