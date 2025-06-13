@@ -2,9 +2,10 @@
 using RabbitMQ.Client.Events;
 using SupportHelper.Communication.Requests;
 using SupportHelper.Communication.Responses;
-using SupportHelper.WinServices.Core.Interfaces.Events;
-using SupportHelper.WinServices.Core.Interfaces.RabbitMQService;
-using SupportHelper.WinServices.Core.Interfaces.Services;
+using SupportHelper.WinServices.Application.Interfaces.Events;
+using SupportHelper.WinServices.Application.Interfaces.RabbitMQService;
+using SupportHelper.WinServices.Application.Interfaces.Services;
+using SupportHelper.WinServices.Core.Models;
 using System.Text;
 using System.Text.Json;
 
@@ -59,8 +60,9 @@ namespace SupportHelper.WinServices.Core.Events
             switch (request.Command)
             {
                 case "GET_INFORMATION_MACHINE":
-                    result = _machineService.GetInformationMachine();
-                    await PublishReplyTo(channel, ea, result, true);
+                    MachineModel machine = new();
+                    machine.GetAllInformationFromMachine();
+                    await PublishReplyTo(channel, ea, machine, true);
                     break;
 
                 case "GET_LOG_SGPCLIENT":

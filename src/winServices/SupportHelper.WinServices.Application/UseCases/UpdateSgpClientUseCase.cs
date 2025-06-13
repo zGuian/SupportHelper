@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 
-namespace SupportHelper.WinServices.Core.UseCases
+namespace SupportHelper.WinServices.Application.UseCases
 {
     public sealed class UpdateSgpClientUseCase : IUpdateSgpClientUseCase
     {

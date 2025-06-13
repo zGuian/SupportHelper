@@ -1,8 +1,8 @@
-﻿using SupportHelper.WinServices.Core.Interfaces.Services;
-using SupportHelper.WinServices.Core.Interfaces.UseCases;
-using SupportHelper.WinServices.Core.Models;
+﻿using Microsoft.Extensions.Logging;
+using SupportHelper.WinServices.Application.Interfaces.Services;
+using SupportHelper.WinServices.Application.Interfaces.UseCases;
 
-namespace SupportHelper.WinServices.Core.Services
+namespace SupportHelper.WinServices.Application.Services
 {
     public sealed class MachineService : IMachineService
     {
@@ -15,14 +15,6 @@ namespace SupportHelper.WinServices.Core.Services
             _logger = logger;
             _getLoggerUseCase = getLoggerUseCase;
             _updateSgpClientUseCase = updateSgpClientUseCase;
-        }
-
-        public MachineModel GetInformationMachine(CancellationToken cancellationToken = default)
-        {
-            var machine = new MachineModel();
-            machine.GetAllInformationFromMachine();
-            _logger.LogInformation("Encontrado informações da máquina: {machine}", machine.Hostname);
-            return machine;
         }
 
         public async Task<bool> MakeAvailableLogSgpClient(string productionLine)

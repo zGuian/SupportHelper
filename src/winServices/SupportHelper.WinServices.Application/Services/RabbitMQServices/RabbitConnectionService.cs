@@ -1,7 +1,7 @@
 ﻿using RabbitMQ.Client;
 using SupportHelper.WinServices.Core.Interfaces.RabbitMQService;
 
-namespace SupportHelper.WinServices.Core.Services.RabbitMQServices
+namespace SupportHelper.WinServices.Application.Services.RabbitMQServices
 {
     public class RabbitConnectionService : IRabbitConnectionService, IDisposable
     {

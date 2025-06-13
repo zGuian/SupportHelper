@@ -1,6 +1,7 @@
-﻿using RabbitMQ.Client;
+﻿using Microsoft.Extensions.Configuration;
+using RabbitMQ.Client;
 
-namespace SupportHelper.WinServices.Core.Interfaces.Events
+namespace SupportHelper.WinServices.Application.Interfaces.Events
 {
     public interface IRabbitMQEvent
     {

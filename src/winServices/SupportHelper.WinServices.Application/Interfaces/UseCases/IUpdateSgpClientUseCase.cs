@@ -1,6 +1,6 @@
 ﻿using SupportHelper.WinServices.Core.Models.Enums;
 
-namespace SupportHelper.WinServices.Core.Interfaces.UseCases
+namespace SupportHelper.WinServices.Application.Interfaces.UseCases
 {
     public interface IUpdateSgpClientUseCase
     {

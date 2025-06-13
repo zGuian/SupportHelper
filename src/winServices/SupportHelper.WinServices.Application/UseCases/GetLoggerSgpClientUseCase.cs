@@ -2,7 +2,7 @@
 using SupportHelper.WinServices.Core.Models.Enums;
 using System.Text;
 
-namespace SupportHelper.WinServices.Core.UseCases
+namespace SupportHelper.WinServices.Application.UseCases
 {
     public sealed class GetLoggerSgpClientUseCase : IGetLoggerSgpClientUseCase
     {

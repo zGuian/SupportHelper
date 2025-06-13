@@ -1,5 +1,5 @@
-﻿using SupportHelper.WinServices.Core.Interfaces.Events;
-using SupportHelper.WinServices.Core.Interfaces.RabbitMQService;
+﻿using SupportHelper.WinServices.Application.Interfaces.Events;
+using SupportHelper.WinServices.Application.Interfaces.RabbitMQService;
 
 namespace SupportHelper.WinServices.Core.Workers
 {
@@ -9,7 +9,7 @@ namespace SupportHelper.WinServices.Core.Workers
         private readonly IConfiguration _configuration;
         private readonly IRabbitConnectionService _connection;
 
-        public RabbitEventWorker(IRabbitMQEvent rabbitEvent, IConfiguration configuration, 
+        public RabbitEventWorker(IRabbitMQEvent rabbitEvent, IConfiguration configuration,
             IRabbitConnectionService connection)
         {
             _rabbitEvent = rabbitEvent;
