@@ -18,7 +18,7 @@ namespace SupportHelper.Infrastructure.SignalRContext
 
         public async Task RequestStatusAsync(string equipmentId)
         {
-            var connId = _connectionService.GetConnectionId(equipmentId);
+            string connId = _connectionService.GetConnectionId(equipmentId) ?? throw new Exception("EQUIPAMENTO NÃO ESTA CONECTADO AO SIGNALR");
             await _context.Clients.Client(connId).SendAsync("RequestStatusToMachine");
         }
     }

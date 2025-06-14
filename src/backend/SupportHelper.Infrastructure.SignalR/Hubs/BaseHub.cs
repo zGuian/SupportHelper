@@ -1,13 +1,33 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
+using SupportHelper.Infrastructure.SignalR.Interfaces;
 
 namespace SupportHelper.Infrastructure.SignalR.Hubs
 {
     public abstract class BaseHub : Hub
     {
-        public override Task OnConnectedAsync()
+        private readonly IConnectionService _connectionService;
+
+        protected BaseHub(IConnectionService connectionService)
         {
-            //ADICIONAR LOGICA PARA PEGAR ID DA CONEXÃO
-            return base.OnConnectedAsync();
+            _connectionService = connectionService;
+        }
+
+        public async override Task OnConnectedAsync()
+        {
+            HttpContext httpContext = Context.GetHttpContext() ?? throw new Exception("NÃO ENCONTRADO VALORES DE URL");
+
+            string hostName = httpContext.Request.Query["hostname"].ToString();
+            string connId = Context.ConnectionId;
+
+            _connectionService.Register(hostName, connId);
+            await base.OnConnectedAsync();
+        }
+
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            Context.Abort();
+            return base.OnDisconnectedAsync(exception);
         }
     }
 }
