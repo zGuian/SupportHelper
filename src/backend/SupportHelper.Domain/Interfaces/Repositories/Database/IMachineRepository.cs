@@ -1,6 +1,6 @@
 ﻿using SupportHelper.Domain.Entities;
 
-namespace SupportHelper.Domain.Interfaces.Repositories
+namespace SupportHelper.Domain.Interfaces.Repositories.Database
 {
     public interface IMachineRepository
     {

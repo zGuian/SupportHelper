@@ -1,4 +1,5 @@
-﻿using SupportHelper.Domain.ValueObjects;
+﻿using SupportHelper.Communication.Responses;
+using SupportHelper.Domain.ValueObjects;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -12,16 +13,6 @@ namespace SupportHelper.Domain.Entities
         public string OperationalSystem { get; private set; }
         public NetworkBoard[] NetworkBoards { get; private set; }
 
-        public Machine()
-        {
-            Id = GenerateId();
-            Hostname = string.Empty;
-            DomainName = string.Empty;
-            CurrentUsername = string.Empty;
-            OperationalSystem = string.Empty;
-            NetworkBoards = [];
-        }
-
         [JsonConstructor]
         public Machine(string hostname, string currentUsername, string domainName, 
             string operationalSystem, NetworkBoard[] networkBoards)
@@ -31,6 +22,22 @@ namespace SupportHelper.Domain.Entities
             DomainName = domainName;
             OperationalSystem = operationalSystem;
             NetworkBoards = networkBoards;
+        }
+
+        public static Machine Create(string hostname, string currentUsername, string domainName,
+            string operationalSystem, NetworkBoard[] networkBoards)
+        {
+            return new Machine(hostname, currentUsername, domainName, operationalSystem, networkBoards);
+        }
+
+        public static Machine Create(MachineInformationResponse response)
+        {
+            List<NetworkBoard> networkBoards = [];
+            foreach (var item in response.NetworkBoards)
+            {
+                networkBoards.Add(new NetworkBoard(item.Description, item.Ipv4, item.Ipv6, item.MacAddress, item.InUse));
+            }
+            return new Machine(response.Hostname, response.CurrentUsername, response.DomainName, response.OperationalSystem, [.. networkBoards]);
         }
 
         public override string ToString()
