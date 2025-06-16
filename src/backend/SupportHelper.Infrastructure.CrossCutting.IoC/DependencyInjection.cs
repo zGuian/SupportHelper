@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SupportHelper.Application.Interfaces;
 using SupportHelper.Application.UseCases.MachineUC;
-using SupportHelper.Domain.Interfaces.Repositories;
+using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Infrastructure.Data.Context;
 using SupportHelper.Infrastructure.Data.Repositories.Database;
 using SupportHelper.Infrastructure.SignalR.Interfaces;
