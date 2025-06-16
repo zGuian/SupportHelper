@@ -8,6 +8,8 @@ using SupportHelper.Infrastructure.MQServices;
 using SupportHelper.Infrastructure.MQServices.MQResponses;
 using SupportHelper.Infrastructure.Persistence.Context;
 using SupportHelper.Infrastructure.Persistence.Repositories;
+using SupportHelper.Infrastructure.SignalR.Interfaces;
+using SupportHelper.Infrastructure.SignalR.SignalRServices;
 
 namespace SupportHelper.Infrastructure
 {
@@ -17,6 +19,7 @@ namespace SupportHelper.Infrastructure
         {
             AddMqServices(services, configuration);
             AddDatabaseContext(services, configuration);
+            AddSignalRContext(services);
             return services;
         }
 
@@ -31,6 +34,11 @@ namespace SupportHelper.Infrastructure
         {
             services.AddDbContext<AppDbContext>(opts => opts.UseNpgsql(configuration.GetConnectionString("Default")));
             services.AddScoped<IMachineRepository, MachineRepository>();
+        }
+
+        private static void AddSignalRContext(IServiceCollection services)
+        {
+            services.AddScoped<IConnectionService, ConnectionService>();
         }
     }
 }
