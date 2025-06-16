@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using SupportHelper.Domain.Entities;
-using SupportHelper.Domain.Interfaces.Repositories;
+using SupportHelper.Domain.Interfaces.Repositories.Database;
 using System.Data;
 
 namespace SupportHelper.Infrastructure.Data.Repositories.Database

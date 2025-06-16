@@ -1,5 +1,5 @@
 ﻿using Moq;
-using SupportHelper.Domain.Interfaces.Repositories;
+using SupportHelper.Domain.Interfaces.Repositories.Database;
 
 namespace SupportHelper.Test.Common.Utilities.Repositories
 {
