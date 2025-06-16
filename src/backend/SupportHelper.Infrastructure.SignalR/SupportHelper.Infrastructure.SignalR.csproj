@@ -16,6 +16,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\shared\SupportHelper.Communication\SupportHelper.Communication.csproj" />
+    <ProjectReference Include="..\SupportHelper.Domain\SupportHelper.Domain.csproj" />
+    <ProjectReference Include="..\SupportHelper.Infrastructure.Data\SupportHelper.Infrastructure.Data.csproj" />
   </ItemGroup>
 
 </Project>

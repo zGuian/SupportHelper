@@ -1,21 +1,19 @@
 ﻿using SupportHelper.Communication.Responses;
 using SupportHelper.Infrastructure.SignalR.Interfaces;
+using SupportHelper.Infrastructure.Data.Interfaces;
 
 namespace SupportHelper.Infrastructure.SignalR.Hubs
 {
     public class ControlHub : BaseHub
     {
-        private readonly IConnectionService _connectionService;
+        private readonly IMachineServices _machineServices;
 
-        public ControlHub(IConnectionService connectionService) : base(connectionService)
-        {
-            _connectionService = connectionService;
-        }
+        public ControlHub(IConnectionService connectionService, IMachineServices machineServices) :
+            base(connectionService) => _machineServices = machineServices;
 
-        public async Task ResponseStatusMachine(MachineInformationResponse response) 
+        public async Task ResponseStatusMachine(MachineInformationResponse response)
         {
-            //ADICIONAR LOGICA PARA PERSISTIR DADOS
-            await Task.CompletedTask;
+            await _machineServices.SaveInDatabaseAndInMemory(response);
         }
     }
 }
