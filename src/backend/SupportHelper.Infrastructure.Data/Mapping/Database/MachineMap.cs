@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SupportHelper.Domain.Entities;
+using SupportHelper.Infrastructure.Data.DbModels;
 
-namespace SupportHelper.Infrastructure.Persistence.Context.MapperDB
+namespace SupportHelper.Infrastructure.Data.Mapping.Database
 {
-    public class MachineMap : IEntityTypeConfiguration<Machine>
+    public class MachineMap : IEntityTypeConfiguration<MachineModel>
     {
-        public void Configure(EntityTypeBuilder<Machine> builder)
+        public void Configure(EntityTypeBuilder<MachineModel> builder)
         {
             builder.ToTable("machine");
             builder.HasKey(m => m.Id);
@@ -39,9 +39,6 @@ namespace SupportHelper.Infrastructure.Persistence.Context.MapperDB
                 .HasColumnOrder(4)
                 .HasMaxLength(50)
                 .IsRequired(true);
-
-            builder.Ignore(m => m.NetworkBoards);
-
         }
     }
 }
