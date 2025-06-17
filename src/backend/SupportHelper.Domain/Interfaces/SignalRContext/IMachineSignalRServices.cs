@@ -1,5 +1,4 @@
-﻿
-namespace SupportHelper.Domain.Interfaces.SignalRContext
+﻿namespace SupportHelper.Domain.Interfaces.SignalRContext
 {
     public interface IMachineSignalRServices
     {

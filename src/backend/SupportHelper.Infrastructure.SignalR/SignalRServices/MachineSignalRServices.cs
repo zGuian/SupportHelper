@@ -3,7 +3,7 @@ using SupportHelper.Domain.Interfaces.SignalRContext;
 using SupportHelper.Infrastructure.SignalR.Hubs;
 using SupportHelper.Infrastructure.SignalR.Interfaces;
 
-namespace SupportHelper.Infrastructure.SignalRContext
+namespace SupportHelper.Infrastructure.SignalR.SignalRServices
 {
     public class MachineSignalRServices : IMachineSignalRServices
     {

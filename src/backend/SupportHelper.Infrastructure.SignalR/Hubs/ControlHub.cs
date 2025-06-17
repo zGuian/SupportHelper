@@ -1,19 +1,37 @@
-﻿using SupportHelper.Communication.Responses;
-using SupportHelper.Infrastructure.SignalR.Interfaces;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
+using SupportHelper.Communication.Responses;
 using SupportHelper.Infrastructure.Data.Interfaces;
+using SupportHelper.Infrastructure.SignalR.Interfaces;
+using System.Text.Json;
 
 namespace SupportHelper.Infrastructure.SignalR.Hubs
 {
-    public class ControlHub : BaseHub
+    public class ControlHub : Hub
     {
+        private readonly IConnectionService _connectionService;
         private readonly IMachineServices _machineServices;
 
-        public ControlHub(IConnectionService connectionService, IMachineServices machineServices) :
-            base(connectionService) => _machineServices = machineServices;
+        public ControlHub(IConnectionService connectionService, IMachineServices machineServices)
+        {
+            _connectionService = connectionService;
+            _machineServices = machineServices;
+        }
 
-        public async Task ResponseStatusMachine(MachineInformationResponse response)
+        public async Task ResponseStatusToMachine(MachineInformationResponse response)
         {
             await _machineServices.SaveInDatabaseAndInMemory(response);
+        }
+
+        public async override Task OnConnectedAsync()
+        {
+            HttpContext httpContext = Context.GetHttpContext() ?? throw new Exception("NÃO ENCONTRADO VALORES DE URL");
+
+            string hostName = httpContext.Request.Query["hostname"].ToString().ToLower();
+            string connId = Context.ConnectionId;
+            Console.WriteLine(hostName);
+            _connectionService.Register(hostName, connId);
+            await base.OnConnectedAsync();
         }
     }
 }
