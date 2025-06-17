@@ -18,6 +18,7 @@ namespace SupportHelper.WinServices.Core
             services.AddSingleton<IRabbitMQEvent, RabbitMQEvent>();
 
             services.AddHostedService<RabbitEventWorker>();
+            services.AddHostedService<SignalRWorker>();
 
             services.AddTransient<IMachineService, MachineService>();
             services.AddTransient<IGetLoggerSgpClientUseCase, GetLoggerSgpClientUseCase>();

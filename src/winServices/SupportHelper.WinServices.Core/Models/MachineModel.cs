@@ -4,19 +4,20 @@ namespace SupportHelper.WinServices.Core.Models
 {
     public sealed class MachineModel
     {
-        public string Hostname { get; private set; }
-        public string CurrentUsername { get; private set; }
-        public string DomainName { get; private set; }
-        public string OperationalSystem { get; private set; }
-        public NetworkBoard[] NetworkBoards { get; private set; }
+        public string Hostname { get; private set; } = string.Empty;
+        public string CurrentUsername { get; private set; } = string.Empty;
+        public string DomainName { get; private set; } = string.Empty;
+        public string OperationalSystem { get; private set; } = string.Empty;
+        public NetworkBoard[] NetworkBoards { get; private set; } = [];
 
-        public MachineModel()
+        private MachineModel()
         {
-            Hostname = string.Empty;
-            DomainName = string.Empty;
-            CurrentUsername = string.Empty;
-            OperationalSystem = string.Empty;
-            NetworkBoards = [];
+            GetAllInformationFromMachine();
+        }
+
+        public static MachineModel Create()
+        {
+            return new MachineModel();
         }
 
         public void GetAllInformationFromMachine()

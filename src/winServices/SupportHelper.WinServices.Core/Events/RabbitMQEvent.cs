@@ -59,11 +59,11 @@ namespace SupportHelper.WinServices.Core.Events
             dynamic result;
             switch (request.Command)
             {
-                case "GET_INFORMATION_MACHINE":
-                    MachineModel machine = new();
-                    machine.GetAllInformationFromMachine();
-                    await PublishReplyTo(channel, ea, machine, true);
-                    break;
+                //case "GET_INFORMATION_MACHINE":
+                //    MachineModel machine = new();
+                //    machine.GetAllInformationFromMachine();
+                //    await PublishReplyTo(channel, ea, machine, true);
+                //    break;
 
                 case "GET_LOG_SGPCLIENT":
                     result = await _machineService.MakeAvailableLogSgpClient(
