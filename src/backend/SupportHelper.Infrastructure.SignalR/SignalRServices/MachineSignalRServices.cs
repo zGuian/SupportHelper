@@ -21,5 +21,17 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
             string connId = _connectionService.GetConnectionId(equipmentId) ?? throw new Exception("EQUIPAMENTO NÃO ESTA CONECTADO AO SIGNALR");
             await _context.Clients.Client(connId).SendAsync("RequestStatusToMachine");
         }
+
+        public async Task UpdateSgpClientAsync(string equipmentId, string productionLine, CancellationToken cancellationToken = default)
+        {
+            string connId = _connectionService.GetConnectionId(equipmentId) ?? throw new Exception("EQUIPAMENTO NÃO ESTA CONECTADO AO SIGNALR");
+            await _context.Clients.Client(connId).SendAsync("UpdateSgpClient", productionLine, cancellationToken);
+        }
+
+        public async Task GetLogSgpClientAsync(string equipmentId, string productionLine, CancellationToken cancellationToken = default)
+        {
+            string connId = _connectionService.GetConnectionId(equipmentId) ?? throw new Exception("EQUIPAMENTO NÃO ESTA CONECTADO AO SIGNALR");
+            await _context.Clients.Client(connId).SendAsync("GetLogSgpClient", productionLine, cancellationToken);
+        }
     }
 }
