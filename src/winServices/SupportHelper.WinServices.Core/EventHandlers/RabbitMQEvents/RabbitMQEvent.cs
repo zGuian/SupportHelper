@@ -9,7 +9,7 @@ using SupportHelper.WinServices.Core.Models;
 using System.Text;
 using System.Text.Json;
 
-namespace SupportHelper.WinServices.Core.Events
+namespace SupportHelper.WinServices.Core.EventHandlers.RabbitMQEvents
 {
     public class RabbitMQEvent : IRabbitMQEvent
     {
