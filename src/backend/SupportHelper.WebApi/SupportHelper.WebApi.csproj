@@ -18,8 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SupportHelper.Application\SupportHelper.Application.csproj" />
-    <ProjectReference Include="..\SupportHelper.Infrastructure\SupportHelper.Infrastructure.csproj" />
+    <ProjectReference Include="..\SupportHelper.Infrastructure.CrossCutting.IoC\SupportHelper.Infrastructure.CrossCutting.IoC.csproj" />
   </ItemGroup>
 
 </Project>

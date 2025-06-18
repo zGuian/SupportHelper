@@ -5,7 +5,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using SupportHelper.Communication.Responses;
 using SupportHelper.Domain.Entities;
-using SupportHelper.Domain.Interfaces.Repositories;
+using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Infrastructure.Contracts;
 using System.Text;
 using System.Text.Json;

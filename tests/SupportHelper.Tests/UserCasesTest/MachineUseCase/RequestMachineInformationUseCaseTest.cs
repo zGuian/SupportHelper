@@ -26,7 +26,8 @@ namespace SupportHelper.Tests.UserCasesTest.MachineUseCase
         {
             var log = new NullLogger<RequestMachineInformationUseCase>();
             var mqService = MachineMQServiceBuilder.Build();
-            return new RequestMachineInformationUseCase(log, mqService);
+            var signalRService = MachineSignalRServiceBuilder.Build();
+            return new RequestMachineInformationUseCase(log, mqService, signalRService);
         }
     }
 }

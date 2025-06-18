@@ -1,12 +1,11 @@
-﻿using SupportHelper.WinServices.Core.Interfaces.UseCases;
-using SupportHelper.WinServices.Core.Models.Enums;
+﻿using SupportHelper.WinServices.Application.Interfaces.UseCases;
 using System.Text;
 
 namespace SupportHelper.WinServices.Application.UseCases
 {
     public sealed class GetLoggerSgpClientUseCase : IGetLoggerSgpClientUseCase
     {
-        public void Execute(SGPClientLine productionLine)
+        public void Execute(string productionLine)
         {
             string originBase = @$"C:\ProgramData\MBBras\SGP\SGPClient3";
             string folderName = Path.Combine(originBase, productionLine.ToString());

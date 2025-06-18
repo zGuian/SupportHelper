@@ -3,10 +3,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using SupportHelper.Domain.Entities;
-using SupportHelper.Domain.Interfaces.Repositories;
+using SupportHelper.Domain.Interfaces.Repositories.Database;
 using System.Data;
 
-namespace SupportHelper.Infrastructure.Persistence.Repositories
+namespace SupportHelper.Infrastructure.Data.Repositories.Database
 {
     public class MachineRepository : IMachineRepository
     {
@@ -38,7 +38,7 @@ namespace SupportHelper.Infrastructure.Persistence.Repositories
             {
                 const string sql = @"";
 
-                var machine = await _dbConnection.QueryFirstAsync<Machine>(sql, id, 
+                var machine = await _dbConnection.QueryFirstAsync<Machine>(sql, id,
                     commandTimeout: TimeSpan.FromSeconds(30).Seconds) ?? throw new Exception("NOT FOUND MACHINE");
                 return machine;
             }
@@ -92,7 +92,7 @@ namespace SupportHelper.Infrastructure.Persistence.Repositories
                     m_currentUsername = machine.CurrentUsername,
                     m_domainName = machine.DomainName,
                     m_operationalSystem = machine.OperationalSystem,
-                    m_newId = Machine.GenerateId()
+                    m_newId = EntityBase.GenerateId()
                 }, commandType: CommandType.Text);
                 _logger.LogInformation("Adicionado com sucesso via Function");
             }

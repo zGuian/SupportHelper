@@ -28,5 +28,13 @@ namespace SupportHelper.WebApi.Controllers
             await sgpClientUseCase.ExecuteAsync(request, new RabbitMQRequest(hostname, exchange));
             return Ok();
         }
+
+        [HttpGet("StatusMachine/{hostname:required}")]
+        public async Task<IActionResult> GetStatusToMachine([FromServices] IRequestStatusMachineUseCase statusMachineUseCase,
+            [FromRoute] string hostname)
+        {
+            await statusMachineUseCase.ExecuteAsync(hostname);
+            return Ok();
+        }
     }
 }

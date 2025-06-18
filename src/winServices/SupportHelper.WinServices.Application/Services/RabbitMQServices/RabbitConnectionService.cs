@@ -1,5 +1,6 @@
-﻿using RabbitMQ.Client;
-using SupportHelper.WinServices.Core.Interfaces.RabbitMQService;
+﻿using Microsoft.Extensions.Configuration;
+using RabbitMQ.Client;
+using SupportHelper.WinServices.Application.Interfaces.RabbitMQService;
 
 namespace SupportHelper.WinServices.Application.Services.RabbitMQServices
 {

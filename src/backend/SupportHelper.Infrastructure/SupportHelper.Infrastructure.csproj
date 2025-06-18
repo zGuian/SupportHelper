@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\shared\SupportHelper.Exceptions\SupportHelper.Exceptions.csproj" />
     <ProjectReference Include="..\SupportHelper.Domain\SupportHelper.Domain.csproj" />
+    <ProjectReference Include="..\SupportHelper.Infrastructure.SignalR\SupportHelper.Infrastructure.SignalR.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.2.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.4.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />

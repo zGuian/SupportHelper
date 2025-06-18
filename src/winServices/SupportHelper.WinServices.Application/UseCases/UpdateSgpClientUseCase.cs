@@ -1,4 +1,4 @@
-﻿using SupportHelper.WinServices.Core.Interfaces.UseCases;
+﻿using SupportHelper.WinServices.Application.Interfaces.UseCases;
 using System.Diagnostics;
 using System.Text;
 
