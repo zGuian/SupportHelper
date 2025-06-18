@@ -1,19 +1,20 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using SupportHelper.Domain.Interfaces.Repositories.Memory;
 using SupportHelper.Domain.Interfaces.SignalRContext;
 using SupportHelper.Infrastructure.SignalR.Hubs;
-using SupportHelper.Infrastructure.SignalR.Interfaces;
 
 namespace SupportHelper.Infrastructure.SignalR.SignalRServices
 {
     public class MachineSignalRServices : IMachineSignalRServices
     {
         private readonly IHubContext<ControlHub> _context;
-        private readonly IConnectionService _connectionService;
+        private readonly IConnectionMemoryRepository _connectionMemoryRepository;
 
-        public MachineSignalRServices(IHubContext<ControlHub> context, IConnectionService connectionService)
+        public MachineSignalRServices(IHubContext<ControlHub> context,
+            IConnectionMemoryRepository connectionRepository)
         {
             _context = context;
-            _connectionService = connectionService;
+            _connectionMemoryRepository = connectionRepository;
         }
 
         public async Task RequestStatusAsync(string equipmentId)
@@ -35,8 +36,7 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
         }
 
         private string GetConnectionId(string equipmentId)
-        {
-            return _connectionService.GetConnectionId(equipmentId) ?? throw new Exception("EQUIPAMENTO NÃO ESTA CONECTADO AO SIGNALR");
-        }
+            => _connectionMemoryRepository.GetConnectionId(equipmentId) 
+                ?? throw new Exception("EQUIPAMENTO NÃO ESTA CONECTADO AO SIGNALR");
     }
 }

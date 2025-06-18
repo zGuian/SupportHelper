@@ -40,7 +40,7 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
 
         private static void SignalRDI(this IServiceCollection services)
         {
-            services.AddSingleton<IConnectionService, ConnectionService>();
+            //services.AddSingleton<IConnectionService, ConnectionService>();
             services.AddSingleton<IMachineSignalRServices, MachineSignalRServices>();
         }
 
@@ -50,6 +50,7 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
             services.AddScoped<IMachineRepository, MachineRepository>();
             services.AddScoped<IMachineServices, MachineServices>();
             services.AddSingleton<IMachineMemoryRepository, MachineMemoryRepository>();
+            services.AddSingleton<IConnectionMemoryRepository, ConnectionMemoryRepository>();
         }
 
         private static void RabbitMQDI(IServiceCollection services)
