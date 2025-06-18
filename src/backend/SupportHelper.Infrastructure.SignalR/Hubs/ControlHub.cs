@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.SignalR;
 using SupportHelper.Communication.Responses;
 using SupportHelper.Infrastructure.Data.Interfaces;
 using SupportHelper.Infrastructure.SignalR.Interfaces;
-using System.Text.Json;
 
 namespace SupportHelper.Infrastructure.SignalR.Hubs
 {
