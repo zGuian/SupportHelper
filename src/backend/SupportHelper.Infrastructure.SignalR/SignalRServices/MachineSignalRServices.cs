@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using SupportHelper.Communication.Responses;
 using SupportHelper.Domain.Interfaces.Repositories.Memory;
 using SupportHelper.Domain.Interfaces.SignalRContext;
 using SupportHelper.Infrastructure.SignalR.Hubs;
@@ -23,10 +24,12 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
             await _context.Clients.Client(connId).SendAsync("RequestStatusToMachine");
         }
 
-        public async Task UpdateSgpClientAsync(string equipmentId, string productionLine, CancellationToken cancellationToken = default)
+        public async Task<ResponseUpdateSgpClientJson> UpdateSgpClientAsync(string equipmentId, string productionLine, CancellationToken cancellationToken = default)
         {
             string connId = GetConnectionId(equipmentId);
-            await _context.Clients.Client(connId).SendAsync("UpdateSgpClient", productionLine, cancellationToken);
+            var response = await _context.Clients.Client(connId).InvokeAsync<ResponseUpdateSgpClientJson>(
+                "UpdateSgpClient", productionLine, cancellationToken);
+            return response;
         }
 
         public async Task GetLogSgpClientAsync(string equipmentId, string productionLine, CancellationToken cancellationToken = default)
