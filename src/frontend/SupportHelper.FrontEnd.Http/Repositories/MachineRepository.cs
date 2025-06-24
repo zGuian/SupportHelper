@@ -49,7 +49,7 @@ namespace SupportHelper.FrontEnd.Http.Repositories
                     throw new Exception("ERROR");
                 }
                 json = await response.Content.ReadAsStringAsync();
-                MachineInformationResponse obj = JsonSerializer.Deserialize<MachineInformationResponse>(json)
+                ResponseUpdateSgpClientJson obj = JsonSerializer.Deserialize<ResponseUpdateSgpClientJson>(json)
                     ?? throw new Exception();
             }
             catch (Exception ex)
