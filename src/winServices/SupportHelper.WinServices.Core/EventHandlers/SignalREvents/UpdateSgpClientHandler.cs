@@ -15,7 +15,7 @@ namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
 
         public void Register(HubConnection connection, CancellationToken stoppingToken)
         {
-            connection.On("UpdateSgpClientAsync", async (string productionLine) => 
+            connection.On("UpdateSgpClient", async (string productionLine) => 
             {
                 await _machineService.UpdateSgpClient(productionLine);
             });

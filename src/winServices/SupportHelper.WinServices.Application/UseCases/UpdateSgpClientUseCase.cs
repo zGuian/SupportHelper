@@ -28,6 +28,8 @@ namespace SupportHelper.WinServices.Application.UseCases
 
             _process.StartInfo.FileName = pathFile;
             _process.Start();
+            string version = GetSgpVersion(pathFile) ?? string.Empty;
+            //return version;
         }
 
         private void StopSgpIfRunning(Process[] processes)
@@ -68,6 +70,15 @@ namespace SupportHelper.WinServices.Application.UseCases
                 }
             }
             throw new Exception("SGP NÃO ESTA RODANDO NA MÁQUINA");
+        }
+
+        private string? GetSgpVersion(string pathSgp)
+        {
+            if (!File.Exists(pathSgp))
+            {
+            }
+            var infoVersion = FileVersionInfo.GetVersionInfo(pathSgp);
+            return infoVersion.FileVersion;
         }
     }
 }
