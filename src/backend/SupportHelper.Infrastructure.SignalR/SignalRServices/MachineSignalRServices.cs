@@ -18,17 +18,19 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
             _connectionMemoryRepository = connectionRepository;
         }
 
-        public async Task RequestStatusAsync(string equipmentId)
+        public async Task<ResponseStatusMachineJson> RequestStatusAsync(string equipmentId, CancellationToken cancellationToken = default)
         {
             string connId = GetConnectionId(equipmentId);
-            await _context.Clients.Client(connId).SendAsync("RequestStatusToMachine");
+            var response = await _context.Clients.Client(connId).InvokeAsync<ResponseStatusMachineJson>("RequestStatusMachine", 
+                equipmentId, cancellationToken);
+            return response;
         }
 
         public async Task<ResponseUpdateSgpClientJson> UpdateSgpClientAsync(string equipmentId, string productionLine, CancellationToken cancellationToken = default)
         {
             string connId = GetConnectionId(equipmentId);
-            var response = await _context.Clients.Client(connId).InvokeAsync<ResponseUpdateSgpClientJson>(
-                "UpdateSgpClient", productionLine, cancellationToken);
+            var response = await _context.Clients.Client(connId).InvokeAsync<ResponseUpdateSgpClientJson>("UpdateSgpClient", 
+                productionLine, cancellationToken);
             return response;
         }
 

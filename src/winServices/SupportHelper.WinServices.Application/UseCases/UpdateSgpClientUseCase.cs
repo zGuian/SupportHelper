@@ -7,8 +7,9 @@ namespace SupportHelper.WinServices.Application.UseCases
     public sealed class UpdateSgpClientUseCase : IUpdateSgpClientUseCase
     {
         Process _process = new();
+        readonly string _sgpUI = @"C:\ProgramData\MBBras\SGP\SGPClient3_TR\DCX.ITLC.SGPClient.UI.exe";
 
-        public void Execute(string sgpClientLine)
+        public string Execute(string sgpClientLine)
         {
             Process[] processes = Process.GetProcesses(Environment.MachineName);
 
@@ -28,8 +29,12 @@ namespace SupportHelper.WinServices.Application.UseCases
 
             _process.StartInfo.FileName = pathFile;
             _process.Start();
-            string version = GetSgpVersion(pathFile) ?? string.Empty;
-            //return version;
+            (string version, bool isSuccess) version = GetSgpVersion();
+            if (!version.isSuccess)
+            {
+                return "não encontrado versão do programa";
+            }
+            return $"Versão atual: {version.version}";
         }
 
         private void StopSgpIfRunning(Process[] processes)
@@ -72,13 +77,16 @@ namespace SupportHelper.WinServices.Application.UseCases
             throw new Exception("SGP NÃO ESTA RODANDO NA MÁQUINA");
         }
 
-        private string? GetSgpVersion(string pathSgp)
+        private (string version, bool isSuccess) GetSgpVersion()
         {
-            if (!File.Exists(pathSgp))
+            if (!File.Exists(_sgpUI))
             {
+                return ("não foi encontrado aplicação", false);
             }
-            var infoVersion = FileVersionInfo.GetVersionInfo(pathSgp);
-            return infoVersion.FileVersion;
+            var infoVersion = FileVersionInfo.GetVersionInfo(_sgpUI);
+            if (infoVersion.FileVersion is null)
+                return ("não encontrado versão da aplicação", false);
+            return (infoVersion.FileVersion, true);
         }
     }
 }

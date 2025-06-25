@@ -1,7 +1,9 @@
-﻿namespace SupportHelper.Domain.Interfaces.SignalRContext
+﻿using SupportHelper.Communication.Responses;
+
+namespace SupportHelper.Domain.Interfaces.SignalRContext
 {
     public interface IMachineSignalRServices
     {
-        Task RequestStatusAsync(string equipmentId);
+        Task<ResponseStatusMachineJson> RequestStatusAsync(string equipmentId, CancellationToken cancellationToken = default);
     }
 }

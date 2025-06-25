@@ -2,6 +2,6 @@
 {
     public interface IUpdateSgpClientUseCase
     {
-        void Execute(string sgpClientLine);
+        string Execute(string sgpClientLine);
     }
 }

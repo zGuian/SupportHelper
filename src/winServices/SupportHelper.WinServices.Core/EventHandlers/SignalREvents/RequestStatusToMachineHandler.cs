@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using SupportHelper.Communication.Requests;
 using SupportHelper.Communication.Responses;
 using SupportHelper.WinServices.Application.Interfaces.Events;
 using SupportHelper.WinServices.Core.Models;
@@ -17,7 +18,7 @@ namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
 
         public void Register(HubConnection connection, CancellationToken stoppingToken)
         {
-            connection.On("RequestStatusToMachine", async () =>
+            connection.On<RequestStatusMachineJson, ResponseStatusMachineJson>("RequestStatusMachine", async request =>
             {
                 MachineModel machine = MachineModel.Create();
                 List<NetworkBoardResponse> networkBoard = [];
@@ -29,8 +30,7 @@ namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
 
                 var response = MachineInformationResponse.Create(machine.Hostname, machine.CurrentUsername, machine.DomainName,
                     machine.OperationalSystem, [.. networkBoard]);
-
-                await connection.InvokeAsync("ResponseStatusToMachine", response);
+                
                 _logger.LogInformation("Resposta enviada com sucesso");
             });
         }

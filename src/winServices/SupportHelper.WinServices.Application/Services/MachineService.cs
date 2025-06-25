@@ -35,21 +35,21 @@ namespace SupportHelper.WinServices.Application.Services
             }
         }
 
-        public async Task<bool> UpdateSgpClient(string productionLine)
+        public async Task<string> UpdateSgpClient(string productionLine)
         {
             try
             {
                 _logger.LogInformation("Iniciando processo para atualizar o SGP via Start");
                 await Task.Run(() =>
                 {
-                    _updateSgpClientUseCase.Execute(productionLine);
+                    return _updateSgpClientUseCase.Execute(productionLine);
                 });
-                return true;
+                return "";
             }
             catch (Exception ex)
             {
                 _logger.LogError("Ocorreu um erro ao atualizar o SGP: {message}", ex.Message);
-                return false;
+                return "";
             }
         }
     }
