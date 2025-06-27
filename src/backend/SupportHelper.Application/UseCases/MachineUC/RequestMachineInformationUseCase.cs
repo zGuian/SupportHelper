@@ -20,14 +20,10 @@ namespace SupportHelper.Application.UseCases.MachineUC
             _machineSignalR = machineSignalR;
         }
 
-        public async Task ExecuteAsync(MachineInformationRequest request)
+        public async Task ExecuteAsync(RequestMachineInformationJson request, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("ENVIADO SINAL VIA SIGNALR");
-            await _machineSignalR.RequestStatusAsync(request.RabbitMQRequest.Hostname);
-            //await PublishRabbitMQ(request);
+            var response = await _machineSignalR.RequestStatusAsync(request.Hostname, cancellationToken);
         }
-
-        private async Task PublishRabbitMQ(MachineInformationRequest request) =>
-            await _machineMQServices.PublishMessageAsync(request);
     }
 }

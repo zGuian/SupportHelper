@@ -12,16 +12,14 @@ namespace SupportHelper.WebApi.Controllers
     {
         [HttpGet("Information/{hostname:required}")]
         public async Task<IActionResult> GetMachineInformation([FromServices] IRequestMachineInformationUseCase getMachineInformation,
-            [FromRoute] string hostname, [FromHeader] string? exchange)
+            [FromRoute] string hostname)
         {
-            var request = new MachineInformationRequest("GET_INFORMATION_MACHINE",
-                                                        new RabbitMQRequest(hostname, exchange));
-
+            var request = new RequestMachineInformationJson { Hostname =  hostname };
             await getMachineInformation.ExecuteAsync(request);
             return Ok();
         }
 
-        [HttpPost("LogSgpClient/{hostname:required}")]
+        [HttpGet("LogSgpClient/{hostname:required}")]
         public async Task<IActionResult> GetLogsForSgpClientAsync([FromServices] IRequestLogsSgpClientUseCase sgpClientUseCase,
             [FromBody] RequestBase<RequestMachine> request, [FromRoute] string hostname, [FromHeader] string? exchange)
         {
@@ -34,6 +32,14 @@ namespace SupportHelper.WebApi.Controllers
             [FromRoute] string hostname)
         {
             await statusMachineUseCase.ExecuteAsync(hostname);
+            return Ok();
+        }
+
+        [HttpPost("UpdateSgpCliet")]
+        public async Task<IActionResult> UpdateSgpClient([FromServices] IRequestUpdateSgpClientUseCase request,
+            [FromBody] RequestUpdateSgpClientJson json)
+        {
+            await request.ExecuteAsync(json);
             return Ok();
         }
     }
