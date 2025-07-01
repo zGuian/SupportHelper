@@ -42,5 +42,13 @@ namespace SupportHelper.WebApi.Controllers
             await request.ExecuteAsync(json);
             return Ok();
         }
+
+        [HttpGet("GetMachinesConnected")]
+        public async Task<IActionResult> GetMachinesConnected([FromServices] IRequestGetAllMachinesUseCase request,
+            [FromQuery]int pageNumber, [FromQuery]int pageSize)
+        {
+            var data = await request.ExecuteAsync(pageNumber, pageSize);
+            return Ok(data);
+        }
     }
 }

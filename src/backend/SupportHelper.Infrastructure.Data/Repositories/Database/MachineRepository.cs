@@ -19,17 +19,29 @@ namespace SupportHelper.Infrastructure.Data.Repositories.Database
             _dbConnection = new NpgsqlConnection(configuration.GetConnectionString("Default"));
         }
 
-        public async Task<HashSet<Machine>> GetAllMachinesAsync(int pageSize, int count)
+        public async Task<(HashSet<Machine>?, int total)> GetAllMachinesAsync(int pageNumber, int pageSize)
         {
-            const string sql = @"";
-
-            var machine = await _dbConnection.QueryAsync<Machine>(sql, new
+            try
             {
-                pageSize,
-                count
-            });
+                const string nameStoredProcedure = @"sp_GetPagedData";
 
-            return [.. machine];
+                DynamicParameters parameters = new();
+                parameters.Add("@PageNumber", pageNumber);
+                parameters.Add("@PageSize", pageSize);
+                parameters.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                IEnumerable<Machine> data = await _dbConnection.QueryAsync<Machine>(nameStoredProcedure,
+                    parameters, commandType: CommandType.StoredProcedure);
+
+                int totalRecords = parameters.Get<int>("@TotalRecords");
+
+                return (data.ToHashSet(), totalRecords);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning("Ocorreu um problema ao buscar valores paginados.");
+                return (null, 0);
+            }
         }
 
         public async Task<Machine?> GetMachineAsync(string id)
@@ -38,7 +50,7 @@ namespace SupportHelper.Infrastructure.Data.Repositories.Database
             {
                 const string sql = @"";
 
-                var machine = await _dbConnection.QueryFirstAsync<Machine>(sql, id,
+                Machine machine = await _dbConnection.QueryFirstAsync<Machine>(sql, id,
                     commandTimeout: TimeSpan.FromSeconds(30).Seconds) ?? throw new Exception("NOT FOUND MACHINE");
                 return machine;
             }
@@ -85,7 +97,7 @@ namespace SupportHelper.Infrastructure.Data.Repositories.Database
             try
             {
                 const string function = "SELECT sp_ValidateAndUpdateMachine(@m_id, @m_hostname, @m_currentUsername, @m_domainName, @m_operationalSystem, @m_newId)";
-                var line = await _dbConnection.ExecuteAsync(function, new
+                int line = await _dbConnection.ExecuteAsync(function, new
                 {
                     m_id = machine.Id,
                     m_hostname = machine.Hostname,
