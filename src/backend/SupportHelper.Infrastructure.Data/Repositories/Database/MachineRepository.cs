@@ -19,27 +19,39 @@ namespace SupportHelper.Infrastructure.Data.Repositories.Database
             _dbConnection = new NpgsqlConnection(configuration.GetConnectionString("Default"));
         }
 
-        public async Task<(HashSet<Machine>?, int total)> GetAllMachinesAsync(int pageNumber, int pageSize)
+        public async Task<(HashSet<Machine>?, int)> GetAllMachinesAsync(int pageNumber, int pageSize)
         {
             try
             {
-                const string nameStoredProcedure = @"sp_GetPagedData";
+                const string sql = @"
+                SELECT 
+                    id,
+                    hostname,
+                    current_username,
+                    domain_name,
+                    operational_system
+                FROM machine
+                OFFSET (@page_number - 1) * @page_size
+                LIMIT @page_size;
+
+                SELECT COUNT(*) FROM machine;
+                ";
 
                 DynamicParameters parameters = new();
-                parameters.Add("@PageNumber", pageNumber);
-                parameters.Add("@PageSize", pageSize);
-                parameters.Add("@TotalRecords", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                parameters.Add("@page_size", pageSize);
+                parameters.Add("@page_number", pageNumber);
 
-                IEnumerable<Machine> data = await _dbConnection.QueryAsync<Machine>(nameStoredProcedure,
-                    parameters, commandType: CommandType.StoredProcedure);
+                var query = await _dbConnection.QueryMultipleAsync(sql, parameters, commandType: CommandType.Text,
+                    commandTimeout: TimeSpan.FromSeconds(30).Seconds);
 
-                int totalRecords = parameters.Get<int>("@TotalRecords");
+                var machines = (await query.ReadAsync<Machine>()).ToHashSet();
+                var totalRecord = await query.ReadFirstAsync<int>();
 
-                return (data.ToHashSet(), totalRecords);
+                return (machines, totalRecord);
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("Ocorreu um problema ao buscar valores paginados.");
+                _logger.LogWarning("Ocorreu um problema ao buscar valores paginados: {message}", ex.Message);
                 return (null, 0);
             }
         }
@@ -48,10 +60,14 @@ namespace SupportHelper.Infrastructure.Data.Repositories.Database
         {
             try
             {
-                const string sql = @"";
+                const string sql = @"
+                    SELECT * 
+                    FROM machine m
+                    WHERE m.id = @id";
 
                 Machine machine = await _dbConnection.QueryFirstAsync<Machine>(sql, id,
                     commandTimeout: TimeSpan.FromSeconds(30).Seconds) ?? throw new Exception("NOT FOUND MACHINE");
+
                 return machine;
             }
             catch (Exception ex)
@@ -86,9 +102,9 @@ namespace SupportHelper.Infrastructure.Data.Repositories.Database
                     @id = machine.Id
                 });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                _logger.LogWarning("Ocorreu um erro ao realizar atualização: {message}", ex.Message);
             }
         }
 
