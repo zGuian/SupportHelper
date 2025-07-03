@@ -19,9 +19,15 @@ namespace SupportHelper.Infrastructure.Data.Services
 
         public async Task SaveInDatabaseAndInMemory(MachineInformationResponse response)
         {
-            var machine = Machine.Create(response);
+            var machine = Machine.Convert(response);
             _machineMemory.Register(machine.Id, machine);
             await _repository.InsertMachineByProcedure(machine);
+        }
+
+        public async Task UpdateDatabaseAsync(ResponseStatusMachineJson response)
+        {
+            var machine = Machine.Convert(response);
+            await _repository.UpdateMachineAsync(machine);
         }
     }
 }

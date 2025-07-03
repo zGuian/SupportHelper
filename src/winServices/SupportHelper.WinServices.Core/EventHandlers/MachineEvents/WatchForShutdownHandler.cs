@@ -12,6 +12,12 @@ namespace SupportHelper.WinServices.Core.EventHandlers.MachineEvents
     {
         [SupportedOSPlatform("windows")]
         private ManagementEventWatcher? _shutdownEventWatcher;
+        private readonly ILogger<WatchForShutdownHandler> _logger;
+
+        public WatchForShutdownHandler(ILogger<WatchForShutdownHandler> logger)
+        {
+            _logger = logger;
+        }
 
         [SupportedOSPlatform("windows")]
         public void Run(HubConnection connection, CancellationToken cancellationToken)
@@ -29,10 +35,11 @@ namespace SupportHelper.WinServices.Core.EventHandlers.MachineEvents
                     await connection.SendAsync("MachineDisconnected", response, cancellationToken);
                 };
                 _shutdownEventWatcher.Start();
+                _logger.LogInformation("Iniciado monitoração do evento: [Shutdown]");
             }
             catch (Exception ex)
             {
-                throw;
+                _logger.LogError($"Ocorreu um erro inesperado: {ex.Message}");
             }
         }
     }

@@ -22,6 +22,11 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
             await _machineServices.SaveInDatabaseAndInMemory(response);
         }
 
+        public async Task MachineDisconnected(ResponseStatusMachineJson response)
+        {
+            await _machineServices.UpdateDatabaseAsync(response);
+        }
+
         public async override Task OnConnectedAsync()
         {
             HttpContext httpContext = Context.GetHttpContext() ?? throw new Exception("NÃO ENCONTRADO VALORES DE URL");
