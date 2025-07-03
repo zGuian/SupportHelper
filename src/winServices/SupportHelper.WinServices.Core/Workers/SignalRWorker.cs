@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using SupportHelper.WinServices.Application.Interfaces.Events;
+using System.Threading;
 
 namespace SupportHelper.WinServices.Core.Workers
 {
@@ -8,14 +9,16 @@ namespace SupportHelper.WinServices.Core.Workers
         private HubConnection? _connection;
         private readonly ILogger<SignalRWorker> _logger;
         private readonly IConfiguration _config;
-        private readonly IEnumerable<ISignalREventHandler> _handlers;
+        private readonly IEnumerable<ISignalREventHandler> _signalrHandlers;
+        private readonly IWatchForShutdownHandler _watchForShutdownHandler;
 
         public SignalRWorker(ILogger<SignalRWorker> logger, IConfiguration configuration,
-            IEnumerable<ISignalREventHandler> signalREventHandlers)
+            IEnumerable<ISignalREventHandler> signalREventHandlers, IWatchForShutdownHandler watchForShutdownHandler)
         {
             _logger = logger;
             _config = configuration;
-            _handlers = signalREventHandlers;
+            _signalrHandlers = signalREventHandlers;
+            _watchForShutdownHandler = watchForShutdownHandler;
         }
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -27,10 +30,12 @@ namespace SupportHelper.WinServices.Core.Workers
                 .WithAutomaticReconnect()
                 .Build();
 
-            foreach (ISignalREventHandler handler in _handlers)
+            foreach (ISignalREventHandler handler in _signalrHandlers)
             {
                 handler.Register(_connection, stoppingToken);
             }
+
+            _watchForShutdownHandler.Run(_connection, stoppingToken);
 
             try
             {
@@ -46,6 +51,11 @@ namespace SupportHelper.WinServices.Core.Workers
             {
                 await Task.Delay(1000, stoppingToken);
             }
+        }
+
+        public override Task StopAsync(CancellationToken cancellationToken)
+        {
+            return base.StopAsync(cancellationToken);
         }
     }
 }

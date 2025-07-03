@@ -10,7 +10,8 @@ namespace SupportHelper.WinServices.Application.Services
         private readonly IGetLoggerSgpClientUseCase _getLoggerUseCase;
         private readonly IUpdateSgpClientUseCase _updateSgpClientUseCase;
 
-        public MachineService(ILogger<MachineService> logger, IGetLoggerSgpClientUseCase getLoggerUseCase, IUpdateSgpClientUseCase updateSgpClientUseCase)
+        public MachineService(ILogger<MachineService> logger, IGetLoggerSgpClientUseCase getLoggerUseCase, 
+            IUpdateSgpClientUseCase updateSgpClientUseCase)
         {
             _logger = logger;
             _getLoggerUseCase = getLoggerUseCase;
