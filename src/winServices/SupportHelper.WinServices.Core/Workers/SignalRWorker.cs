@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Options;
 using SupportHelper.WinServices.Application.Interfaces.Events;
-using System.Threading;
+using SupportHelper.WinServices.Core.Settings;
 
 namespace SupportHelper.WinServices.Core.Workers
 {
@@ -8,22 +9,22 @@ namespace SupportHelper.WinServices.Core.Workers
     {
         private HubConnection? _connection;
         private readonly ILogger<SignalRWorker> _logger;
-        private readonly IConfiguration _config;
         private readonly IEnumerable<ISignalREventHandler> _signalrHandlers;
         private readonly IWatchForShutdownHandler _watchForShutdownHandler;
+        private readonly SignalrSettings _signalrSettings;
 
-        public SignalRWorker(ILogger<SignalRWorker> logger, IConfiguration configuration,
-            IEnumerable<ISignalREventHandler> signalREventHandlers, IWatchForShutdownHandler watchForShutdownHandler)
+        public SignalRWorker(ILogger<SignalRWorker> logger, IEnumerable<ISignalREventHandler> signalREventHandlers,
+            IWatchForShutdownHandler watchForShutdownHandler, IOptions<SignalrSettings> options)
         {
             _logger = logger;
-            _config = configuration;
             _signalrHandlers = signalREventHandlers;
             _watchForShutdownHandler = watchForShutdownHandler;
+            _signalrSettings = options.Value;
         }
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            string url = "http://localhost:5001/SupportHelperConnectionSignalR?hostname=";
+            string url = _signalrSettings.Url;
 
             _connection = new HubConnectionBuilder()
                 .WithUrl($"{url}{Environment.MachineName}")
@@ -51,11 +52,6 @@ namespace SupportHelper.WinServices.Core.Workers
             {
                 await Task.Delay(1000, stoppingToken);
             }
-        }
-
-        public override Task StopAsync(CancellationToken cancellationToken)
-        {
-            return base.StopAsync(cancellationToken);
         }
     }
 }
