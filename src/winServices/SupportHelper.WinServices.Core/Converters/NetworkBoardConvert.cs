@@ -5,26 +5,28 @@ namespace SupportHelper.WinServices.Core.Converters
 {
     public static class NetworkBoardConvert
     {
-        public static ICollection<NetworkBoardResponse> EntityToResponse(NetworkBoard[] networkBoard)
+        public static IEnumerable<NetworkBoardResponse> EntityToResponse(IEnumerable<NetworkBoard> networkBoard)
         {
-            List<NetworkBoardResponse> response = [];
-            foreach (var item in networkBoard)
+            var arrayResponse = new NetworkBoardResponse[networkBoard.Count()];
+            var arrayEntity = networkBoard.ToArray();
+            for (var i = 0; i < networkBoard.Count(); i++)
             {
-                response.Add(NetworkBoardResponse.Create(item.Description, item.Ipv4, item.Ipv6, item.MacAddress,
-                    item.InUse));
+                var item = arrayEntity[i];
+                arrayResponse[i] = NetworkBoardResponse.Create(item.Description, item.Ipv4, item.Ipv6, item.MacAddress, item.InUse);
             }
-            return response;
+            return arrayResponse;
         }
 
-        public static ICollection<NetworkBoard> ResponseToEntity(ICollection<NetworkBoardResponse> networkBoard)
+        public static IEnumerable<NetworkBoard> ResponseToEntity(IEnumerable<NetworkBoardResponse> networkBoardResponse)
         {
-            List<NetworkBoard> response = [];
-            foreach (var item in networkBoard)
+            var arrayEntity = new NetworkBoard[networkBoardResponse.Count()];
+            var arrayResponse = networkBoardResponse.ToArray();
+            for (int i = 0; i < networkBoardResponse.Count(); i++)
             {
-                response.Add(NetworkBoard.Create(item.Description, item.Ipv4, item.Ipv6, item.MacAddress,
-                    item.InUse));
+                var item = arrayResponse[i];
+                arrayEntity[i] = NetworkBoard.Create(item.Description, item.Ipv4, item.Ipv6, item.MacAddress, item.InUse);
             }
-            return response;
+            return arrayEntity;
         }
     }
 }
