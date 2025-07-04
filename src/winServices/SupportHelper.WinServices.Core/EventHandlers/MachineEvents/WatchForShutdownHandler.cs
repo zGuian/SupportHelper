@@ -32,7 +32,7 @@ namespace SupportHelper.WinServices.Core.EventHandlers.MachineEvents
                 _shutdownEventWatcher = new ManagementEventWatcher(query);
                 _shutdownEventWatcher.EventArrived += async (sender, e) =>
                 {
-                    await connection.SendAsync("MachineDisconnected", response, cancellationToken);
+                    await connection.SendAsync("ClientHasShutdown", response, cancellationToken);
                 };
                 _shutdownEventWatcher.Start();
                 _logger.LogInformation("Iniciado monitoração do evento: [Shutdown]");

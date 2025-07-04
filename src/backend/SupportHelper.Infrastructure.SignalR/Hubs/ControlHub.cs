@@ -22,7 +22,7 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
             await _machineServices.SaveInDatabaseAndInMemory(response);
         }
 
-        public async Task MachineDisconnected(ResponseStatusMachineJson response)
+        public async Task ClientHasShutdown(ResponseStatusMachineJson response)
         {
             await _machineServices.UpdateDatabaseAsync(response);
         }
