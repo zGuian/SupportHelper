@@ -16,22 +16,41 @@ namespace SupportHelper.WinServices.Core
     {
         public static IServiceCollection AddDependencyInjection(this IServiceCollection services)
         {
-            services.AddSingleton<IRabbitConnectionService, RabbitConnectionService>();
-            services.AddSingleton<IRabbitMQEvent, RabbitMQEvent>();
-
+            AddRabbitMQ(services);
             services.AddHostedService<RabbitEventWorker>();
             services.AddHostedService<SignalRWorker>();
+            AddServices(services);
+            AddUseCases(services);
+            AddEventHandlers(services);
+            return services;
+        }
 
+        private static void AddServices(IServiceCollection services)
+        {
             services.AddTransient<IMachineService, MachineService>();
+        }
+
+        private static void AddUseCases(IServiceCollection services)
+        {
             services.AddTransient<IGetLoggerSgpClientUseCase, GetLoggerSgpClientUseCase>();
             services.AddTransient<IUpdateSgpClientUseCase, UpdateSgpClientUseCase>();
+        }
 
-            services.AddTransient<ISignalREventHandler, RequestStatusToMachineHandler>();
-            services.AddTransient<ISignalREventHandler, GetLogSgpClientHandler>();
-            services.AddTransient<ISignalREventHandler, UpdateSgpClientHandler>();
+        private static void AddEventHandlers(IServiceCollection services)
+        {
             services.AddTransient<IWatchForShutdownHandler, WatchForShutdownHandler>();
 
-            return services;
+            services.AddSingleton<ISignalREventHandler, ConnectionHandler>();
+
+            services.AddTransient<ISignalREventHandler, GetLogSgpClientHandler>();
+            services.AddTransient<ISignalREventHandler, RequestStatusToMachineHandler>();
+            services.AddTransient<ISignalREventHandler, UpdateSgpClientHandler>();
+        }
+
+        private static void AddRabbitMQ(IServiceCollection services)
+        {
+            services.AddSingleton<IRabbitConnectionService, RabbitConnectionService>();
+            services.AddSingleton<IRabbitMQEvent, RabbitMQEvent>();
         }
     }
 }
