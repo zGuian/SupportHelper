@@ -2,6 +2,7 @@
 using SupportHelper.Communication.Requests;
 using SupportHelper.Communication.Responses;
 using SupportHelper.WinServices.Application.Interfaces.Events;
+using SupportHelper.WinServices.Core.Converters;
 using SupportHelper.WinServices.Core.Models;
 using SupportHelper.WinServices.Core.Models.ValueObjects;
 using System.Diagnostics;
@@ -22,13 +23,6 @@ namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
             connection.On<RequestStatusMachineJson, ResponseStatusMachineJson>("RequestStatusMachine", request =>
             {
                 MachineModel machine = MachineModel.Create();
-                List<NetworkBoardResponse> networkBoard = [];
-                foreach (NetworkBoard item in machine.NetworkBoards)
-                {
-                    networkBoard.Add(NetworkBoardResponse.Create(item.Description, item.Ipv4, item.Ipv6,
-                        item.MacAddress, item.InUse));
-                }
-
                 var response = new ResponseStatusMachineJson
                 {
                     IsConnected = true,
@@ -37,7 +31,7 @@ namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
                     CurrentUsername = machine.CurrentUsername,
                     DomainName = machine.DomainName,
                     OperationalSystem = machine.OperationalSystem,
-                    NetworkBoards = [.. networkBoard],
+                    NetworkBoards = NetworkBoardConvert.EntityToResponse(machine.NetworkBoards),
                 };
 
                 _logger.LogInformation("Resposta enviada com sucesso");

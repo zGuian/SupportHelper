@@ -8,10 +8,10 @@
         public required string CurrentUsername { get; init; }
         public required string DomainName { get; init; }
         public string? OperationalSystem { get; init; }
-        public NetworkBoardResponse[]? NetworkBoards { get; init; }
+        public IEnumerable<NetworkBoardResponse> NetworkBoards { get; init; } = [];
 
         public static ResponseStatusMachineJson Create(bool isConnected, string hostname, bool sgpIsRunning, string currentUsername,
-            string domainName, string operationalSystem, NetworkBoardResponse[] networkBoardResponses)
+            string domainName, string operationalSystem, IEnumerable<NetworkBoardResponse> networkBoardResponses)
         {
             return new ResponseStatusMachineJson
             {
