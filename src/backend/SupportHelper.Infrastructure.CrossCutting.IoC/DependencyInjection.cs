@@ -24,27 +24,27 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
     {
         public static IServiceCollection IoC(this IServiceCollection services, IConfiguration configuration)
         {
-            DatabaseDI(services, configuration);
-            SignalRDI(services);
-            UseCasesDI(services);
+            AddDatabase(services, configuration);
+            AddSignalR(services);
+            AddUseCases(services);
             RabbitMQDI(services);
             return services;
         }
 
-        private static void UseCasesDI(IServiceCollection services)
+        private static void AddUseCases(IServiceCollection services)
         {
             services.AddScoped<IRequestMachineInformationUseCase, RequestMachineInformationUseCase>();
             services.AddScoped<IRequestLogsSgpClientUseCase, RequestLogsSgpClientUseCase>();
             services.AddScoped<IRequestStatusMachineUseCase, RequestStatusMachineUseCase>();
         }
 
-        private static void SignalRDI(this IServiceCollection services)
+        private static void AddSignalR(this IServiceCollection services)
         {
-            //services.AddSingleton<IConnectionService, ConnectionService>();
+            services.AddSingleton<IConnectionService, ConnectionService>();
             services.AddSingleton<IMachineSignalRServices, MachineSignalRServices>();
         }
 
-        private static void DatabaseDI(IServiceCollection services, IConfiguration configuration)
+        private static void AddDatabase(IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<AppDbContext>(opts => opts.UseNpgsql(configuration.GetConnectionString("Default")));
             services.AddScoped<IMachineRepository, MachineRepository>();

@@ -8,9 +8,9 @@ using System.Runtime.Versioning;
 
 namespace SupportHelper.WinServices.Core.EventHandlers.MachineEvents
 {
+    [SupportedOSPlatform("windows")]
     public sealed class WatchForShutdownHandler : IWatchForShutdownHandler
     {
-        [SupportedOSPlatform("windows")]
         private ManagementEventWatcher? _shutdownEventWatcher;
         private readonly ILogger<WatchForShutdownHandler> _logger;
 
@@ -19,7 +19,6 @@ namespace SupportHelper.WinServices.Core.EventHandlers.MachineEvents
             _logger = logger;
         }
 
-        [SupportedOSPlatform("windows")]
         public void Run(HubConnection connection, CancellationToken cancellationToken)
         {
             try

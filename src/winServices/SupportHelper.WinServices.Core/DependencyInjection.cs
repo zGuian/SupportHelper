@@ -16,8 +16,6 @@ namespace SupportHelper.WinServices.Core
     {
         public static IServiceCollection AddDependencyInjection(this IServiceCollection services)
         {
-            AddRabbitMQ(services);
-            services.AddHostedService<RabbitEventWorker>();
             services.AddHostedService<SignalRWorker>();
             AddServices(services);
             AddUseCases(services);
