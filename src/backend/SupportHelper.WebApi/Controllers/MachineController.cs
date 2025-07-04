@@ -14,7 +14,7 @@ namespace SupportHelper.WebApi.Controllers
         public async Task<IActionResult> GetMachineInformation([FromServices] IRequestMachineInformationUseCase getMachineInformation,
             [FromRoute] string hostname)
         {
-            var request = new RequestMachineInformationJson { Hostname =  hostname };
+            var request = new RequestStatusMachineJson { Hostname =  hostname };
             await getMachineInformation.ExecuteAsync(request);
             return Ok();
         }

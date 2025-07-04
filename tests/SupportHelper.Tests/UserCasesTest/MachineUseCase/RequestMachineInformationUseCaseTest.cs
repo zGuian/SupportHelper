@@ -13,11 +13,12 @@ namespace SupportHelper.Tests.UserCasesTest.MachineUseCase
         public async Task Success()
         {
             var request = MachineInformationRequestBuilder.Build();
+            var json = RequestStatusMachineJsonBuilder.Build();
             var mockMqService = new Mock<IMachineMQServices>();
             var useCase = CreateUseCase();
             mockMqService.Setup(x => x.PublishMessageAsync(request));
 
-            await useCase.ExecuteAsync(request);
+            await useCase.ExecuteAsync(json);
 
             mockMqService.Verify(x => x.PublishMessageAsync(request), Times.Once);
         }

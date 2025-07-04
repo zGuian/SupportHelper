@@ -4,6 +4,6 @@ namespace SupportHelper.Application.Interfaces
 {
     public interface IRequestMachineInformationUseCase
     {
-        Task ExecuteAsync(RequestMachineInformationJson request, CancellationToken cancellationToken = default);
+        Task ExecuteAsync(RequestStatusMachineJson request, CancellationToken cancellationToken = default);
     }
 }

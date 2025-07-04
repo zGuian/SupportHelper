@@ -20,7 +20,7 @@ namespace SupportHelper.Application.UseCases.MachineUC
             _machineSignalR = machineSignalR;
         }
 
-        public async Task ExecuteAsync(RequestMachineInformationJson request, CancellationToken cancellationToken = default)
+        public async Task ExecuteAsync(RequestStatusMachineJson request, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("ENVIADO SINAL VIA SIGNALR");
             var response = await _machineSignalR.RequestStatusAsync(request.Hostname, cancellationToken);
