@@ -4,7 +4,7 @@ namespace SupportHelper.Infrastructure.Data.Interfaces
 {
     public interface IMachineServices
     {
-        Task SaveInDatabaseAndInMemory(MachineInformationResponse response);
+        Task SaveInDatabaseAndInMemory(ResponseStatusMachineJson response);
         Task UpdateDatabaseAsync(ResponseStatusMachineJson response);
     }
 }

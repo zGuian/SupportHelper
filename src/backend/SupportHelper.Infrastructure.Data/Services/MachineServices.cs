@@ -17,7 +17,7 @@ namespace SupportHelper.Infrastructure.Data.Services
             _machineMemory = machineMemory;
         }
 
-        public async Task SaveInDatabaseAndInMemory(MachineInformationResponse response)
+        public async Task SaveInDatabaseAndInMemory(ResponseStatusMachineJson response)
         {
             var machine = Machine.Convert(response);
             _machineMemory.Register(machine.Id, machine);

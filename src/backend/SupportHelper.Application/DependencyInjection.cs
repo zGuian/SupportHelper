@@ -16,8 +16,11 @@ namespace SupportHelper.Application
 
         private static void AddUseCases(IServiceCollection services)
         {
-            services.AddScoped<IRequestMachineInformationUseCase, RequestMachineInformationUseCase>();
+            services.AddScoped<IRequestGetAllMachinesUseCase, RequestGetAllMachinesUseCase>();
             services.AddScoped<IRequestLogsSgpClientUseCase, RequestLogsSgpClientUseCase>();
+            services.AddScoped<IRequestMachineInformationUseCase, RequestMachineInformationUseCase>();
+            services.AddScoped<IRequestStatusMachineUseCase, RequestStatusMachineUseCase>();
+            services.AddScoped<IRequestUpdateSgpClientUseCase, RequestUpdateSgpClientUseCase>();
         }
     }
 }
