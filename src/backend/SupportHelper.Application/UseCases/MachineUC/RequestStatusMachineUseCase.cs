@@ -7,17 +7,17 @@ namespace SupportHelper.Application.UseCases.MachineUC
     public class RequestStatusMachineUseCase : IRequestStatusMachineUseCase
     {
         private readonly IMachineSignalRServices _signalR;
-        private readonly IMachineMemoryRepository _memoryRepository;
+        private readonly IConnectionMemoryRepository _connectionMemoryRepository;
 
-        public RequestStatusMachineUseCase(IMachineSignalRServices signalR, IMachineMemoryRepository memoryRepository)
+        public RequestStatusMachineUseCase(IMachineSignalRServices signalR, IConnectionMemoryRepository connectionMemoryRepository)
         {
             _signalR = signalR;
-            _memoryRepository = memoryRepository;
+            _connectionMemoryRepository = connectionMemoryRepository;
         }
 
         public async Task ExecuteAsync(string hostname)
         {
-            var connId = _memoryRepository.GetConnectionId(hostname);
+            string connId = _connectionMemoryRepository.GetConnectionId(hostname) ?? throw new Exception("NÃO ENCONTRADO ID DA CONEXÃO");
             await _signalR.RequestStatusAsync(connId);
         }
     }

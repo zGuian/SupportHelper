@@ -43,13 +43,14 @@ namespace SupportHelper.Domain.Entities
 
         public static Machine Convert(ResponseStatusMachineJson response)
         {
-            List<NetworkBoard> networkBoards = [];
-            foreach (var item in response.NetworkBoards)
+            var networkBoards = new NetworkBoard[response.NetworkBoards.Count()];
+            var array = response.NetworkBoards.ToArray();
+            for (int i = 0; i < response.NetworkBoards.Count(); i++)
             {
-                networkBoards.Add(new NetworkBoard(item.Description, item.Ipv4, item.Ipv6, item.MacAddress, item.InUse));
+                var item = array[i];
+                networkBoards[i] = new NetworkBoard(item.Description, item.Ipv4, item.Ipv6, item.MacAddress, item.InUse);
             }
-            return new Machine(response.Hostname, response.CurrentUsername, response.DomainName, response.OperationalSystem,
-                [.. networkBoards]);
+            return new Machine(response.Hostname, response.CurrentUsername, response.DomainName, response.OperationalSystem, networkBoards);
         }
 
         public override string ToString()

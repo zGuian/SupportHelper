@@ -17,11 +17,6 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
             _machineServices = machineServices;
         }
 
-        public async Task ResponseStatusToMachine(MachineInformationResponse response)
-        {
-            await _machineServices.SaveInDatabaseAndInMemory(response);
-        }
-
         public async Task ClientHasShutdown(ResponseStatusMachineJson response)
         {
             await _machineServices.UpdateDatabaseAsync(response);

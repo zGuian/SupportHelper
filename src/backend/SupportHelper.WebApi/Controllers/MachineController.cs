@@ -10,12 +10,11 @@ namespace SupportHelper.WebApi.Controllers
     [Route("api/v{v:apiVersion}/[controller]")]
     public sealed class MachineController : ControllerBase
     {
-        [HttpGet("Information/{hostname:required}")]
-        public async Task<IActionResult> GetMachineInformation([FromServices] IRequestMachineInformationUseCase getMachineInformation,
+        [HttpGet("StatusMachine/{hostname:required}")]
+        public async Task<IActionResult> GetStatusToMachine([FromServices] IRequestStatusMachineUseCase statusMachineUseCase,
             [FromRoute] string hostname)
         {
-            var request = new RequestStatusMachineJson { Hostname =  hostname };
-            await getMachineInformation.ExecuteAsync(request);
+            await statusMachineUseCase.ExecuteAsync(hostname);
             return Ok();
         }
 
@@ -24,14 +23,6 @@ namespace SupportHelper.WebApi.Controllers
             [FromBody] RequestBase<RequestMachine> request, [FromRoute] string hostname, [FromHeader] string? exchange)
         {
             await sgpClientUseCase.ExecuteAsync(request, new RabbitMQRequest(hostname, exchange));
-            return Ok();
-        }
-
-        [HttpGet("StatusMachine/{hostname:required}")]
-        public async Task<IActionResult> GetStatusToMachine([FromServices] IRequestStatusMachineUseCase statusMachineUseCase,
-            [FromRoute] string hostname)
-        {
-            await statusMachineUseCase.ExecuteAsync(hostname);
             return Ok();
         }
 
@@ -45,7 +36,7 @@ namespace SupportHelper.WebApi.Controllers
 
         [HttpGet("GetMachinesConnected")]
         public async Task<IActionResult> GetMachinesConnected([FromServices] IRequestGetAllMachinesUseCase request,
-            [FromQuery]int pageNumber, [FromQuery]int pageSize)
+            [FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             var data = await request.ExecuteAsync(pageNumber, pageSize);
             return Ok(data);
