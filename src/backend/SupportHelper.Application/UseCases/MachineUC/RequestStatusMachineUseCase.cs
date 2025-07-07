@@ -17,7 +17,7 @@ namespace SupportHelper.Application.UseCases.MachineUC
 
         public async Task ExecuteAsync(string hostname)
         {
-            var connId = _memoryRepository.GetMachineById(hostname);
+            var connId = _memoryRepository.GetConnectionId(hostname);
             await _signalR.RequestStatusAsync(connId);
         }
     }
