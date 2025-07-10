@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportHelper.Infrastructur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportHelper.Infrastructure.Data", "src\backend\SupportHelper.Infrastructure.Data\SupportHelper.Infrastructure.Data.csproj", "{0672F055-78D4-9094-9A22-1C2DF59FA3C4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupportHelper.FrontEnd.Http", "src\frontend\SupportHelper.FrontEnd.Http\SupportHelper.FrontEnd.Http.csproj", "{777C3523-CE2D-4958-BFE3-EAA4359BA60E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{0672F055-78D4-9094-9A22-1C2DF59FA3C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0672F055-78D4-9094-9A22-1C2DF59FA3C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0672F055-78D4-9094-9A22-1C2DF59FA3C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{777C3523-CE2D-4958-BFE3-EAA4359BA60E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{777C3523-CE2D-4958-BFE3-EAA4359BA60E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{777C3523-CE2D-4958-BFE3-EAA4359BA60E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{777C3523-CE2D-4958-BFE3-EAA4359BA60E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -128,6 +134,7 @@ Global
 		{63E852E9-C4C7-4748-AFD4-4AF6F4640E41} = {8561095C-DF8A-4E61-9922-8F3971C9FBDA}
 		{A79DED8A-C315-418D-971F-06E1A1A63594} = {8561095C-DF8A-4E61-9922-8F3971C9FBDA}
 		{0672F055-78D4-9094-9A22-1C2DF59FA3C4} = {8561095C-DF8A-4E61-9922-8F3971C9FBDA}
+		{777C3523-CE2D-4958-BFE3-EAA4359BA60E} = {CCB4189B-BC50-446B-989C-F568229C5036}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {572313D8-E578-473B-AB1C-DA25ACE9B823}

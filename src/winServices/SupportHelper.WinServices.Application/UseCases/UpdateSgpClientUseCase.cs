@@ -8,7 +8,7 @@ namespace SupportHelper.WinServices.Application.UseCases
     {
         Process _process = new();
 
-        public void Execute(string sgpClientLine)
+        public string Execute(string sgpClientLine)
         {
             Process[] processes = Process.GetProcesses(Environment.MachineName);
 
@@ -28,6 +28,12 @@ namespace SupportHelper.WinServices.Application.UseCases
 
             _process.StartInfo.FileName = pathFile;
             _process.Start();
+            (string version, bool isSuccess) version = GetSgpVersion(pathFile);
+            if (!version.isSuccess)
+            {
+                return "não encontrado versão do programa";
+            }
+            return $"Versão atual: {version.version}";
         }
 
         private void StopSgpIfRunning(Process[] processes)
@@ -68,6 +74,18 @@ namespace SupportHelper.WinServices.Application.UseCases
                 }
             }
             throw new Exception("SGP NÃO ESTA RODANDO NA MÁQUINA");
+        }
+
+        private static (string version, bool isSuccess) GetSgpVersion(string pathFile)
+        {
+            if (!File.Exists(pathFile))
+            {
+                return ("não foi encontrado aplicação", false);
+            }
+            var infoVersion = FileVersionInfo.GetVersionInfo(pathFile);
+            if (infoVersion.FileVersion is null)
+                return ("não encontrado versão da aplicação", false);
+            return (infoVersion.FileVersion, true);
         }
     }
 }

@@ -24,27 +24,28 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
     {
         public static IServiceCollection IoC(this IServiceCollection services, IConfiguration configuration)
         {
-            DatabaseDI(services, configuration);
-            SignalRDI(services);
-            UseCasesDI(services);
-            RabbitMQDI(services);
+            AddDatabase(services, configuration);
+            AddSignalR(services);
+            AddUseCases(services);
             return services;
         }
 
-        private static void UseCasesDI(IServiceCollection services)
+        private static void AddUseCases(IServiceCollection services)
         {
-            services.AddScoped<IRequestMachineInformationUseCase, RequestMachineInformationUseCase>();
+            services.AddScoped<IRequestGetAllMachinesUseCase, RequestGetAllMachinesUseCase>();
             services.AddScoped<IRequestLogsSgpClientUseCase, RequestLogsSgpClientUseCase>();
+            services.AddScoped<IRequestMachineInformationUseCase, RequestMachineInformationUseCase>();
             services.AddScoped<IRequestStatusMachineUseCase, RequestStatusMachineUseCase>();
+            services.AddScoped<IRequestUpdateSgpClientUseCase, RequestUpdateSgpClientUseCase>();
         }
 
-        private static void SignalRDI(this IServiceCollection services)
+        private static void AddSignalR(this IServiceCollection services)
         {
-            //services.AddSingleton<IConnectionService, ConnectionService>();
+            services.AddSingleton<IConnectionService, ConnectionService>();
             services.AddSingleton<IMachineSignalRServices, MachineSignalRServices>();
         }
 
-        private static void DatabaseDI(IServiceCollection services, IConfiguration configuration)
+        private static void AddDatabase(IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<AppDbContext>(opts => opts.UseNpgsql(configuration.GetConnectionString("Default")));
             services.AddScoped<IMachineRepository, MachineRepository>();
@@ -53,6 +54,7 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
             services.AddSingleton<IConnectionMemoryRepository, ConnectionMemoryRepository>();
         }
 
+        [Obsolete("RabbitMQ removido do projeto. Utilizar SignalR")]
         private static void RabbitMQDI(IServiceCollection services)
         {
             services.AddSingleton<IRabbitMQConnection, RabbitMQConnection>();

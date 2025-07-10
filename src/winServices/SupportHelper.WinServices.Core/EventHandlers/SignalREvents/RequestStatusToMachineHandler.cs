@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using SupportHelper.Communication.Requests;
 using SupportHelper.Communication.Responses;
 using SupportHelper.WinServices.Application.Interfaces.Events;
+using SupportHelper.WinServices.Core.Converters;
 using SupportHelper.WinServices.Core.Models;
 using SupportHelper.WinServices.Core.Models.ValueObjects;
+using System.Diagnostics;
 
 namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
 {
-    public class RequestStatusToMachineHandler : ISignalREventHandler
+    public sealed class RequestStatusToMachineHandler : ISignalREventHandler
     {
         private readonly ILogger<RequestStatusToMachineHandler> _logger;
 
@@ -17,22 +20,38 @@ namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
 
         public void Register(HubConnection connection, CancellationToken stoppingToken)
         {
-            connection.On("RequestStatusToMachine", async () =>
+            connection.On<RequestStatusMachineJson, ResponseStatusMachineJson>("RequestStatusMachine", request =>
             {
                 MachineModel machine = MachineModel.Create();
-                List<NetworkBoardResponse> networkBoard = [];
-                foreach (NetworkBoard item in machine.NetworkBoards)
+                var response = new ResponseStatusMachineJson
                 {
-                    networkBoard.Add(NetworkBoardResponse.Create(item.Description, item.Ipv4, item.Ipv6,
-                        item.MacAddress, item.InUse));
-                }
+                    IsConnected = true,
+                    Hostname = machine.Hostname,
+                    SgpIsRunning = VerifiySgpIsRunning(),
+                    CurrentUsername = machine.CurrentUsername,
+                    DomainName = machine.DomainName,
+                    OperationalSystem = machine.OperationalSystem,
+                    NetworkBoards = NetworkBoardConvert.EntityToResponse(machine.NetworkBoards),
+                };
 
-                var response = MachineInformationResponse.Create(machine.Hostname, machine.CurrentUsername, machine.DomainName,
-                    machine.OperationalSystem, [.. networkBoard]);
-
-                await connection.InvokeAsync("ResponseStatusToMachine", response);
                 _logger.LogInformation("Resposta enviada com sucesso");
+                return response;
             });
+        }
+
+        private static bool VerifiySgpIsRunning()
+        {
+            Process[] processes = Process.GetProcesses();
+
+            foreach (Process process in processes)
+            {
+                if (process.ProcessName.StartsWith("DCX.ITLC"))
+                {
+                    return true;
+                }
+                continue;
+            }
+            return false;
         }
     }
 }

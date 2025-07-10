@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\shared\SupportHelper.Communication\SupportHelper.Communication.csproj" />
+    <ProjectReference Include="..\..\shared\SupportHelper.Exceptions\SupportHelper.Exceptions.csproj" />
   </ItemGroup>
 
 </Project>

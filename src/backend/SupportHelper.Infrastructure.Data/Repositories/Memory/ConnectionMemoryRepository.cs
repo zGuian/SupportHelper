@@ -1,4 +1,5 @@
 ﻿using SupportHelper.Domain.Interfaces.Repositories.Memory;
+using SupportHelper.Exceptions.ExceptionsBase;
 using System.Collections.Concurrent;
 
 namespace SupportHelper.Infrastructure.Data.Repositories.Memory
@@ -7,13 +8,14 @@ namespace SupportHelper.Infrastructure.Data.Repositories.Memory
     {
         private readonly ConcurrentDictionary<string, string> _map = new();
 
-        public void Register(string equipmentId, string connectionId)
-            => _map[equipmentId] = connectionId;
+        public void Register(string hostname, string connectionId)
+            => _map[hostname] = connectionId;
 
-        public string? GetConnectionId(string equipmentId)
-         => _map.TryGetValue(equipmentId, out var connectionId) ? connectionId : null;
+        public string GetConnectionId(string hostname)
+         => _map.TryGetValue(hostname, out var connectionId) ? connectionId :
+                throw new GenericErrorException(["NÃO ENCONTRADO CONEXÃO ABERTA PARA ESSE HOSTNAME"]);
 
-        public void Remove(string equipmentId)
-            => _map.TryRemove(equipmentId, out _);
+        public void Remove(string hostname)
+            => _map.TryRemove(hostname, out _);
     }
 }

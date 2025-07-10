@@ -3,6 +3,6 @@
     public interface IMachineService
     {
         Task<bool> MakeAvailableLogSgpClient(string productionLine);
-        Task<bool> UpdateSgpClient(string productionLine);
+        Task<string> UpdateSgpClient(string productionLine);
     }
 }

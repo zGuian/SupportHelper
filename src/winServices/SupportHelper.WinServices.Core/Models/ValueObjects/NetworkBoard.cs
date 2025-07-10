@@ -20,6 +20,18 @@ namespace SupportHelper.WinServices.Core.Models.ValueObjects
             InUse = true;
         }
 
+        public static NetworkBoard Create(string description, string ipv4, string? ipv6, string macAdress, bool inUse)
+        {
+            return new NetworkBoard
+            {
+                Description = description,
+                Ipv4 = ipv4,
+                Ipv6 = ipv6,
+                MacAddress = macAdress,
+                InUse = inUse
+            };
+        }
+
         public static NetworkBoard[] GetAllInformation()
         {
             var networkBoard = new HashSet<NetworkBoard>();
@@ -49,7 +61,7 @@ namespace SupportHelper.WinServices.Core.Models.ValueObjects
                 }
                 networkBoard.Add(entity);
             }
-            return [..networkBoard];
+            return [.. networkBoard];
         }
     }
 }

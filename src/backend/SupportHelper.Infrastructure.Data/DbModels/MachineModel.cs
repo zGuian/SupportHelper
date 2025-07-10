@@ -2,7 +2,6 @@
 {
     public class MachineModel
     {
-
         public string Id { get; private set; } = string.Empty;
         public string Hostname { get; private set; } = string.Empty;
         public string CurrentUsername { get; private set; } = string.Empty;

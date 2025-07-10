@@ -17,11 +17,17 @@ namespace SupportHelper.Infrastructure.Data.Services
             _machineMemory = machineMemory;
         }
 
-        public async Task SaveInDatabaseAndInMemory(MachineInformationResponse response)
+        public async Task SaveInDatabaseAndInMemory(ResponseStatusMachineJson response)
         {
-            var machine = Machine.Create(response);
+            var machine = Machine.Convert(response);
             _machineMemory.Register(machine.Id, machine);
             await _repository.InsertMachineByProcedure(machine);
+        }
+
+        public async Task UpdateDatabaseAsync(ResponseStatusMachineJson response)
+        {
+            var machine = Machine.Convert(response);
+            await _repository.UpdateMachineAsync(machine);
         }
     }
 }

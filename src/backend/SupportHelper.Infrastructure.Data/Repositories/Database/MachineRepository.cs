@@ -19,27 +19,55 @@ namespace SupportHelper.Infrastructure.Data.Repositories.Database
             _dbConnection = new NpgsqlConnection(configuration.GetConnectionString("Default"));
         }
 
-        public async Task<HashSet<Machine>> GetAllMachinesAsync(int pageSize, int count)
+        public async Task<(HashSet<Machine>?, int)> GetAllMachinesAsync(int pageNumber, int pageSize)
         {
-            const string sql = @"";
-
-            var machine = await _dbConnection.QueryAsync<Machine>(sql, new
+            try
             {
-                pageSize,
-                count
-            });
+                const string sql = @"
+                SELECT 
+                    id,
+                    hostname,
+                    current_username,
+                    domain_name,
+                    operational_system
+                FROM machine
+                OFFSET (@page_number - 1) * @page_size
+                LIMIT @page_size;
 
-            return [.. machine];
+                SELECT COUNT(*) FROM machine;
+                ";
+
+                DynamicParameters parameters = new();
+                parameters.Add("@page_size", pageSize);
+                parameters.Add("@page_number", pageNumber);
+
+                var query = await _dbConnection.QueryMultipleAsync(sql, parameters, commandType: CommandType.Text,
+                    commandTimeout: TimeSpan.FromSeconds(30).Seconds);
+
+                var machines = (await query.ReadAsync<Machine>()).ToHashSet();
+                var totalRecord = await query.ReadFirstAsync<int>();
+
+                return (machines, totalRecord);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning("Ocorreu um problema ao buscar valores paginados: {message}", ex.Message);
+                return (null, 0);
+            }
         }
 
         public async Task<Machine?> GetMachineAsync(string id)
         {
             try
             {
-                const string sql = @"";
+                const string sql = @"
+                    SELECT * 
+                    FROM machine m
+                    WHERE m.id = @id";
 
-                var machine = await _dbConnection.QueryFirstAsync<Machine>(sql, id,
+                Machine machine = await _dbConnection.QueryFirstAsync<Machine>(sql, id,
                     commandTimeout: TimeSpan.FromSeconds(30).Seconds) ?? throw new Exception("NOT FOUND MACHINE");
+
                 return machine;
             }
             catch (Exception ex)
@@ -74,9 +102,9 @@ namespace SupportHelper.Infrastructure.Data.Repositories.Database
                     @id = machine.Id
                 });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                _logger.LogWarning("Ocorreu um erro ao realizar atualização: {message}", ex.Message);
             }
         }
 
@@ -85,7 +113,7 @@ namespace SupportHelper.Infrastructure.Data.Repositories.Database
             try
             {
                 const string function = "SELECT sp_ValidateAndUpdateMachine(@m_id, @m_hostname, @m_currentUsername, @m_domainName, @m_operationalSystem, @m_newId)";
-                var line = await _dbConnection.ExecuteAsync(function, new
+                int line = await _dbConnection.ExecuteAsync(function, new
                 {
                     m_id = machine.Id,
                     m_hostname = machine.Hostname,

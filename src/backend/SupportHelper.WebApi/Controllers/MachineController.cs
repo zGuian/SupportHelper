@@ -10,18 +10,15 @@ namespace SupportHelper.WebApi.Controllers
     [Route("api/v{v:apiVersion}/[controller]")]
     public sealed class MachineController : ControllerBase
     {
-        [HttpGet("Information/{hostname:required}")]
-        public async Task<IActionResult> GetMachineInformation([FromServices] IRequestMachineInformationUseCase getMachineInformation,
-            [FromRoute] string hostname, [FromHeader] string? exchange)
+        [HttpGet("StatusMachine/{hostname:required}")]
+        public async Task<IActionResult> GetStatusToMachine([FromServices] IRequestStatusMachineUseCase statusMachineUseCase,
+            [FromRoute] string hostname)
         {
-            var request = new MachineInformationRequest("GET_INFORMATION_MACHINE",
-                                                        new RabbitMQRequest(hostname, exchange));
-
-            await getMachineInformation.ExecuteAsync(request);
+            await statusMachineUseCase.ExecuteAsync(hostname);
             return Ok();
         }
 
-        [HttpPost("LogSgpClient/{hostname:required}")]
+        [HttpGet("LogSgpClient/{hostname:required}")]
         public async Task<IActionResult> GetLogsForSgpClientAsync([FromServices] IRequestLogsSgpClientUseCase sgpClientUseCase,
             [FromBody] RequestBase<RequestMachine> request, [FromRoute] string hostname, [FromHeader] string? exchange)
         {
@@ -29,12 +26,20 @@ namespace SupportHelper.WebApi.Controllers
             return Ok();
         }
 
-        [HttpGet("StatusMachine/{hostname:required}")]
-        public async Task<IActionResult> GetStatusToMachine([FromServices] IRequestStatusMachineUseCase statusMachineUseCase,
-            [FromRoute] string hostname)
+        [HttpPost("UpdateSgpCliet")]
+        public async Task<IActionResult> UpdateSgpClient([FromServices] IRequestUpdateSgpClientUseCase request,
+            [FromBody] RequestUpdateSgpClientJson json)
         {
-            await statusMachineUseCase.ExecuteAsync(hostname);
+            await request.ExecuteAsync(json);
             return Ok();
+        }
+
+        [HttpGet("GetMachinesConnected")]
+        public async Task<IActionResult> GetMachinesConnected([FromServices] IRequestGetAllMachinesUseCase request,
+            [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        {
+            var data = await request.ExecuteAsync(pageNumber, pageSize);
+            return Ok(data);
         }
     }
 }

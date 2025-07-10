@@ -30,14 +30,27 @@ namespace SupportHelper.Domain.Entities
             return new Machine(hostname, currentUsername, domainName, operationalSystem, networkBoards);
         }
 
-        public static Machine Create(MachineInformationResponse response)
+        public static Machine Convert(MachineInformationResponse response)
         {
             List<NetworkBoard> networkBoards = [];
             foreach (var item in response.NetworkBoards)
             {
                 networkBoards.Add(new NetworkBoard(item.Description, item.Ipv4, item.Ipv6, item.MacAddress, item.InUse));
             }
-            return new Machine(response.Hostname, response.CurrentUsername, response.DomainName, response.OperationalSystem, [.. networkBoards]);
+            return new Machine(response.Hostname, response.CurrentUsername, response.DomainName, response.OperationalSystem, 
+                [.. networkBoards]);
+        }
+
+        public static Machine Convert(ResponseStatusMachineJson response)
+        {
+            var networkBoards = new NetworkBoard[response.NetworkBoards.Count()];
+            var array = response.NetworkBoards.ToArray();
+            for (int i = 0; i < response.NetworkBoards.Count(); i++)
+            {
+                var item = array[i];
+                networkBoards[i] = new NetworkBoard(item.Description, item.Ipv4, item.Ipv6, item.MacAddress, item.InUse);
+            }
+            return new Machine(response.Hostname, response.CurrentUsername, response.DomainName, response.OperationalSystem, networkBoards);
         }
 
         public override string ToString()
