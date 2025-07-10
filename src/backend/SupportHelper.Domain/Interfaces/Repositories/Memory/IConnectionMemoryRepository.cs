@@ -3,7 +3,7 @@
     public interface IConnectionMemoryRepository
     {
         string? GetConnectionId(string hostname);
-        void Register(string equipmentId, string connectionId);
-        void Remove(string equipmentId);
+        void Register(string hostname, string connectionId);
+        void Remove(string hostname);
     }
 }

@@ -1,36 +1,22 @@
 ﻿version: '3.9'
 
 services:
-  postgres:
-    image: postgres
-    container_name: postgres_developed
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres_database
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq_developed
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    networks:
-      - backend_dev
+    couchdb:
+        image: couchdb:latest
+        container_name: couchdb_developed
+        environment:
+            COUCHDB_USER: administrator@supportHelper
+            COUCHDB_PASSWORD: W2knaft@123supportHelper
+        ports:
+            - "5984:5984"
+        volumes:
+            - couchdb_data:/opt/couchdb/data
+        networks:
+            - backend_dev_network
 
 volumes:
-  postgres_data:
-  rabbitmq_data:
+    couchdb_data:
 
 networks:
-  backend_dev:
-    driver: bridge
+    backend_dev_network:
+        driver: bridge

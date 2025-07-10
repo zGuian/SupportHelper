@@ -27,15 +27,16 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
             AddDatabase(services, configuration);
             AddSignalR(services);
             AddUseCases(services);
-            RabbitMQDI(services);
             return services;
         }
 
         private static void AddUseCases(IServiceCollection services)
         {
-            services.AddScoped<IRequestMachineInformationUseCase, RequestMachineInformationUseCase>();
+            services.AddScoped<IRequestGetAllMachinesUseCase, RequestGetAllMachinesUseCase>();
             services.AddScoped<IRequestLogsSgpClientUseCase, RequestLogsSgpClientUseCase>();
+            services.AddScoped<IRequestMachineInformationUseCase, RequestMachineInformationUseCase>();
             services.AddScoped<IRequestStatusMachineUseCase, RequestStatusMachineUseCase>();
+            services.AddScoped<IRequestUpdateSgpClientUseCase, RequestUpdateSgpClientUseCase>();
         }
 
         private static void AddSignalR(this IServiceCollection services)
@@ -53,6 +54,7 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
             services.AddSingleton<IConnectionMemoryRepository, ConnectionMemoryRepository>();
         }
 
+        [Obsolete("RabbitMQ removido do projeto. Utilizar SignalR")]
         private static void RabbitMQDI(IServiceCollection services)
         {
             services.AddSingleton<IRabbitMQConnection, RabbitMQConnection>();

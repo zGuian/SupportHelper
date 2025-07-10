@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+    postgres:
+        image: postgres
+        container_name: postgres_developed
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: postgres_database
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/opt/postgres/data
+        networks:
+            - backend_dev_network
+ 
+    couchdb:
+        image: couchdb:latest
+        container_name: couchdb_developed
+        environment:
+            COUCHDB_USER: admin
+            COUCHDB_PASSWORD: admin
+        ports:
+            - "5984:5984"
+        volumes:
+            - couchdb_data:/opt/couchdb/data
+        networks:
+            - backend_dev_network
+
+volumes:
+    postgres_data:
+    couchdb_data:
+
+networks:
+    backend_dev_network:
+        driver: bridge
