@@ -41,5 +41,11 @@ namespace SupportHelper.WinServices.Core.EventHandlers.MachineEvents
                 _logger.LogError($"Ocorreu um erro inesperado: {ex.Message}");
             }
         }
+
+        public void Stop(CancellationToken cancellationToken)
+        {
+            _shutdownEventWatcher?.Stop();
+            _shutdownEventWatcher?.Dispose();
+        }
     }
 }

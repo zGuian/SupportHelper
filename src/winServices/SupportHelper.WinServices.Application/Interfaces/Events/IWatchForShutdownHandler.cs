@@ -4,6 +4,7 @@ namespace SupportHelper.WinServices.Application.Interfaces.Events
 {
     public interface IWatchForShutdownHandler
     {
-        void Run(HubConnection connection, CancellationToken cancellationToken = default);
+        void Run(HubConnection connection, CancellationToken cancellationToken);
+        void Stop(CancellationToken cancellationToken);
     }
 }

@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.Options;
 using SupportHelper.WinServices.Application.Interfaces.Events;
-using SupportHelper.WinServices.Core.Settings;
 
 namespace SupportHelper.WinServices.Core.Workers
 {
@@ -50,6 +48,12 @@ namespace SupportHelper.WinServices.Core.Workers
             {
                 await Task.Delay(1000, stoppingToken);
             }
+        }
+
+        public override Task StopAsync(CancellationToken cancellationToken)
+        {
+            _watchForShutdownHandler.Stop(cancellationToken);
+            return base.StopAsync(cancellationToken);
         }
     }
 }
