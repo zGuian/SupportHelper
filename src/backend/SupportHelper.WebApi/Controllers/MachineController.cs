@@ -14,8 +14,8 @@ namespace SupportHelper.WebApi.Controllers
         public async Task<IActionResult> GetStatusToMachine([FromServices] IRequestStatusMachineUseCase statusMachineUseCase,
             [FromRoute] string hostname)
         {
-            await statusMachineUseCase.ExecuteAsync(hostname);
-            return Ok();
+            var json = await statusMachineUseCase.ExecuteAsync(hostname);
+            return Ok(json);
         }
 
         [HttpGet("LogSgpClient/{hostname:required}")]

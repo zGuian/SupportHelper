@@ -8,7 +8,10 @@ namespace SupportHelper.WinServices.Core.Models
         public string CurrentUsername { get; private set; } = string.Empty;
         public string DomainName { get; private set; } = string.Empty;
         public string OperationalSystem { get; private set; } = string.Empty;
-        public NetworkBoard[] NetworkBoards { get; private set; } = [];
+        public IEnumerable<NetworkBoard> NetworkBoards { get; private set; } = [];
+        public string UpTime { get; set; } = string.Empty;
+        public string LastUpdate { get; set; } = string.Empty;
+
 
         private MachineModel()
         {
@@ -27,6 +30,14 @@ namespace SupportHelper.WinServices.Core.Models
             CurrentUsername = Environment.UserName;
             OperationalSystem = Environment.OSVersion.VersionString;
             NetworkBoards = NetworkBoard.GetAllInformation();
+            UpTime = GetUpTime();
+            LastUpdate = DateTime.Now.ToString("dd/MM/yyyy:HH:mm");
+        }
+
+        private static string GetUpTime()
+        {
+            var upTime = Environment.TickCount64;
+            return TimeSpan.FromMilliseconds(upTime).ToString();
         }
     }
 }

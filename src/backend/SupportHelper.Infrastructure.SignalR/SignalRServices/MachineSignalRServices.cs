@@ -14,7 +14,8 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
             _context = context;
         }
 
-        public async Task<ResponseStatusMachineJson> RequestStatusAsync(string connectionId, CancellationToken cancellationToken = default)
+        public async Task<ResponseStatusMachineJson> RequestStatusAsync(string connectionId, 
+            CancellationToken cancellationToken = default)
         {
             ResponseStatusMachineJson response = await _context.Clients.Client(connectionId)
                 .InvokeAsync<ResponseStatusMachineJson>("RequestStatusMachine", cancellationToken);

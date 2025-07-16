@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using SupportHelper.Communication.Requests;
+using SupportHelper.Communication.Services.Requests;
 
 namespace SupportHelper.Test.Common.Utilities.Requests
 {

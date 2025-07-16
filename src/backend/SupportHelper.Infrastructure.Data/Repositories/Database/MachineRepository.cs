@@ -56,7 +56,7 @@ namespace SupportHelper.Infrastructure.Data.Repositories.Database
             }
         }
 
-        public async Task<Machine?> GetMachineAsync(string id)
+        public async Task<Machine?> GetMachineByIdAsync(string id)
         {
             try
             {

@@ -4,7 +4,6 @@ using SupportHelper.Communication.Responses;
 using SupportHelper.WinServices.Application.Interfaces.Events;
 using SupportHelper.WinServices.Core.Converters;
 using SupportHelper.WinServices.Core.Models;
-using SupportHelper.WinServices.Core.Models.ValueObjects;
 using System.Diagnostics;
 
 namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
@@ -32,6 +31,8 @@ namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
                     DomainName = machine.DomainName,
                     OperationalSystem = machine.OperationalSystem,
                     NetworkBoards = NetworkBoardConvert.EntityToResponse(machine.NetworkBoards),
+                    UpTime = machine.UpTime,
+                    LastUpdate = machine.LastUpdate
                 };
 
                 _logger.LogInformation("Resposta enviada com sucesso");

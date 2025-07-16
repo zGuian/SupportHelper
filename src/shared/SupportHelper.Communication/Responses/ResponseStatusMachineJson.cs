@@ -7,11 +7,13 @@
         public bool? SgpIsRunning { get; init; }
         public required string CurrentUsername { get; init; }
         public required string DomainName { get; init; }
-        public string? OperationalSystem { get; init; }
+        public required string OperationalSystem { get; init; }
         public IEnumerable<NetworkBoardResponse> NetworkBoards { get; init; } = [];
+        public required string UpTime { get; init; }
+        public required string LastUpdate { get; init; }
 
         public static ResponseStatusMachineJson Create(bool isConnected, string hostname, bool sgpIsRunning, string currentUsername,
-            string domainName, string operationalSystem, IEnumerable<NetworkBoardResponse> networkBoardResponses)
+            string domainName, string operationalSystem, IEnumerable<NetworkBoardResponse> networkBoardResponses, string upTime, string lastUpdate)
         {
             return new ResponseStatusMachineJson
             {
@@ -21,7 +23,9 @@
                 CurrentUsername = currentUsername,
                 DomainName = domainName,
                 OperationalSystem = operationalSystem,
-                NetworkBoards = networkBoardResponses
+                NetworkBoards = networkBoardResponses,
+                UpTime = upTime,
+                LastUpdate = lastUpdate
             };
         }
     }

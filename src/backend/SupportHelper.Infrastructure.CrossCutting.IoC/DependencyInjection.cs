@@ -7,6 +7,7 @@ using SupportHelper.Domain.Interfaces.MQServices;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Domain.Interfaces.Repositories.Memory;
 using SupportHelper.Domain.Interfaces.SignalRContext;
+using SupportHelper.Exceptions.ExceptionsBase;
 using SupportHelper.Infrastructure.Contracts;
 using SupportHelper.Infrastructure.Data.Context;
 using SupportHelper.Infrastructure.Data.Interfaces;
@@ -17,6 +18,7 @@ using SupportHelper.Infrastructure.MQServices;
 using SupportHelper.Infrastructure.MQServices.MQResponses;
 using SupportHelper.Infrastructure.SignalR.Interfaces;
 using SupportHelper.Infrastructure.SignalR.SignalRServices;
+using System.Net.Http.Headers;
 
 namespace SupportHelper.Infrastructure.CrossCutting.IoC
 {
@@ -27,6 +29,7 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
             AddDatabase(services, configuration);
             AddSignalR(services);
             AddUseCases(services);
+            AddHttpClient(services, configuration);
             return services;
         }
 
@@ -60,6 +63,16 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
             services.AddSingleton<IRabbitMQConnection, RabbitMQConnection>();
             services.AddSingleton<IMachineConsumer, MachineConsumer>();
             services.AddScoped<IMachineMQServices, MachineMQService>();
+        }
+
+        private static void AddHttpClient(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddHttpClient("CouchDB", client =>
+            {
+                client.BaseAddress = new Uri(configuration.GetConnectionString("CouchDB")
+                    ?? throw new GenericErrorException(["NÃO ENCONTRADO CONNECTION STRING"]));
+                client.DefaultRequestHeaders.Add("Content-Type", "application/json");
+            });
         }
     }
 }

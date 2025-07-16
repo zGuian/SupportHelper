@@ -16,7 +16,7 @@ services:
             - backend_dev_network
  
     couchdb:
-        image: couchdb:latest
+        image: couchdb:3.5.0
         container_name: couchdb_developed
         environment:
             COUCHDB_USER: admin
