@@ -5,6 +5,6 @@ namespace SupportHelper.Communication.Dtos.CouchDbDto
     public class ValueDto
     {
         [JsonPropertyName("rev")]
-        public string Rev { get; set; }
+        public string Rev { get; set; } = string.Empty;
     }
 }

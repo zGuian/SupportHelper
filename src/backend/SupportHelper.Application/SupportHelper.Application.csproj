@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\shared\SupportHelper.Exceptions\SupportHelper.Exceptions.csproj" />
     <ProjectReference Include="..\SupportHelper.Domain\SupportHelper.Domain.csproj" />
   </ItemGroup>
 

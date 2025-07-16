@@ -24,7 +24,7 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             _client = clientFactory.CreateClient("CouchDB");
         }
 
-        public async Task<AllDocsDto> GetAllMachinesAsync(int limit, int skip)
+        public async Task<AllDocsDto> GetAllAsync(int limit, int skip)
         {
             try
             {
@@ -43,7 +43,7 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             }
         }
 
-        public async Task<BaseDto> GetMachineByIdAsync(string id)
+        public async Task<BaseDto> GetByIdAsync(string id)
         {
             try
             {
@@ -110,13 +110,13 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             }
         }
 
-        public async Task UpdateMachineAsync(Machine machine)
+        public async Task UpdateAsync(MachineSchemaJson schema)
         {
             try
             {
                 HttpRequestMessage request = new(HttpMethod.Put, "");
                 request.Headers.Authorization = new AuthenticationHeaderValue("AuthSession", "");
-                string json = JsonSerializer.Serialize(machine);
+                string json = JsonSerializer.Serialize(schema);
                 request.Content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _client.SendAsync(request);
                 if (!response.IsSuccessStatusCode)
@@ -124,7 +124,6 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
                     var stream = await response.Content.ReadAsStreamAsync();
                     var errorBaseDto = await JsonSerializer.DeserializeAsync<ErrorBaseDto>(stream)
                         ?? throw new GenericErrorException(["NÃO FOI POSSIVEL DESERIALIZAR OBJETO"]);
-
                 }
             }
             catch (Exception)
