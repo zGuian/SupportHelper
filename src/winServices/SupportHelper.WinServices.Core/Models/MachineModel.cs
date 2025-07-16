@@ -47,19 +47,24 @@ namespace SupportHelper.WinServices.Core.Models
         {
             try
             {
-                const string RegistryKeyPath = @"SOFTWARE\MeuServico";
+                const string RegistryKeyPath = @"SOFTWARE\SupportHelper";
                 const string RegistryValueName = "MachineId";
-                using RegistryKey key = Registry.LocalMachine.CreateSubKey(RegistryKeyPath) 
-                    ?? throw new Exception("Falha ao abrir ou criar a chave de registro.");
-                object? existingValue = key.GetValue(RegistryValueName);
-                if (existingValue is string existingId && Guid.TryParse(existingId, out _))
+                using (var key = Registry.LocalMachine.CreateSubKey(RegistryKeyPath))
                 {
-                    return existingId;
-                }
+                    if (key == null)
+                    {
+                        throw new Exception("Falha ao abrir ou criar a chave de registro.");
+                    }
+                    object? existingValue = key.GetValue(RegistryValueName);
+                    if (existingValue is string existingId && Guid.TryParse(existingId, out _))
+                    {
+                        return existingId;
+                    }
 
-                string newId = Guid.NewGuid().ToString();
-                key.SetValue(RegistryValueName, newId, RegistryValueKind.String);
-                return newId;
+                    string newId = Guid.NewGuid().ToString();
+                    key.SetValue(RegistryValueName, newId, RegistryValueKind.String);
+                    return newId;
+                }
             }
             catch (Exception ex)
             {
