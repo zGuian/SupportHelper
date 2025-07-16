@@ -19,19 +19,7 @@ namespace SupportHelper.Application.UseCases.MachineUC
 
         public async Task<ResponsePageableDto<HashSet<Machine>>> ExecuteAsync(int pageNumber, int pageSize)
         {
-            (HashSet<Machine>? datas, int total) = await _machineRepository.GetAllMachinesAsync(pageNumber, pageSize);
-            if (datas == null)
-            {
-                throw new ArgumentNullException(nameof(datas));
-            }
-
-            return new ResponsePageableDto<HashSet<Machine>>
-            {
-                CurrentPage = pageNumber,
-                PageCount = pageSize,
-                TotalQuantity = total,
-                Datas = datas
-            };
+            throw new NotImplementedException();
         }
     }
 }

@@ -2,9 +2,9 @@
 using SupportHelper.Exceptions.ExceptionsBase;
 using System.Collections.Concurrent;
 
-namespace SupportHelper.Infrastructure.Data.Repositories.Memory
+namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Memory
 {
-    public class ConnectionMemoryRepository : IConnectionMemoryRepository
+    public sealed class ConnectionMemoryRepository : IConnectionMemoryRepository
     {
         private readonly ConcurrentDictionary<string, string> _map = new();
 

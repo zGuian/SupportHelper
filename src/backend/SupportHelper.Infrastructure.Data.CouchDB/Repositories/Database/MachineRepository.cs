@@ -8,7 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
-namespace SupportHelper.Infrastructure.Http.Database.Repositories
+namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
 {
     public sealed class MachineRepository : IMachineRepository
     {
@@ -101,13 +101,13 @@ namespace SupportHelper.Infrastructure.Http.Database.Repositories
                     throw new GenericErrorException(["OCORREU UM ERRO GENERICO"]);
                 }
                 Stream stream = await response.Content.ReadAsStreamAsync();
-                return await JsonSerializer.DeserializeAsync<ResponseBaseDto>(stream) 
+                return await JsonSerializer.DeserializeAsync<ResponseBaseDto>(stream)
                     ?? throw new GenericErrorException(["ERROR!"]);
             }
             catch (Exception ex)
             {
                 throw new NotImplementedException();
-            }   
+            }
         }
 
         public async Task UpdateMachineAsync(Machine machine)
@@ -122,7 +122,7 @@ namespace SupportHelper.Infrastructure.Http.Database.Repositories
                 if (!response.IsSuccessStatusCode)
                 {
                     var stream = await response.Content.ReadAsStreamAsync();
-                    var errorBaseDto = await JsonSerializer.DeserializeAsync<ErrorBaseDto>(stream) 
+                    var errorBaseDto = await JsonSerializer.DeserializeAsync<ErrorBaseDto>(stream)
                         ?? throw new GenericErrorException(["NÃO FOI POSSIVEL DESERIALIZAR OBJETO"]);
 
                 }
