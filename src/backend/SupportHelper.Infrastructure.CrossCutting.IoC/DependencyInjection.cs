@@ -3,22 +3,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SupportHelper.Application.Interfaces;
 using SupportHelper.Application.UseCases.MachineUC;
-using SupportHelper.Domain.Interfaces.MQServices;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Domain.Interfaces.Repositories.Memory;
 using SupportHelper.Domain.Interfaces.SignalRContext;
 using SupportHelper.Exceptions.ExceptionsBase;
-using SupportHelper.Infrastructure.Contracts;
 using SupportHelper.Infrastructure.Data.Context;
 using SupportHelper.Infrastructure.Data.Interfaces;
 using SupportHelper.Infrastructure.Data.Repositories.Database;
 using SupportHelper.Infrastructure.Data.Repositories.Memory;
 using SupportHelper.Infrastructure.Data.Services;
-using SupportHelper.Infrastructure.MQServices;
-using SupportHelper.Infrastructure.MQServices.MQResponses;
-using SupportHelper.Infrastructure.SignalR.Interfaces;
 using SupportHelper.Infrastructure.SignalR.SignalRServices;
-using System.Net.Http.Headers;
 
 namespace SupportHelper.Infrastructure.CrossCutting.IoC
 {
@@ -44,7 +38,6 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
 
         private static void AddSignalR(this IServiceCollection services)
         {
-            services.AddSingleton<IConnectionService, ConnectionService>();
             services.AddSingleton<IMachineSignalRServices, MachineSignalRServices>();
         }
 
@@ -55,14 +48,6 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
             services.AddScoped<IMachineServices, MachineServices>();
             services.AddSingleton<IMachineMemoryRepository, MachineMemoryRepository>();
             services.AddSingleton<IConnectionMemoryRepository, ConnectionMemoryRepository>();
-        }
-
-        [Obsolete("RabbitMQ removido do projeto. Utilizar SignalR")]
-        private static void RabbitMQDI(IServiceCollection services)
-        {
-            services.AddSingleton<IRabbitMQConnection, RabbitMQConnection>();
-            services.AddSingleton<IMachineConsumer, MachineConsumer>();
-            services.AddScoped<IMachineMQServices, MachineMQService>();
         }
 
         private static void AddHttpClient(this IServiceCollection services, IConfiguration configuration)
