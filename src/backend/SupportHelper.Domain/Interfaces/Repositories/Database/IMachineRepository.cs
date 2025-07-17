@@ -7,7 +7,7 @@ namespace SupportHelper.Domain.Interfaces.Repositories.Database
     public interface IMachineRepository
     {
         Task<AllDocsDto> GetAllAsync(int limit, int skip);
-        Task<BaseDto> GetByIdAsync(string id);
+        Task<BaseDto> GetByHostnameAsync(string id);
         Task InsertAsync(MachineSchemaJson schema);
         Task<ResponseBaseDto> InsertOrUpdateAsync(MachineSchemaJson schema);
         Task UpdateAsync(MachineSchemaJson schema);

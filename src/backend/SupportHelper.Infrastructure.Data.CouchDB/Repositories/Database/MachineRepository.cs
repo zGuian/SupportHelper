@@ -42,20 +42,32 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             }
         }
 
-        public async Task<BaseDto> GetByIdAsync(string id)
+        public async Task<BaseDto> GetByHostnameAsync(string hostname)
         {
             try
             {
-                HttpRequestMessage httpRequest = new(HttpMethod.Get, $"");
+                HttpRequestMessage httpRequest = new(HttpMethod.Post, $"");
                 httpRequest.Headers.Authorization = new AuthenticationHeaderValue("AuthSession", "");
-                HttpResponseMessage response = await _client.SendAsync(httpRequest);
+                var query = new
+                {
+                    Selector = new
+                    {
+                        Machine = new
+                        {
+                            Hostname = hostname
+                        }
+                    }
+                };
+
+                var content = new StringContent(JsonSerializer.Serialize(query), Encoding.UTF8, "application/json");
+                var response = await _client.PostAsync("_find", content);
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new GenericErrorException(["OCORREU UM ERRO GENERICO"]);
+                    throw new NotImplementedException();
                 }
-                Stream stream = await response.Content.ReadAsStreamAsync();
-                return await JsonSerializer.DeserializeAsync<BaseDto>(stream)
-                    ?? throw new GenericErrorException(["OCORREU UM ERRO GENERICO"]);
+                var baseDto = JsonSerializer.Deserialize<BaseDto>(
+                    await response.Content.ReadAsStreamAsync()) ?? throw new Exception();
+                return baseDto;
             }
             catch (Exception ex)
             {

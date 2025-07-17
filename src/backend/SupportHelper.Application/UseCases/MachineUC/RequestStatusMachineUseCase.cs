@@ -13,7 +13,7 @@ namespace SupportHelper.Application.UseCases.MachineUC
         private readonly IMachineRepository _machineRepository;
         private readonly IConnectionMemoryRepository _connectionMemoryRepository;
 
-        public RequestStatusMachineUseCase(IMachineSignalRServices signalR, IMachineRepository machineRepository, 
+        public RequestStatusMachineUseCase(IMachineSignalRServices signalR, IMachineRepository machineRepository,
             IConnectionMemoryRepository connectionMemoryRepository)
         {
             _signalR = signalR;
@@ -23,7 +23,12 @@ namespace SupportHelper.Application.UseCases.MachineUC
 
         public async Task<ResponseStatusMachineJson> ExecuteAsync(string hostname)
         {
-            string connId = _connectionMemoryRepository.GetConnectionId(hostname) ?? throw new Exception("NÃO ENCONTRADO ID DA CONEXÃO");
+            _connectionMemoryRepository.GetConnectionId(hostname, out var connId);
+            if (string.IsNullOrWhiteSpace(connId))
+            {
+                var responseBase = await _machineRepository.GetByHostnameAsync(hostname);
+                connId = responseBase.SignalR.ConnectionId;
+            }
             var responseJson = await _signalR.RequestStatusAsync(connId);
             var schema = MachineSchemaJson.Create(responseJson, connId);
             await _machineRepository.InsertOrUpdateAsync(schema);

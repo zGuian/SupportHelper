@@ -31,9 +31,9 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
         {
             HttpContext httpContext = Context.GetHttpContext() 
                 ?? throw new GenericErrorException(["NÃO ENCONTRADO VALORES DE URL"]);
-            string hostName = httpContext.Request.Query["hostname"].ToString().ToLower();
+            string hostname = httpContext.Request.Query["hostname"].ToString().ToLower();
             string connId = Context.ConnectionId;
-            _connectionMemoryRepository.Register(hostName, connId);
+            _connectionMemoryRepository.Register(hostname, connId);
             await base.OnConnectedAsync();
         }
     }
