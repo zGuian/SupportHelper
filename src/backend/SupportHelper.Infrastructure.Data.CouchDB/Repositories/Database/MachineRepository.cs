@@ -50,11 +50,11 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
                 httpRequest.Headers.Authorization = new AuthenticationHeaderValue("AuthSession", "");
                 var query = new
                 {
-                    Selector = new
+                    selector = new
                     {
-                        Machine = new
+                        machine = new
                         {
-                            Hostname = hostname
+                            hostname = hostname
                         }
                     }
                 };
