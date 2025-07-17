@@ -40,6 +40,7 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
         private static void AddDatabase(IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<IConnectionMemoryRepository, ConnectionMemoryRepository>();
+            services.AddSingleton<ITokenMemoryRepository, TokenMemoryRepository>();
             services.AddScoped<IMachineRepository, MachineRepository>();
         }
 

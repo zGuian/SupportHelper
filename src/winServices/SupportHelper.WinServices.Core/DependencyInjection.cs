@@ -1,12 +1,9 @@
 ﻿using SupportHelper.WinServices.Application.Interfaces.Events;
-using SupportHelper.WinServices.Application.Interfaces.RabbitMQService;
 using SupportHelper.WinServices.Application.Interfaces.Services;
 using SupportHelper.WinServices.Application.Interfaces.UseCases;
 using SupportHelper.WinServices.Application.Services;
-using SupportHelper.WinServices.Application.Services.RabbitMQServices;
 using SupportHelper.WinServices.Application.UseCases;
 using SupportHelper.WinServices.Core.EventHandlers.MachineEvents;
-using SupportHelper.WinServices.Core.EventHandlers.RabbitMQEvents;
 using SupportHelper.WinServices.Core.EventHandlers.SignalREvents;
 using SupportHelper.WinServices.Core.Workers;
 
@@ -43,12 +40,6 @@ namespace SupportHelper.WinServices.Core
             services.AddTransient<ISignalREventHandler, GetLogSgpClientHandler>();
             services.AddTransient<ISignalREventHandler, RequestStatusToMachineHandler>();
             services.AddTransient<ISignalREventHandler, UpdateSgpClientHandler>();
-        }
-
-        private static void AddRabbitMQ(IServiceCollection services)
-        {
-            services.AddSingleton<IRabbitConnectionService, RabbitConnectionService>();
-            services.AddSingleton<IRabbitMQEvent, RabbitMQEvent>();
         }
     }
 }
