@@ -11,7 +11,7 @@ namespace SupportHelper.Exceptions.ExceptionsBase
             _errorsMessages = message;
         }
 
-        public override string[] GetErrorsMessages() => _errorsMessages;
+        public override string[] GetErrorMessages() => _errorsMessages;
 
         public override HttpStatusCode GetStatusCode() => HttpStatusCode.BadRequest;
     }
