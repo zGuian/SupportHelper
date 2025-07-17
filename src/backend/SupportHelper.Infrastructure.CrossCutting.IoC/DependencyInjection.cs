@@ -50,7 +50,7 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
             {
                 client.BaseAddress = new Uri(configuration.GetConnectionString("CouchDB")
                     ?? throw new GenericErrorException(["NÃO ENCONTRADO CONNECTION STRING"]));
-                client.DefaultRequestHeaders.Add("Content-Type", "application/json");
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
             });
         }
     }

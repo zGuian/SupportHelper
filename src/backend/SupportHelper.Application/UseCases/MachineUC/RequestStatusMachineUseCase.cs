@@ -25,7 +25,7 @@ namespace SupportHelper.Application.UseCases.MachineUC
         {
             string connId = _connectionMemoryRepository.GetConnectionId(hostname) ?? throw new Exception("NÃO ENCONTRADO ID DA CONEXÃO");
             var responseJson = await _signalR.RequestStatusAsync(connId);
-            var schema = MachineSchemaJson.Create(responseJson, connId, "");
+            var schema = MachineSchemaJson.Create(responseJson, connId);
             await _machineRepository.InsertOrUpdateAsync(schema);
             return responseJson;
         }

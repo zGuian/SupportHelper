@@ -20,8 +20,7 @@ namespace SupportHelper.Domain.Aggregates
             return new MachineSchemaJson(machine, signalR);
         }
 
-        public static MachineSchemaJson Create(ResponseStatusMachineJson responseStatusMachineJson, string connId, 
-            string lastUpdate)
+        public static MachineSchemaJson Create(ResponseStatusMachineJson responseStatusMachineJson, string connId)
         {
             var machine = new Machine(
                 responseStatusMachineJson.Hostname,
@@ -32,7 +31,7 @@ namespace SupportHelper.Domain.Aggregates
                     new NetworkBoard(nb.Description, nb.Ipv4, nb.Ipv6, nb.MacAddress, nb.InUse)),
                 responseStatusMachineJson.UpTime, responseStatusMachineJson.LastUpdate);
 
-            var signalR = new SignalR(connId, lastUpdate);
+            var signalR = new SignalR(connId, responseStatusMachineJson.LastUpdate);
 
             return new MachineSchemaJson(machine, signalR);
         }

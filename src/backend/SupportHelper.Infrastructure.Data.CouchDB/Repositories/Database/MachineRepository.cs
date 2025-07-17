@@ -1,6 +1,5 @@
 ﻿using SupportHelper.Communication.Dtos.CouchDbDto;
 using SupportHelper.Domain.Aggregates;
-using SupportHelper.Domain.Entities;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Domain.Interfaces.Repositories.Memory;
 using SupportHelper.Exceptions.ExceptionsBase;
@@ -91,8 +90,7 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
         {
             try
             {
-                HttpRequestMessage httpRequest = new(HttpMethod.Put, "");
-                httpRequest.Headers.Authorization = new AuthenticationHeaderValue("AuthSession", "");
+                HttpRequestMessage httpRequest = new(HttpMethod.Put, $"{schema.Machine.Id}");
                 string json = JsonSerializer.Serialize(schema);
                 httpRequest.Content = new StringContent(json, Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await _client.SendAsync(httpRequest);

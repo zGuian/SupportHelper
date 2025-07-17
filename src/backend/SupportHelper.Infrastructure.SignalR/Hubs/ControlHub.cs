@@ -23,8 +23,7 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
         public async Task ClientHasShutdown(ResponseStatusMachineJson response)
         {
             var connId = _connectionMemoryRepository.GetConnectionId(response.Hostname);
-            var schema = MachineSchemaJson.Create(response,
-                connId, response.LastUpdate);
+            var schema = MachineSchemaJson.Create(response, connId);
             await _machineRepository.UpdateAsync(schema);
         }
 
