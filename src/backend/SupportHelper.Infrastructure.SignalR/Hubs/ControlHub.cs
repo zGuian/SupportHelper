@@ -11,18 +11,15 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
     public class ControlHub : Hub
     {
         private readonly IMachineRepository _machineRepository;
-        private readonly IConnectionMemoryRepository _connectionMemoryRepository;
 
-        public ControlHub(IConnectionMemoryRepository connectionMemoryRepository,
-            IMachineRepository machineRepository)
+        public ControlHub(IMachineRepository machineRepository)
         {
-            _connectionMemoryRepository = connectionMemoryRepository;
             _machineRepository = machineRepository;
         }
 
         public async Task ClientHasShutdown(ResponseStatusMachineJson response)
         {
-            _connectionMemoryRepository.GetConnectionId(response.Hostname, out var connId);
+            var connId = await _machineRepository.GetConnectionByHostnameAsync(response.Hostname);
             var schema = MachineSchemaJson.Create(response, connId);
             await _machineRepository.UpdateAsync(schema);
         }
@@ -33,7 +30,7 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
                 ?? throw new GenericErrorException(["NÃO ENCONTRADO VALORES DE URL"]);
             string hostname = httpContext.Request.Query["hostname"].ToString().ToLower();
             string connId = Context.ConnectionId;
-            _connectionMemoryRepository.Register(hostname, connId);
+            await _machineRepository.InsertOrUpdateAsync(hostname, connId);
             await base.OnConnectedAsync();
         }
     }

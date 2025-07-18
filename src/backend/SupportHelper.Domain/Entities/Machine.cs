@@ -28,6 +28,23 @@ namespace SupportHelper.Domain.Entities
             LastUpdate = lastUpdate;
         }
 
+        public Machine(string hostname)
+        {
+            Id = "";
+            Hostname = hostname;
+            CurrentUsername = "";
+            DomainName = "";
+            OperationalSystem = "";
+            NetworkBoards = [];
+            UpTime = "";
+            LastUpdate = "";
+        }
+
+        public static Machine Create(string hostname)
+        {
+            return new Machine(hostname);
+        }
+
         public static Machine Create(string hostname, string currentUsername, string domainName,
             string operationalSystem, IEnumerable<NetworkBoard> networkBoards, string upTime, string lastUpdate)
         {

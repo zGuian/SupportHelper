@@ -14,7 +14,7 @@ namespace SupportHelper.WebApi.Controllers
         public async Task<IActionResult> GetStatusToMachine([FromServices] IRequestStatusMachineUseCase statusMachineUseCase,
             [FromRoute] string hostname)
         {
-            var json = await statusMachineUseCase.ExecuteAsync(hostname);
+            var json = await statusMachineUseCase.ExecuteAsync(hostname.ToLower());
             return Ok(json);
         }
 

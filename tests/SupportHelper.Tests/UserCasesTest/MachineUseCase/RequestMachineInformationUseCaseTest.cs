@@ -25,8 +25,7 @@ namespace SupportHelper.Tests.UserCasesTest.MachineUseCase
             var log = new NullLogger<RequestMachineInformationUseCase>();
             var signalRService = MachineSignalRServiceBuilder.Build();
             var machineRepository = MachineRepositoryBuilder.Build();
-            var connMemoryRepository = ConnectionMemoryRepositoryBuilder.Build();
-            return new RequestStatusMachineUseCase(signalRService, machineRepository, connMemoryRepository);
+            return new RequestStatusMachineUseCase(signalRService, machineRepository);
         }
     }
 }

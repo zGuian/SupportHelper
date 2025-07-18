@@ -1,5 +1,4 @@
 ﻿using SupportHelper.Domain.Interfaces.Repositories.Memory;
-using SupportHelper.Exceptions.ExceptionsBase;
 using System.Collections.Concurrent;
 
 namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Memory
@@ -14,7 +13,7 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Memory
             connId = connectionId ?? string.Empty;
         }
 
-        public void Register(string hostname, string connectionId) 
+        public void Register(string hostname, string connectionId)
             => _map[hostname] = connectionId;
 
         public void Remove(string hostname)

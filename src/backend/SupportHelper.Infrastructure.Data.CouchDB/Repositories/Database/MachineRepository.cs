@@ -1,8 +1,11 @@
 ﻿using SupportHelper.Communication.Dtos.CouchDbDto;
 using SupportHelper.Domain.Aggregates;
+using SupportHelper.Domain.Entities;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Domain.Interfaces.Repositories.Memory;
+using SupportHelper.Domain.ValueObjects;
 using SupportHelper.Exceptions.ExceptionsBase;
+using SupportHelper.Infrastructure.Data.CouchDB.Json;
 using SupportHelper.Infrastructure.Data.CouchDB.Json.Responses;
 using System.Net.Http.Headers;
 using System.Text;
@@ -13,15 +16,31 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
     public sealed class MachineRepository : IMachineRepository
     {
         private readonly ITokenMemoryRepository _tokenMemoryRepository;
-        private readonly IConnectionMemoryRepository _connectionMemoryRepository;
         private readonly HttpClient _client;
 
-        public MachineRepository(IHttpClientFactory clientFactory, ITokenMemoryRepository tokenMemoryRepository,
-            IConnectionMemoryRepository connectionMemoryRepository)
+        public MachineRepository(IHttpClientFactory clientFactory, ITokenMemoryRepository tokenMemoryRepository)
         {
             _tokenMemoryRepository = tokenMemoryRepository;
-            _connectionMemoryRepository = connectionMemoryRepository;
             _client = clientFactory.CreateClient("CouchDB");
+        }
+
+        public async Task Login()
+        {
+            try
+            {
+                var value = new
+                {
+                    name = "admin",
+                    password = "admin"
+                };
+                var content = new StringContent(JsonSerializer.Serialize(value), Encoding.UTF8, "application/json");
+                var response = await _client.PostAsync("_session", content);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public async Task<AllDocsDto> GetAllAsync(int limit, int skip)
@@ -43,44 +62,29 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             }
         }
 
-        public async Task<BaseDto> GetByHostnameAsync(string hostname)
+        public async Task<Machine> GetByHostname(string hostname)
         {
-            try
+            var findData = await FindByHostnameAsync(hostname);
+            if (findData == null || findData.Docs == null)
             {
-                HttpRequestMessage httpRequest = new(HttpMethod.Post, $"");
-                httpRequest.Headers.Authorization = new AuthenticationHeaderValue("AuthSession", "");
-                var query = new
-                {
-                    selector = new
-                    {
-                        Machine = new
-                        {
-                            Hostname = hostname
-                        }
-                    }
-                };
+                throw new Exception();
+            }
+            var doc = findData.Docs.FirstOrDefault() ?? throw new Exception();
+            return doc.Machine;
+        }
 
-                var content = new StringContent(JsonSerializer.Serialize(query), Encoding.UTF8, "application/json");
-                var response = await _client.PostAsync("_find", content);
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new NotImplementedException();
-                }
-                var baseDto = JsonSerializer.Deserialize<BaseDto>(
-                    await response.Content.ReadAsStreamAsync()) ?? throw new Exception();
-                return baseDto;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+        public async Task<string> GetConnectionByHostnameAsync(string hostname)
+        {
+            var doc = await FindDocByHostnameAsync(hostname);
+            var connId = doc.SignalR.ConnectionId;
+            return connId;
         }
 
         public async Task InsertAsync(MachineSchemaJson schema)
         {
             try
             {
-                HttpRequestMessage httpRequest = new(HttpMethod.Post, "");
+                HttpRequestMessage httpRequest = new(HttpMethod.Put, $"{schema.Machine.Id}");
                 httpRequest.Headers.Authorization = new AuthenticationHeaderValue("AuthSession", "");
                 string json = JsonSerializer.Serialize(schema);
                 httpRequest.Content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -99,50 +103,12 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             }
         }
 
-        public async Task InsertAsync(string hostname, string connId)
-        {
-            try
-            {
-                var json = new
-                {
-                    Machine = new
-                    {
-                        Hostname = hostname
-                    },
-                    SignalR = new
-                    {
-                        ConnectionId = connId
-                    }
-                };
-
-                var content = new StringContent(JsonSerializer.Serialize(json),
-                    Encoding.UTF8, "application/json");
-
-                var request = new HttpRequestMessage(HttpMethod.Post, "");
-                request.Content = content;
-
-                var response = await _client.SendAsync(request);
-                if (!response.IsSuccessStatusCode) 
-                {
-
-                }
-                var data = await JsonSerializer.DeserializeAsync<InsertDataResponse>(
-                    await response.Content.ReadAsStreamAsync());
-
-                if (data.Ok)
-                    await Task.CompletedTask;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
         public async Task<ResponseBaseDto> InsertOrUpdateAsync(MachineSchemaJson schema)
         {
+            var doc = await FindDocByHostnameAsync(schema.Machine.Hostname);
             try
             {
-                HttpRequestMessage httpRequest = new(HttpMethod.Put, $"{schema.Machine.Id}");
+                HttpRequestMessage httpRequest = new(HttpMethod.Put, $"{doc.Id}");
                 string json = JsonSerializer.Serialize(schema);
                 httpRequest.Content = new StringContent(json, Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await _client.SendAsync(httpRequest);
@@ -157,6 +123,32 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             catch (Exception ex)
             {
                 throw new NotImplementedException();
+            }
+        }
+
+        public async Task InsertOrUpdateAsync(string hostname, string connId)
+        {
+            try
+            {
+                var findReponse = await FindByHostnameAsync(hostname);
+                if (findReponse != null && findReponse.Docs.Any())
+                {
+                    var doc = findReponse.Docs.FirstOrDefault();
+                    doc.SignalR = new SignalR(connId, "");
+                    var content = new StringContent(JsonSerializer.Serialize(doc), Encoding.UTF8, "application/json");
+                    await SendToDatabase(doc.Id, content);
+                    return;
+                }
+                var machine = Machine.Create(hostname);
+                var signalR = new SignalR(connId, "");
+                var machineSchemaJson = MachineSchemaJson.Create(machine, signalR);
+                var json = new StringContent(JsonSerializer.Serialize(machineSchemaJson), Encoding.UTF8, "application/json");
+                await SendToDatabase(machine.Id, json);
+                return;
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 
@@ -181,6 +173,74 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
 
                 throw;
             }
+        }
+
+        private async Task<FindDataResponse?> FindByHostnameAsync(string hostname)
+        {
+            try
+            {
+                var query = new
+                {
+                    selector = new
+                    {
+                        Machine = new
+                        {
+                            Hostname = hostname
+                        }
+                    }
+                };
+
+                var content = new StringContent(JsonSerializer.Serialize(query), Encoding.UTF8, "application/json");
+                var response = await _client.PostAsync("_find", content);
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new NotImplementedException();
+                }
+                return await JsonSerializer.DeserializeAsync<FindDataResponse>(
+                    await response.Content.ReadAsStreamAsync());
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        private async Task<Doc> FindDocByHostnameAsync(string hostname)
+        {
+            var query = new
+            {
+                selector = new
+                {
+                    Machine = new
+                    {
+                        Hostname = hostname
+                    }
+                }
+            };
+
+            var content = new StringContent(JsonSerializer.Serialize(query), Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync("_find", content);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new NotImplementedException();
+            }
+            var findResponse = await JsonSerializer.DeserializeAsync<FindDataResponse>(
+                await response.Content.ReadAsStreamAsync()) ?? throw new NotImplementedException();
+
+            return findResponse.Docs.FirstOrDefault() ?? throw new Exception("Não encontrado nenhum documento");
+
+        }
+
+        private async Task SendToDatabase(string id, StringContent content)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Empty)
+            {
+                Content = content
+            };
+            var response = await _client.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+                throw new NotImplementedException();
+            return;
         }
     }
 }

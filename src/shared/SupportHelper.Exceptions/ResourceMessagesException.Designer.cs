@@ -79,6 +79,15 @@ namespace SupportHelper.Exceptions {
         }
         
         /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Não foi encontrado nenhum valor..
+        /// </summary>
+        public static string NOT_FOUND {
+            get {
+                return ResourceManager.GetString("NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Consulta uma cadeia de caracteres localizada semelhante a Erro desconhecido..
         /// </summary>
         public static string UNKNOWN_ERROR {

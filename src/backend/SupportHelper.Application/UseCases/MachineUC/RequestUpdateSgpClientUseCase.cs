@@ -1,6 +1,7 @@
 ﻿using SupportHelper.Application.Interfaces;
 using SupportHelper.Communication.Requests;
 using SupportHelper.Communication.Responses;
+using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Domain.Interfaces.Repositories.Memory;
 using SupportHelper.Domain.Interfaces.SignalRContext;
 
@@ -9,19 +10,19 @@ namespace SupportHelper.Application.UseCases.MachineUC
     public sealed class RequestUpdateSgpClientUseCase : IRequestUpdateSgpClientUseCase
     {
         private readonly IMachineSignalRServices _signalRService;
-        private readonly IConnectionMemoryRepository _connectionMemoryRepository;
+        private readonly IMachineRepository _machineRepository;
 
-        public RequestUpdateSgpClientUseCase(IMachineSignalRServices signalRService, IConnectionMemoryRepository connectionMemoryRepository)
+        public RequestUpdateSgpClientUseCase(IMachineSignalRServices signalRService, IMachineRepository machineRepository)
         {
             _signalRService = signalRService;
-            _connectionMemoryRepository = connectionMemoryRepository;
+            _machineRepository = machineRepository;
         }
 
         public async Task<ResponseUpdateSgpClientJson> ExecuteAsync(RequestUpdateSgpClientJson requestJson)
         {
-            string? connectionId = _connectionMemoryRepository.GetConnectionId(requestJson.Hostname) 
-                ?? throw new Exception("Não foi encontrado o id da conexão do equipamento");
-            ResponseUpdateSgpClientJson response = await _signalRService.UpdateSgpClientAsync(connectionId, requestJson.ProductionLine);
+            var connectionId = _machineRepository.GetConnectionByHostnameAsync(requestJson.Hostname);
+            ResponseUpdateSgpClientJson response = await _signalRService.UpdateSgpClientAsync(requestJson.Hostname, 
+                requestJson.ProductionLine);
             return response;
         }
     }
