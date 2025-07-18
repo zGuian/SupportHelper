@@ -8,7 +8,9 @@ using SupportHelper.Domain.Interfaces.SignalRContext;
 using SupportHelper.Exceptions.ExceptionsBase;
 using SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database;
 using SupportHelper.Infrastructure.Data.CouchDB.Repositories.Memory;
+using SupportHelper.Infrastructure.SignalR.Interfaces;
 using SupportHelper.Infrastructure.SignalR.SignalRServices;
+using SupportHelper.Infrastructure.SignalR.Tasks;
 
 namespace SupportHelper.Infrastructure.CrossCutting.IoC
 {
@@ -35,6 +37,7 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
         private static void AddSignalR(this IServiceCollection services)
         {
             services.AddSingleton<IMachineSignalRServices, MachineSignalRServices>();
+            services.AddSingleton<ITaskClientResponses, TaskClientResponses>();
         }
 
         private static void AddDatabase(IServiceCollection services, IConfiguration configuration)

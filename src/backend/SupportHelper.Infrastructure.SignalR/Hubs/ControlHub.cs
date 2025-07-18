@@ -1,20 +1,24 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using SupportHelper.Communication.Responses;
 using SupportHelper.Domain.Aggregates;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Domain.Interfaces.Repositories.Memory;
 using SupportHelper.Exceptions.ExceptionsBase;
+using SupportHelper.Infrastructure.SignalR.Interfaces;
 
 namespace SupportHelper.Infrastructure.SignalR.Hubs
 {
     public class ControlHub : Hub
     {
         private readonly IMachineRepository _machineRepository;
+        private readonly ITaskClientResponses _taskClientResponses;
 
-        public ControlHub(IMachineRepository machineRepository)
+        public ControlHub(IMachineRepository machineRepository, ITaskClientResponses taskClientResponses)
         {
             _machineRepository = machineRepository;
+            _taskClientResponses = taskClientResponses;
         }
 
         public async Task ClientHasShutdown(ResponseStatusMachineJson response)
@@ -22,6 +26,12 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
             var connId = await _machineRepository.GetConnectionByHostnameAsync(response.Hostname);
             var schema = MachineSchemaJson.Create(response, connId);
             await _machineRepository.UpdateAsync(schema);
+        }
+
+        public async Task ResponseStatusAsync(string requestId, ResponseStatusMachineJson response)
+        {
+            _taskClientResponses.FinalizeTask(requestId, response);
+            await Task.CompletedTask;
         }
 
         public async override Task OnConnectedAsync()

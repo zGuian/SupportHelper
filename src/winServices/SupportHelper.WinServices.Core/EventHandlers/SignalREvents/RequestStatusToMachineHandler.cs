@@ -19,7 +19,7 @@ namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
 
         public void Register(HubConnection connection, CancellationToken stoppingToken)
         {
-            connection.On<RequestStatusMachineJson, ResponseStatusMachineJson>("RequestStatusMachine", request =>
+            connection.On<string>("RequestStatusMachine", async (receivedRequestId) =>
             {
                 MachineModel machine = MachineModel.Create();
                 var response = new ResponseStatusMachineJson
@@ -35,8 +35,8 @@ namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
                     LastUpdate = machine.LastUpdate
                 };
 
+                await connection.InvokeAsync("ResponseStatusAsync", receivedRequestId, response);
                 _logger.LogInformation("Resposta enviada com sucesso");
-                return response;
             });
         }
 
