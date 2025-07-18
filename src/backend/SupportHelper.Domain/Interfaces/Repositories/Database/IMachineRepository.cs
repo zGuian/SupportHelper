@@ -9,6 +9,7 @@ namespace SupportHelper.Domain.Interfaces.Repositories.Database
         Task<AllDocsDto> GetAllAsync(int limit, int skip);
         Task<BaseDto> GetByHostnameAsync(string id);
         Task InsertAsync(MachineSchemaJson schema);
+        Task InsertAsync(string hostname, string connId);
         Task<ResponseBaseDto> InsertOrUpdateAsync(MachineSchemaJson schema);
         Task UpdateAsync(MachineSchemaJson schema);
         

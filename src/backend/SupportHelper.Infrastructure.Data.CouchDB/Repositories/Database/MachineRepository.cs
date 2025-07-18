@@ -3,6 +3,7 @@ using SupportHelper.Domain.Aggregates;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Domain.Interfaces.Repositories.Memory;
 using SupportHelper.Exceptions.ExceptionsBase;
+using SupportHelper.Infrastructure.Data.CouchDB.Json.Responses;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -52,9 +53,9 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
                 {
                     selector = new
                     {
-                        machine = new
+                        Machine = new
                         {
-                            hostname = hostname
+                            Hostname = hostname
                         }
                     }
                 };
@@ -91,6 +92,45 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
                 Stream stream = await response.Content.ReadAsStreamAsync();
                 ResponseBaseDto content = await JsonSerializer.DeserializeAsync<ResponseBaseDto>(stream)
                     ?? throw new GenericErrorException(["ERROR!"]);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task InsertAsync(string hostname, string connId)
+        {
+            try
+            {
+                var json = new
+                {
+                    Machine = new
+                    {
+                        Hostname = hostname
+                    },
+                    SignalR = new
+                    {
+                        ConnectionId = connId
+                    }
+                };
+
+                var content = new StringContent(JsonSerializer.Serialize(json),
+                    Encoding.UTF8, "application/json");
+
+                var request = new HttpRequestMessage(HttpMethod.Post, "");
+                request.Content = content;
+
+                var response = await _client.SendAsync(request);
+                if (!response.IsSuccessStatusCode) 
+                {
+
+                }
+                var data = await JsonSerializer.DeserializeAsync<InsertDataResponse>(
+                    await response.Content.ReadAsStreamAsync());
+
+                if (data.Ok)
+                    await Task.CompletedTask;
             }
             catch (Exception ex)
             {
