@@ -38,7 +38,6 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -47,7 +46,7 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
         {
             try
             {
-                HttpResponseMessage response = await _client.GetAsync("_all_docs");
+                HttpResponseMessage response = await _client.GetAsync("machine-dev-db/machine_all_docs");
                 if (!response.IsSuccessStatusCode)
                 {
                     throw new GenericErrorException(["HOUVE UMA RESPOSTA HTTP NEGATIVA"]);
@@ -136,14 +135,14 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
                     var doc = findReponse.Docs.FirstOrDefault();
                     doc.SignalR = new SignalR(connId, "");
                     var content = new StringContent(JsonSerializer.Serialize(doc), Encoding.UTF8, "application/json");
-                    await SendToDatabase(doc.Id, content);
+                    await SendToDatabase(content, doc.Id);
                     return;
                 }
                 var machine = Machine.Create(hostname);
                 var signalR = new SignalR(connId, "");
                 var machineSchemaJson = MachineSchemaJson.Create(machine, signalR);
                 var json = new StringContent(JsonSerializer.Serialize(machineSchemaJson), Encoding.UTF8, "application/json");
-                await SendToDatabase(machine.Id, json);
+                await SendToDatabase(json, machine.Hostname);
                 return;
             }
             catch (Exception ex)
@@ -191,7 +190,7 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
                 };
 
                 var content = new StringContent(JsonSerializer.Serialize(query), Encoding.UTF8, "application/json");
-                var response = await _client.PostAsync("_find", content);
+                var response = await _client.PostAsync("machine-dev-db/_find", content);
                 if (!response.IsSuccessStatusCode)
                 {
                     throw new NotImplementedException();
@@ -219,7 +218,7 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             };
 
             var content = new StringContent(JsonSerializer.Serialize(query), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync("_find", content);
+            var response = await _client.PostAsync("machine-dev-db/_find", content);
             if (!response.IsSuccessStatusCode)
             {
                 throw new NotImplementedException();
@@ -231,13 +230,9 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
 
         }
 
-        private async Task SendToDatabase(string id, StringContent content)
+        private async Task SendToDatabase(StringContent content, string? docId = null)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Empty)
-            {
-                Content = content
-            };
-            var response = await _client.SendAsync(request);
+            var response = await _client.PutAsync($"machine-dev-db/{docId}", content);
             if (!response.IsSuccessStatusCode)
                 throw new NotImplementedException();
             return;

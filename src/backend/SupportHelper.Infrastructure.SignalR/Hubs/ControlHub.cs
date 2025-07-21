@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using SupportHelper.Communication.Responses;
 using SupportHelper.Domain.Aggregates;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
-using SupportHelper.Domain.Interfaces.Repositories.Memory;
 using SupportHelper.Exceptions.ExceptionsBase;
 using SupportHelper.Infrastructure.SignalR.Interfaces;
 
@@ -36,8 +34,9 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
 
         public async override Task OnConnectedAsync()
         {
-            HttpContext httpContext = Context.GetHttpContext() 
-                ?? throw new GenericErrorException(["NÃO ENCONTRADO VALORES DE URL"]);
+            await _machineRepository.Login();
+            HttpContext httpContext = Context.GetHttpContext()
+            ?? throw new GenericErrorException(["NÃO ENCONTRADO VALORES DE URL"]);
             string hostname = httpContext.Request.Query["hostname"].ToString().ToLower();
             string connId = Context.ConnectionId;
             await _machineRepository.InsertOrUpdateAsync(hostname, connId);
