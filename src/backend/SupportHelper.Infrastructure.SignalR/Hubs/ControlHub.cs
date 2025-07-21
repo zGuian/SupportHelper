@@ -26,7 +26,13 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
             await _machineRepository.UpdateAsync(schema);
         }
 
-        public async Task ResponseStatusAsync(string requestId, ResponseStatusMachineJson response)
+        public async Task ResponseStatusAsync(string requestId, string response)
+        {
+            _taskClientResponses.FinalizeTask(requestId, response);
+            await Task.CompletedTask;
+        }
+
+        public async Task ResponseUpdateSgpClient(string requestId, string response)
         {
             _taskClientResponses.FinalizeTask(requestId, response);
             await Task.CompletedTask;

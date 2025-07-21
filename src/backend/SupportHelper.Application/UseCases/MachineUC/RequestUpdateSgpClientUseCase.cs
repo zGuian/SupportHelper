@@ -20,9 +20,8 @@ namespace SupportHelper.Application.UseCases.MachineUC
 
         public async Task<ResponseUpdateSgpClientJson> ExecuteAsync(RequestUpdateSgpClientJson requestJson)
         {
-            var connectionId = _machineRepository.GetConnectionByHostnameAsync(requestJson.Hostname);
-            ResponseUpdateSgpClientJson response = await _signalRService.UpdateSgpClientAsync(requestJson.Hostname, 
-                requestJson.ProductionLine);
+            var connectionId = await _machineRepository.GetConnectionByHostnameAsync(requestJson.Hostname);
+            var response = await _signalRService.UpdateSgpClientAsync(connectionId, requestJson);
             return response;
         }
     }

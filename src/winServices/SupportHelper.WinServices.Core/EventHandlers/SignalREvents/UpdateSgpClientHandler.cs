@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using SupportHelper.Communication.Requests;
 using SupportHelper.Communication.Responses;
 using SupportHelper.WinServices.Application.Interfaces.Events;
 using SupportHelper.WinServices.Application.Interfaces.Services;
+using System.Text.Json;
 
 namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
 {
@@ -16,14 +18,11 @@ namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
 
         public void Register(HubConnection connection, CancellationToken stoppingToken)
         {
-            connection.On<string, ResponseUpdateSgpClientJson>("UpdateSgpClient", async productionLine =>
+            connection.On<string,RequestUpdateSgpClientJson>("UpdateSgpClient", async (receivedRequestId, request) =>
             {
-                string response = await _machineService.UpdateSgpClient(productionLine);
-                ResponseUpdateSgpClientJson json = new()
-                {
-                    VersionSgp = response
-                };
-                return json;
+                var value = await _machineService.UpdateSgpClient(request.ProductionLine);
+                var response = JsonSerializer.Serialize(value);
+                await connection.InvokeAsync("ResponseStatusAsync", receivedRequestId, response);
             });
         }
     }
