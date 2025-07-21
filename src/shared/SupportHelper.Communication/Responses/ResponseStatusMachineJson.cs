@@ -18,7 +18,7 @@
             return new ResponseStatusMachineJson
             {
                 IsConnected = isConnected,
-                Hostname = hostname,
+                Hostname = hostname.ToLower(),
                 SgpIsRunning = sgpIsRunning,
                 CurrentUsername = currentUsername,
                 DomainName = domainName,

@@ -24,24 +24,6 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             _client = clientFactory.CreateClient("CouchDB");
         }
 
-        public async Task Login()
-        {
-            try
-            {
-                var value = new
-                {
-                    name = "admin",
-                    password = "admin"
-                };
-                var content = new StringContent(JsonSerializer.Serialize(value), Encoding.UTF8, "application/json");
-                var response = await _client.PostAsync("_session", content);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
         public async Task<AllDocsDto> GetAllAsync(int limit, int skip)
         {
             try
@@ -74,7 +56,7 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
 
         public async Task<string> GetConnectionByHostnameAsync(string hostname)
         {
-            var doc = await FindDocByHostnameAsync(hostname);
+            var doc = await FindDocByHostnameAsync(hostname.ToLower());
             var connId = doc.SignalR.ConnectionId;
             return connId;
         }
@@ -104,15 +86,16 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
 
         public async Task<ResponseBaseDto> InsertOrUpdateAsync(MachineSchemaJson schema)
         {
-            var doc = await FindDocByHostnameAsync(schema.Machine.Hostname.ToLower());
             try
             {
+                var doc = await FindDocByHostnameAsync(schema.Machine.Hostname);
                 doc.Update(schema);
                 string json = JsonSerializer.Serialize(doc);
                 HttpRequestMessage httpRequest = new(HttpMethod.Put, $"machine-dev-db/{doc.Id}")
                 {
                     Content = new StringContent(json, Encoding.UTF8, "application/json")
                 };
+
                 HttpResponseMessage response = await _client.SendAsync(httpRequest);
                 if (!response.IsSuccessStatusCode)
                 {
@@ -135,7 +118,7 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
                 var findReponse = await FindByHostnameAsync(hostname);
                 if (findReponse != null && findReponse.Docs.Any())
                 {
-                    var doc = findReponse.Docs.FirstOrDefault();
+                    var doc = findReponse.Docs.FirstOrDefault() ?? throw new NotImplementedException();
                     doc.SignalR = new SignalR(connId, "");
                     var content = new StringContent(JsonSerializer.Serialize(doc), Encoding.UTF8, "application/json");
                     await SendToDatabase(content, doc.Id);
@@ -215,7 +198,7 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
                 {
                     Machine = new
                     {
-                        Hostname = hostname
+                        Hostname = hostname.ToLower()
                     }
                 }
             };

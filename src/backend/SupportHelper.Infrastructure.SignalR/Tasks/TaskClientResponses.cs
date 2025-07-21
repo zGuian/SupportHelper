@@ -1,17 +1,16 @@
-﻿using SupportHelper.Communication.Responses;
-using SupportHelper.Infrastructure.SignalR.Interfaces;
+﻿using SupportHelper.Infrastructure.SignalR.Interfaces;
 using System.Collections.Concurrent;
 
 namespace SupportHelper.Infrastructure.SignalR.Tasks
 {
     public sealed class TaskClientResponses : ITaskClientResponses
     {
-        private ConcurrentDictionary<string, TaskCompletionSource<ResponseStatusMachineJson>> _pendingClientResponses = new();
+        private ConcurrentDictionary<string, TaskCompletionSource<string>> _pendingClientResponses = new();
         private static readonly TimeSpan DefaultResponseTimeout = TimeSpan.FromSeconds(30);
 
         public TimeSpan Time => DefaultResponseTimeout;
 
-        public void Register(string requestId, TaskCompletionSource<ResponseStatusMachineJson> tcs)
+        public void Register(string requestId, TaskCompletionSource<string> tcs)
         {
             if (!_pendingClientResponses.TryAdd(requestId, tcs))
             {
@@ -21,7 +20,7 @@ namespace SupportHelper.Infrastructure.SignalR.Tasks
 
         public void Unregister(string requestId) => _pendingClientResponses.TryRemove(requestId, out _);
 
-        public bool FinalizeTask(string requestId, ResponseStatusMachineJson data)
+        public bool FinalizeTask(string requestId, string data)
         {
             if (_pendingClientResponses.TryRemove(requestId, out var tcs))
             {

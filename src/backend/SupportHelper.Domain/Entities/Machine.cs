@@ -19,7 +19,7 @@ namespace SupportHelper.Domain.Entities
             string operationalSystem, IEnumerable<NetworkBoard> networkBoards, string upTime, string lastUpdate)
         {
             Id = GenerateId();
-            Hostname = hostname;
+            Hostname = hostname.ToLower();
             CurrentUsername = currentUsername;
             DomainName = domainName;
             OperationalSystem = operationalSystem;
@@ -31,7 +31,7 @@ namespace SupportHelper.Domain.Entities
         public Machine(string hostname)
         {
             Id = "";
-            Hostname = hostname;
+            Hostname = hostname.ToLower();
             CurrentUsername = "";
             DomainName = "";
             OperationalSystem = "";

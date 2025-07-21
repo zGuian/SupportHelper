@@ -44,7 +44,6 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
 
         private static void AddDatabase(IServiceCollection services, IConfiguration configuration)
         {
-            //services.AddSingleton<IConnectionMemoryRepository, ConnectionMemoryRepository>();
             services.AddSingleton<ITokenMemoryRepository, TokenMemoryRepository>();
             services.AddScoped<IMachineRepository, MachineRepository>();
         }
@@ -60,7 +59,7 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
                 client.BaseAddress = new Uri(configuration.GetConnectionString("CouchDB")
                     ?? throw new GenericErrorException(["NÃO ENCONTRADO CONNECTION STRING"]));
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("basic", base64Credentials);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Credentials);
             });
         }
     }

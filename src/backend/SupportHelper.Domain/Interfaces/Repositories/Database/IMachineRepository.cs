@@ -12,7 +12,6 @@ namespace SupportHelper.Domain.Interfaces.Repositories.Database
         Task InsertAsync(MachineSchemaJson schema);
         Task InsertOrUpdateAsync(string hostname, string connId);
         Task<ResponseBaseDto> InsertOrUpdateAsync(MachineSchemaJson schema);
-        Task Login();
         Task UpdateAsync(MachineSchemaJson schema);
         
     }
