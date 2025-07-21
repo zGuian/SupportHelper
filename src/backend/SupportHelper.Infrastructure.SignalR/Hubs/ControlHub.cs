@@ -34,7 +34,6 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
 
         public async override Task OnConnectedAsync()
         {
-            await _machineRepository.Login();
             HttpContext httpContext = Context.GetHttpContext()
             ?? throw new GenericErrorException(["NÃO ENCONTRADO VALORES DE URL"]);
             string hostname = httpContext.Request.Query["hostname"].ToString().ToLower();

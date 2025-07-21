@@ -11,6 +11,8 @@ using SupportHelper.Infrastructure.Data.CouchDB.Repositories.Memory;
 using SupportHelper.Infrastructure.SignalR.Interfaces;
 using SupportHelper.Infrastructure.SignalR.SignalRServices;
 using SupportHelper.Infrastructure.SignalR.Tasks;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace SupportHelper.Infrastructure.CrossCutting.IoC
 {
@@ -49,11 +51,16 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
 
         private static void AddHttpClient(this IServiceCollection services, IConfiguration configuration)
         {
+            var credentials = "admin:admin";
+            var credentialsBytes = Encoding.UTF8.GetBytes(credentials);
+            var base64Credentials = Convert.ToBase64String(credentialsBytes);
+
             services.AddHttpClient("CouchDB", client =>
             {
                 client.BaseAddress = new Uri(configuration.GetConnectionString("CouchDB")
                     ?? throw new GenericErrorException(["NÃO ENCONTRADO CONNECTION STRING"]));
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("basic", base64Credentials);
             });
         }
     }

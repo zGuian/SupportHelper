@@ -104,12 +104,15 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
 
         public async Task<ResponseBaseDto> InsertOrUpdateAsync(MachineSchemaJson schema)
         {
-            var doc = await FindDocByHostnameAsync(schema.Machine.Hostname);
+            var doc = await FindDocByHostnameAsync(schema.Machine.Hostname.ToLower());
             try
             {
-                HttpRequestMessage httpRequest = new(HttpMethod.Put, $"{doc.Id}");
-                string json = JsonSerializer.Serialize(schema);
-                httpRequest.Content = new StringContent(json, Encoding.UTF8, "application/json");
+                doc.Update(schema);
+                string json = JsonSerializer.Serialize(doc);
+                HttpRequestMessage httpRequest = new(HttpMethod.Put, $"machine-dev-db/{doc.Id}")
+                {
+                    Content = new StringContent(json, Encoding.UTF8, "application/json")
+                };
                 HttpResponseMessage response = await _client.SendAsync(httpRequest);
                 if (!response.IsSuccessStatusCode)
                 {
