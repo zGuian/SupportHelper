@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\backend\SupportHelper.Application\SupportHelper.Application.csproj" />
+    <ProjectReference Include="..\..\src\backend\SupportHelper.WebApi\SupportHelper.WebApi.csproj" />
     <ProjectReference Include="..\SupportHelper.Test.Common.Utilities\SupportHelper.Test.Common.Utilities.csproj" />
   </ItemGroup>
 
