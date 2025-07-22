@@ -1,41 +1,50 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using SupportHelper.Communication.Responses;
-using SupportHelper.Domain.Interfaces.Repositories.Memory;
+using SupportHelper.Domain.Aggregates;
+using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Exceptions.ExceptionsBase;
-using SupportHelper.Infrastructure.Data.Interfaces;
-using SupportHelper.Infrastructure.Data.Repositories.Memory;
 using SupportHelper.Infrastructure.SignalR.Interfaces;
 
 namespace SupportHelper.Infrastructure.SignalR.Hubs
 {
     public class ControlHub : Hub
     {
-        private readonly IConnectionService _connectionService;
-        private readonly IMachineServices _machineServices;
-        private readonly IConnectionMemoryRepository _connectionMemoryRepository;
+        private readonly IMachineRepository _machineRepository;
+        private readonly ITaskClientResponses _taskClientResponses;
 
-        public ControlHub(IConnectionService connectionService, IMachineServices machineServices,
-            IConnectionMemoryRepository connectionMemoryRepository)
+        public ControlHub(IMachineRepository machineRepository, ITaskClientResponses taskClientResponses)
         {
-            _connectionService = connectionService;
-            _machineServices = machineServices;
-            _connectionMemoryRepository = connectionMemoryRepository;
+            _machineRepository = machineRepository;
+            _taskClientResponses = taskClientResponses;
         }
 
         public async Task ClientHasShutdown(ResponseStatusMachineJson response)
         {
-            await _machineServices.UpdateDatabaseAsync(response);
+            var connId = await _machineRepository.GetConnectionByHostnameAsync(response.Hostname);
+            var schema = MachineSchemaJson.Create(response, connId);
+            await _machineRepository.UpdateAsync(schema);
+        }
+
+        public async Task ResponseStatusAsync(string requestId, string response)
+        {
+            _taskClientResponses.FinalizeTask(requestId, response);
+            await Task.CompletedTask;
+        }
+
+        public async Task ResponseUpdateSgpClient(string requestId, string response)
+        {
+            _taskClientResponses.FinalizeTask(requestId, response);
+            await Task.CompletedTask;
         }
 
         public async override Task OnConnectedAsync()
         {
-            HttpContext httpContext = Context.GetHttpContext() ?? throw new GenericErrorException(["NÃO ENCONTRADO VALORES DE URL"]);
-
-            string hostName = httpContext.Request.Query["hostname"].ToString().ToLower();
+            HttpContext httpContext = Context.GetHttpContext()
+            ?? throw new GenericErrorException(["NÃO ENCONTRADO VALORES DE URL"]);
+            string hostname = httpContext.Request.Query["hostname"].ToString().ToLower();
             string connId = Context.ConnectionId;
-            Console.WriteLine(hostName);
-            _connectionMemoryRepository.Register(hostName, connId);
+            await _machineRepository.InsertOrUpdateAsync(hostname, connId);
             await base.OnConnectedAsync();
         }
     }

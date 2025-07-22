@@ -123,4 +123,10 @@
   <data name="GENERIC_ERROR" xml:space="preserve">
     <value>Ocorreu um erro inesperado. Erro não tratado.</value>
   </data>
+  <data name="NOT_FOUND" xml:space="preserve">
+    <value>Não foi encontrado nenhum valor.</value>
+  </data>
+  <data name="UNKNOWN_ERROR" xml:space="preserve">
+    <value>Erro desconhecido.</value>
+  </data>
 </root>

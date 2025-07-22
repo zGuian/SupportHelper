@@ -4,8 +4,8 @@ using SupportHelper.Communication.Responses;
 using SupportHelper.WinServices.Application.Interfaces.Events;
 using SupportHelper.WinServices.Core.Converters;
 using SupportHelper.WinServices.Core.Models;
-using SupportHelper.WinServices.Core.Models.ValueObjects;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
 {
@@ -20,10 +20,10 @@ namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
 
         public void Register(HubConnection connection, CancellationToken stoppingToken)
         {
-            connection.On<RequestStatusMachineJson, ResponseStatusMachineJson>("RequestStatusMachine", request =>
+            connection.On<string>("RequestStatusMachine", async (receivedRequestId) =>
             {
                 MachineModel machine = MachineModel.Create();
-                var response = new ResponseStatusMachineJson
+                var json = new ResponseStatusMachineJson
                 {
                     IsConnected = true,
                     Hostname = machine.Hostname,
@@ -32,10 +32,12 @@ namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
                     DomainName = machine.DomainName,
                     OperationalSystem = machine.OperationalSystem,
                     NetworkBoards = NetworkBoardConvert.EntityToResponse(machine.NetworkBoards),
+                    UpTime = machine.UpTime,
+                    LastUpdate = machine.LastUpdate
                 };
-
+                var response = JsonSerializer.Serialize(json);
+                await connection.InvokeAsync("ResponseStatusAsync", receivedRequestId, response);
                 _logger.LogInformation("Resposta enviada com sucesso");
-                return response;
             });
         }
 

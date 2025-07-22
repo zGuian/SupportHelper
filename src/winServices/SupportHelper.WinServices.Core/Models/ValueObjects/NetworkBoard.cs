@@ -32,7 +32,7 @@ namespace SupportHelper.WinServices.Core.Models.ValueObjects
             };
         }
 
-        public static NetworkBoard[] GetAllInformation()
+        public static IEnumerable<NetworkBoard> GetAllInformation()
         {
             var networkBoard = new HashSet<NetworkBoard>();
             var nics = NetworkInterface.GetAllNetworkInterfaces();

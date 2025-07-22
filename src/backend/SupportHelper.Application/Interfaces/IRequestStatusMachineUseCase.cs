@@ -1,8 +1,10 @@
 ﻿
+using SupportHelper.Communication.Responses;
+
 namespace SupportHelper.Application.Interfaces
 {
     public interface IRequestStatusMachineUseCase
     {
-        Task ExecuteAsync(string hostname);
+        Task<ResponseStatusMachineJson> ExecuteAsync(string hostname);
     }
 }

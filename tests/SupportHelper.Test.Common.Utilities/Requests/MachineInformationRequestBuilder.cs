@@ -15,7 +15,7 @@ namespace SupportHelper.Test.Common.Utilities.Requests
             var rabbitMq = new RabbitMQRequest(hostname, exchange, queueReplyTo);
 
             return new Faker<MachineInformationRequest>()
-                .CustomInstantiator(f => 
+                .CustomInstantiator(f =>
                 new MachineInformationRequest("GET_INFORMATION_MACHINE", rabbitMq));
         }
     }

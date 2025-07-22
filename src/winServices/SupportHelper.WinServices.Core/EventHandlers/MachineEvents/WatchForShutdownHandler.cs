@@ -25,7 +25,8 @@ namespace SupportHelper.WinServices.Core.EventHandlers.MachineEvents
             {
                 MachineModel machine = MachineModel.Create();
                 var response = ResponseStatusMachineJson.Create(false, machine.Hostname, false, machine.CurrentUsername,
-                    machine.DomainName, machine.OperationalSystem, NetworkBoardConvert.EntityToResponse(machine.NetworkBoards));
+                    machine.DomainName, machine.OperationalSystem, 
+                    NetworkBoardConvert.EntityToResponse(machine.NetworkBoards), machine.UpTime, machine.LastUpdate);
 
                 string query = "SELECT * FROM Win32_ComputerShutdown";
                 _shutdownEventWatcher = new ManagementEventWatcher(query);

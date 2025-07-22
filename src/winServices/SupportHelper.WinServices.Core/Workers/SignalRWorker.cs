@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Win32;
 using SupportHelper.WinServices.Application.Interfaces.Events;
 
 namespace SupportHelper.WinServices.Core.Workers

@@ -12,7 +12,8 @@ namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
         {
             MachineModel machine = MachineModel.Create();
             var response = ResponseStatusMachineJson.Create(false, machine.Hostname, false, machine.CurrentUsername,
-                machine.DomainName, machine.OperationalSystem, ConvertToResponse(machine.NetworkBoards));
+                machine.DomainName, machine.OperationalSystem, ConvertToResponse(machine.NetworkBoards.ToArray()), machine.UpTime, 
+                machine.LastUpdate);
             Task.Run(async () =>
             {
                 await connection.SendAsync("MachineDisconnect", response, stoppingToken);
