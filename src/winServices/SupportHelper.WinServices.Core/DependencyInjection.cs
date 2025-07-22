@@ -22,24 +22,23 @@ namespace SupportHelper.WinServices.Core
 
         private static void AddServices(IServiceCollection services)
         {
-            services.AddTransient<IMachineService, MachineService>();
+            services.AddSingleton<IMachineService, MachineService>();
         }
 
         private static void AddUseCases(IServiceCollection services)
         {
-            services.AddTransient<IGetLoggerSgpClientUseCase, GetLoggerSgpClientUseCase>();
-            services.AddTransient<IUpdateSgpClientUseCase, UpdateSgpClientUseCase>();
+            services.AddSingleton<IGetLoggerSgpClientUseCase, GetLoggerSgpClientUseCase>();
+            services.AddSingleton<IUpdateSgpClientUseCase, UpdateSgpClientUseCase>();
         }
 
         private static void AddEventHandlers(IServiceCollection services)
         {
-            services.AddTransient<IWatchForShutdownHandler, WatchForShutdownHandler>();
+            services.AddSingleton<IWatchForShutdownHandler, WatchForShutdownHandler>();
 
             services.AddSingleton<ISignalREventHandler, ConnectionHandler>();
-
-            services.AddTransient<ISignalREventHandler, GetLogSgpClientHandler>();
-            services.AddTransient<ISignalREventHandler, RequestStatusToMachineHandler>();
-            services.AddTransient<ISignalREventHandler, UpdateSgpClientHandler>();
+            services.AddSingleton<ISignalREventHandler, GetLogSgpClientHandler>();
+            services.AddSingleton<ISignalREventHandler, RequestStatusToMachineHandler>();
+            services.AddSingleton<ISignalREventHandler, UpdateSgpClientHandler>();
         }
     }
 }
