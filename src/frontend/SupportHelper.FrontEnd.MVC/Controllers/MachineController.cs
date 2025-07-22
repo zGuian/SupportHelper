@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SupportHelper.FrontEnd.MVC.Interfaces;
 using SupportHelper.FrontEnd.MVC.Models;
+using SupportHelper.FrontEnd.MVC.ValueObjects;
 
 namespace SupportHelper.FrontEnd.MVC.Controllers
 {
@@ -10,11 +12,21 @@ namespace SupportHelper.FrontEnd.MVC.Controllers
         public IActionResult ListOfMachines()
         {
             var machines = new List<MachineModel>();
-            for (int i = 1; i < 50; i++)
+            for (int i = 0; i < 50; i++)
             {
-                machines.Add(new MachineModel(Guid.NewGuid().ToString(), "BOLOLO", "GUIAN", "EMEA", "WIN 10"));
+                machines.Add(new MachineModel(i.ToString(), "HOSTNAME", "GUIAN", "TBAD", "WIN 10",
+                [
+                    new NetworkBoardVO("TESTE", $"10.162.38.{i*24}", "NOT IPV6", "ASDAWQNVKA", true)
+                ], "10:00:20", "AGORA"));
             }
             return View(machines);
+        }
+
+        [HttpGet("Info")]
+        public async Task<IActionResult> InfoMachine([FromServices] IMachineServices services, string hostname)
+        {
+            var data = await services.GetMachineByHostnameAsync(hostname);
+            return View(data);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<MachineModel>
 
-@Html.Partial("SearchField")
+@await Html.PartialAsync("SearchField")
 
 <table class="table">
     <thead>
@@ -22,6 +22,7 @@
             <td>@Html.DisplayFor(modelItem => item.DomainName)</td>
             <td>@Html.DisplayFor(modelItem => item.OperationalSystem)</td>
             <td>
+                <button class="btn btn-primary btn-sm btn-detalhes" idEquipamento="@item.Hostname">Detalhes do equipamento</button>
                 @Html.ActionLink("Detalhes de Rede", "NetworkDetails", new { item.Id }) |
             </td>
         </tr>
@@ -38,3 +39,20 @@
     <a href="#">6</a>
     <a href="#">&raquo;</a>
 </div>
+
+<div id="modalDetalhesEquipamentos" class="modal" tabindex="-1">
+    <div class="modal-dialog modal-1g">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Detalhes</h3>
+            </div>
+            <div class="modal-body">
+                <div id="detalhesEquipamento"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/js/ListOfMachine.js"></script>
+}
