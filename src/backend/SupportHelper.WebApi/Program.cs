@@ -23,7 +23,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMvc(options => options.Filters.Add(typeof(ExceptionFilter)));
 
 var app = builder.Build();
-app.MapHub<ControlHub>("/SupportHelperConnectionSignalR");
+app.MapHub<ControlHub>($"/{builder.Configuration["SignalR:OriginPath"]}");
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
