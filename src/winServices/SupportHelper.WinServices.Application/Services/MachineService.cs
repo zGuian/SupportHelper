@@ -9,13 +9,15 @@ namespace SupportHelper.WinServices.Application.Services
         private readonly ILogger<MachineService> _logger;
         private readonly IGetLoggerSgpClientUseCase _getLoggerUseCase;
         private readonly IUpdateSgpClientUseCase _updateSgpClientUseCase;
+        private readonly IFileTransferUseCase _fileTranferHandler;
 
-        public MachineService(ILogger<MachineService> logger, IGetLoggerSgpClientUseCase getLoggerUseCase, 
-            IUpdateSgpClientUseCase updateSgpClientUseCase)
+        public MachineService(ILogger<MachineService> logger, IGetLoggerSgpClientUseCase getLoggerUseCase,
+            IUpdateSgpClientUseCase updateSgpClientUseCase, IFileTransferUseCase fileTranferHandler)
         {
             _logger = logger;
             _getLoggerUseCase = getLoggerUseCase;
             _updateSgpClientUseCase = updateSgpClientUseCase;
+            _fileTranferHandler = fileTranferHandler;
         }
 
         public async Task<bool> MakeAvailableLogSgpClient(string productionLine)
@@ -23,15 +25,14 @@ namespace SupportHelper.WinServices.Application.Services
             try
             {
                 _logger.LogInformation("Iniciando processo de copiar arquivos");
-                await Task.Run(() =>
-                {
-                    _getLoggerUseCase.Execute(productionLine);
-                });
+                var pathArchiveZip = _getLoggerUseCase.Execute(productionLine);
+                await _fileTranferHandler.SendArchiveZipAsync(productionLine, pathArchiveZip);
+
                 return true;
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
-                _logger.LogError("Houve um problema: {message}", ex.Message);
+                _logger.LogError(ex, "Houve um problema ao enviar o arquivo");
                 return false;
             }
         }

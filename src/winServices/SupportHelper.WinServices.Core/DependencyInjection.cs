@@ -29,6 +29,7 @@ namespace SupportHelper.WinServices.Core
         {
             services.AddSingleton<IGetLoggerSgpClientUseCase, GetLoggerSgpClientUseCase>();
             services.AddSingleton<IUpdateSgpClientUseCase, UpdateSgpClientUseCase>();
+            services.AddSingleton<IFileTransferUseCase, FileTransferUseCase>();
         }
 
         private static void AddEventHandlers(IServiceCollection services)

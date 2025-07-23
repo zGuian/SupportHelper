@@ -1,27 +1,35 @@
-﻿using SupportHelper.WinServices.Application.Interfaces.UseCases;
+﻿using Microsoft.Extensions.Logging;
+using SupportHelper.WinServices.Application.Interfaces.UseCases;
+using System.IO.Compression;
 using System.Text;
 
 namespace SupportHelper.WinServices.Application.UseCases
 {
     public sealed class GetLoggerSgpClientUseCase : IGetLoggerSgpClientUseCase
     {
-        public void Execute(string productionLine)
+        private readonly ILogger<GetLoggerSgpClientUseCase> _logger;
+
+        public GetLoggerSgpClientUseCase(ILogger<GetLoggerSgpClientUseCase> logger)
         {
-            string originBase = @$"C:\ProgramData\MBBras\SGP\SGPClient3";
-            string folderName = Path.Combine(originBase, productionLine.ToString());
-            string destinyBase = @"\\SERVIDOR\";
-            string destiny = Path.Combine(destinyBase, AppointedFolder());
+            _logger = logger;
+        }
 
+        public string Execute(string productionLine)
+        {
+            var originBase = @$"C:\ProgramData\MBBras\SGP\SGPClient3";
+            var folderName = Path.Combine(originBase, productionLine);
             if (!Directory.Exists(folderName))
-                throw new Exception();
-
-            string userLogIn = Environment.UserName;
-            if (!userLogIn.StartsWith("D154_YSBC_"))
             {
-                ConnectToSmb(destinyBase);
+                _logger.LogInformation("NÃO FOI ENCONTRADO O CAMINHO {foldername}", folderName);
             }
-
-            CopyFolderAndArchives(folderName, destiny);
+            var destinyZipBase = @"C:\Temp\";
+            if (!Directory.Exists(destinyZipBase))
+            {
+                Directory.CreateDirectory(destinyZipBase);
+            }
+            var origin = Path.Combine(folderName, "log");
+            var destiny = Path.Combine(destinyZipBase, AppointedFolder());
+            return ZipFolder(origin, destiny);
         }
 
         private static string AppointedFolder()
@@ -37,10 +45,24 @@ namespace SupportHelper.WinServices.Application.UseCases
             return sb.ToString();
         }
 
-        private bool ConnectToSmb(string serverDestin)
+        private static string ZipFolder(string origin, string destinyZip)
         {
-            // LOGICAR PARA ACESSAR O SERVIDOR PASSANDO CREDENCIAIS
-            throw new NotImplementedException();
+            if (File.Exists(destinyZip))
+            {
+                File.Delete(destinyZip);
+            }
+
+            try
+            {
+                destinyZip = string.Concat(destinyZip, @".zip");
+                ZipFile.CreateFromDirectory(origin, destinyZip, CompressionLevel.Fastest, true);
+                return destinyZip;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         private static void CopyFolderAndArchives(string origin, string destiny)
