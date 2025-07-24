@@ -18,11 +18,11 @@ namespace SupportHelper.WebApi.Controllers
             return Ok(json);
         }
 
-        [HttpGet("LogSgpClient/{hostname:required}")]
+        [HttpGet("LogSgpClient")]
         public async Task<IActionResult> GetLogsForSgpClientAsync([FromServices] IRequestLogsSgpClientUseCase sgpClientUseCase,
-            [FromBody] RequestBase<RequestMachine> request, [FromRoute] string hostname, [FromHeader] string? exchange)
+            [FromBody] RequestLogsSgpClientJson request)
         {
-            await sgpClientUseCase.ExecuteAsync(request, new RabbitMQRequest(hostname, exchange));
+            await sgpClientUseCase.ExecuteAsync(request);
             return Ok();
         }
 

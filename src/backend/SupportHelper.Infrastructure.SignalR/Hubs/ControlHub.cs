@@ -38,6 +38,11 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
             await Task.CompletedTask;
         }
 
+        public void ResponseGetLogsSgpClient(string requestId, string response)
+        {
+            _taskClientResponses.FinalizeTask(requestId, response);
+        }
+
         public async override Task OnConnectedAsync()
         {
             HttpContext httpContext = Context.GetHttpContext()

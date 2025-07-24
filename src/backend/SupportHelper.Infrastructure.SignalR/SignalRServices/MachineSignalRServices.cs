@@ -4,7 +4,6 @@ using SupportHelper.Communication.Responses;
 using SupportHelper.Domain.Interfaces.SignalRContext;
 using SupportHelper.Infrastructure.SignalR.Hubs;
 using SupportHelper.Infrastructure.SignalR.Interfaces;
-using System.Text;
 using System.Text.Json;
 
 namespace SupportHelper.Infrastructure.SignalR.SignalRServices
@@ -45,15 +44,15 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
             }
         }
 
-        public async Task<ResponseUpdateSgpClientJson> UpdateSgpClientAsync(string connectionId, RequestUpdateSgpClientJson requestJson, 
+        public async Task<ResponseUpdateSgpClientJson> UpdateSgpClientAsync(string connectionId, RequestUpdateSgpClientJson requestJson,
             CancellationToken cancellationToken = default)
         {
-            var(requestId, tcs) = RegisterTcs();
+            var (requestId, tcs) = RegisterTcs();
             try
             {
                 await _context.Clients.Clients(connectionId).SendAsync("UpdateSgpClient", requestId, requestJson, cancellationToken);
                 var response = await tcs.Task.WaitAsync(_taskClientResponse.Time, cancellationToken);
-                return JsonSerializer.Deserialize<ResponseUpdateSgpClientJson>(response) ?? 
+                return JsonSerializer.Deserialize<ResponseUpdateSgpClientJson>(response) ??
                     throw new NotImplementedException();
             }
             catch (TimeoutException ex)
@@ -70,9 +69,19 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
             }
         }
 
-        public async Task GetLogSgpClientAsync(string connectionId, string productionLine, CancellationToken cancellationToken = default)
+        public async Task<string> GetLogSgpClientAsync(RequestLogsSgpClientJson request, string connectionId, CancellationToken cancellationToken = default)
         {
-            await _context.Clients.Client(connectionId).SendAsync("GetLogSgpClient", productionLine, cancellationToken);
+            var (requestId, tcs) = RegisterTcs();
+            try
+            {
+                await _context.Clients.Client(connectionId).SendAsync("GetLogSgpClient", request, requestId, cancellationToken);
+                var response = await tcs.Task.WaitAsync(_taskClientResponse.Time, cancellationToken);
+                return response;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private (string requestId, TaskCompletionSource<string> tcs) RegisterTcs()
