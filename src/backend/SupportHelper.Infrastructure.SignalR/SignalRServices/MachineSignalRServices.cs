@@ -23,17 +23,17 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
         public async Task<ResponseStatusMachineJson> RequestStatusAsync(string connectionId,
             CancellationToken cancellationToken = default)
         {
-            var tuple = RegisterTcs();
+            var (requestId, tcs) = RegisterTcs();
             try
             {
-                await _context.Clients.Clients(connectionId).SendAsync("RequestStatusMachine", tuple.Item1, cancellationToken);
-                var response = await tuple.Item2.Task.WaitAsync(_taskClientResponse.Time);
+                await _context.Clients.Clients(connectionId).SendAsync("RequestStatusMachine", requestId, cancellationToken);
+                var response = await tcs.Task.WaitAsync(_taskClientResponse.Time, cancellationToken);
                 return JsonSerializer.Deserialize<ResponseStatusMachineJson>(response) ??
                     throw new NotImplementedException();
             }
             catch (TimeoutException)
             {
-                throw new TimeoutException($"Aguardando resposta do cliente '{connectionId}' excedeu o tempo limite.");
+                throw new TimeoutException($"Aguardando resposta do cliente '[{connectionId}]' excedeu o tempo limite.");
             }
             catch (Exception)
             {
@@ -41,18 +41,18 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
             }
             finally
             {
-                _taskClientResponse.Unregister(tuple.Item1);
+                _taskClientResponse.Unregister(requestId);
             }
         }
 
         public async Task<ResponseUpdateSgpClientJson> UpdateSgpClientAsync(string connectionId, RequestUpdateSgpClientJson requestJson, 
             CancellationToken cancellationToken = default)
         {
-            var tuple = RegisterTcs();
+            var(requestId, tcs) = RegisterTcs();
             try
             {
-                await _context.Clients.Clients(connectionId).SendAsync("UpdateSgpClient", tuple.Item1, requestJson, cancellationToken);
-                var response = await tuple.Item2.Task.WaitAsync(_taskClientResponse.Time);
+                await _context.Clients.Clients(connectionId).SendAsync("UpdateSgpClient", requestId, requestJson, cancellationToken);
+                var response = await tcs.Task.WaitAsync(_taskClientResponse.Time, cancellationToken);
                 return JsonSerializer.Deserialize<ResponseUpdateSgpClientJson>(response) ?? 
                     throw new NotImplementedException();
             }
@@ -66,7 +66,7 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
             }
             finally
             {
-                _taskClientResponse.Unregister(tuple.Item1);
+                _taskClientResponse.Unregister(requestId);
             }
         }
 
@@ -75,7 +75,7 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
             await _context.Clients.Client(connectionId).SendAsync("GetLogSgpClient", productionLine, cancellationToken);
         }
 
-        private (string, TaskCompletionSource<string>) RegisterTcs()
+        private (string requestId, TaskCompletionSource<string> tcs) RegisterTcs()
         {
             var requestId = Guid.NewGuid().ToString();
             var tcs = new TaskCompletionSource<string>();
