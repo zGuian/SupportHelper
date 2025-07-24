@@ -4,20 +4,20 @@ using SupportHelper.WinServices.Application.Interfaces.Services;
 
 namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
 {
-    public class GetLogSgpClientHandler : ISignalREventHandler
+    public class RequestLogSgpClientHandler : ISignalREventHandler
     {
         private readonly IMachineService _machineService;
 
-        public GetLogSgpClientHandler(IMachineService machineService)
+        public RequestLogSgpClientHandler(IMachineService machineService)
         {
             _machineService = machineService;
         }
 
         public void Register(HubConnection connection, CancellationToken stoppingToken)
         {
-            connection.On("GetLogSgpClient", async (string productionLine) =>
+            connection.On("GetLogSgpClient", async (string productionLine, string requestId) =>
             {
-                await _machineService.MakeAvailableLogSgpClient(productionLine);
+                await _machineService.MakeAvailableLogSgpClient(productionLine, requestId);
             });
         }
     }

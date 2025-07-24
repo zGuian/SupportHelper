@@ -20,13 +20,13 @@ namespace SupportHelper.WinServices.Application.Services
             _fileTranferHandler = fileTranferHandler;
         }
 
-        public async Task<bool> MakeAvailableLogSgpClient(string productionLine)
+        public async Task<bool> MakeAvailableLogSgpClient(string productionLine, string requestId)
         {
             try
             {
                 _logger.LogInformation("Iniciando processo de copiar arquivos");
                 var pathArchiveZip = _getLoggerUseCase.Execute(productionLine);
-                await _fileTranferHandler.SendArchiveZipAsync(productionLine, pathArchiveZip);
+                await _fileTranferHandler.SendArchiveZipAsync(productionLine, pathArchiveZip, requestId);
 
                 return true;
             }

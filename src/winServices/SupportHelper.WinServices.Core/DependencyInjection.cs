@@ -37,7 +37,7 @@ namespace SupportHelper.WinServices.Core
             services.AddSingleton<IWatchForShutdownHandler, WatchForShutdownHandler>();
 
             services.AddSingleton<ISignalREventHandler, ConnectionHandler>();
-            services.AddSingleton<ISignalREventHandler, GetLogSgpClientHandler>();
+            services.AddSingleton<ISignalREventHandler, RequestLogSgpClientHandler>();
             services.AddSingleton<ISignalREventHandler, RequestStatusToMachineHandler>();
             services.AddSingleton<ISignalREventHandler, UpdateSgpClientHandler>();
         }

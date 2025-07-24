@@ -14,7 +14,7 @@ namespace SupportHelper.WinServices.Application.UseCases
             _hubUrl = $"{configuration["SignalrSettings:FileTransferUrl"]}?hostname={Environment.MachineName}";
         }
 
-        public async Task SendArchiveZipAsync(string productionLine, string filePath, CancellationToken cancellationToken = default)
+        public async Task SendArchiveZipAsync(string productionLine, string filePath, string requestId, CancellationToken cancellationToken = default)
         {
             var connection = new HubConnectionBuilder()
                 .WithUrl(_hubUrl)
@@ -25,7 +25,7 @@ namespace SupportHelper.WinServices.Application.UseCases
             var fileName = Path.GetFileName(filePath);
             var channel = Channel.CreateUnbounded<byte[]>();
 
-            var sendTask = connection.SendAsync("ReceberArquivoZip", channel.Reader, fileName, cancellationToken);
+            var sendTask = connection.SendAsync("ReceivedArchivesZip", requestId, channel.Reader, fileName, cancellationToken);
 
             using var stream = File.OpenRead(filePath);
             var buffer = new byte[8192];

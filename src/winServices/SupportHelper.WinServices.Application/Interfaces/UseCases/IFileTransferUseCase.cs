@@ -2,6 +2,6 @@
 {
     public interface IFileTransferUseCase
     {
-        Task SendArchiveZipAsync(string productionLine, string filePath, CancellationToken cancellationToken = default);
+        Task SendArchiveZipAsync(string productionLine, string filePath, string requestId, CancellationToken cancellationToken = default);
     }
 }
