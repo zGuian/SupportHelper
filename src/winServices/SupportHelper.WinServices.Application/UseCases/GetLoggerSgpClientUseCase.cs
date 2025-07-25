@@ -14,13 +14,15 @@ namespace SupportHelper.WinServices.Application.UseCases
             _logger = logger;
         }
 
-        public string Execute(string productionLine)
+        public void Execute(string productionLine, out string filePath)
         {
             var originBase = @$"C:\ProgramData\MBBras\SGP\SGPClient3";
             var folderName = Path.Combine(originBase, productionLine);
             if (!Directory.Exists(folderName))
             {
                 _logger.LogInformation("NÃO FOI ENCONTRADO O CAMINHO {foldername}", folderName);
+                filePath = "ERROR";
+                return;
             }
             var destinyZipBase = @"C:\Temp\";
             if (!Directory.Exists(destinyZipBase))
@@ -29,7 +31,7 @@ namespace SupportHelper.WinServices.Application.UseCases
             }
             var origin = Path.Combine(folderName, "log");
             var destiny = Path.Combine(destinyZipBase, AppointedFolder());
-            return ZipFolder(origin, destiny);
+            filePath = ZipFolder(origin, destiny);
         }
 
         private static string AppointedFolder()
@@ -60,7 +62,6 @@ namespace SupportHelper.WinServices.Application.UseCases
             }
             catch (Exception)
             {
-
                 throw;
             }
         }

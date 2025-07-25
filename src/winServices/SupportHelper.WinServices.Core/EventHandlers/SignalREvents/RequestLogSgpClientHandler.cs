@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using SupportHelper.Communication.Requests;
 using SupportHelper.WinServices.Application.Interfaces.Events;
 using SupportHelper.WinServices.Application.Interfaces.Services;
 
@@ -15,9 +16,10 @@ namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
 
         public void Register(HubConnection connection, CancellationToken stoppingToken)
         {
-            connection.On("GetLogSgpClient", async (string productionLine, string requestId) =>
+            connection.On("GetLogSgpClient", async (RequestLogsSgpClientJson request, string requestId) =>
             {
-                await _machineService.MakeAvailableLogSgpClient(productionLine, requestId);
+                var response = await _machineService.MakeAvailableLogSgpClient(request);
+                await connection.SendAsync("ResponseGetLogsSgpClient", requestId, response, stoppingToken);
             });
         }
     }
