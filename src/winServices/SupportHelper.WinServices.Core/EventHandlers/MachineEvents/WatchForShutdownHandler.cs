@@ -5,6 +5,7 @@ using SupportHelper.WinServices.Core.Converters;
 using SupportHelper.WinServices.Core.Models;
 using System.Management;
 using System.Runtime.Versioning;
+using System.Text.Json;
 
 namespace SupportHelper.WinServices.Core.EventHandlers.MachineEvents
 {
@@ -24,15 +25,16 @@ namespace SupportHelper.WinServices.Core.EventHandlers.MachineEvents
             try
             {
                 MachineModel machine = MachineModel.Create();
-                var response = ResponseStatusMachineJson.Create(false, machine.Hostname, false, machine.CurrentUsername,
-                    machine.DomainName, machine.OperationalSystem, 
-                    NetworkBoardConvert.EntityToResponse(machine.NetworkBoards), machine.UpTime, machine.LastUpdate);
-
+                
                 string query = "SELECT * FROM Win32_ComputerShutdown";
                 _shutdownEventWatcher = new ManagementEventWatcher(query);
                 _shutdownEventWatcher.EventArrived += async (sender, e) =>
                 {
-                    await connection.SendAsync("ClientHasShutdown", response, cancellationToken);
+                    var response = ResponseStatusMachineJson.Create(false, machine.Hostname, false, machine.CurrentUsername,
+                    machine.DomainName, machine.OperationalSystem,
+                        NetworkBoardConvert.EntityToResponse(machine.NetworkBoards), machine.UpTime, machine.LastUpdate);
+                    var json = JsonSerializer.Serialize(response);
+                    await connection.SendAsync("ClientHasShutdown", json, cancellationToken);
                 };
                 _shutdownEventWatcher.Start();
                 _logger.LogInformation("Iniciado monitoração do evento: [Shutdown]");

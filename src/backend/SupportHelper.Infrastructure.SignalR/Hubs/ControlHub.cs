@@ -5,6 +5,7 @@ using SupportHelper.Domain.Aggregates;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Exceptions.ExceptionsBase;
 using SupportHelper.Infrastructure.SignalR.Interfaces;
+using System.Text.Json;
 
 namespace SupportHelper.Infrastructure.SignalR.Hubs
 {
@@ -29,17 +30,18 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
             await base.OnConnectedAsync();
         }
 
-        public async Task ClientHasShutdown(ResponseStatusMachineJson response)
+        public async Task ClientHasShutdown(string response)
         {
-            var connId = await _machineRepository.GetConnectionByHostnameAsync(response.Hostname);
-            var schema = MachineSchemaJson.Create(response, connId);
+            var obj = JsonSerializer.Deserialize<ResponseStatusMachineJson>(response);
+            var connId = await _machineRepository.GetConnectionByHostnameAsync(obj.Hostname);
+            var schema = MachineSchemaJson.Create(obj, connId);
             await _machineRepository.UpdateAsync(schema);
         }
 
         public async Task ResponseStatusAsync(string requestId, string response)
         {
-            _taskClientResponses.FinalizeTask(requestId, response);
-            await Task.CompletedTask;
+            if (_taskClientResponses.FinalizeTask(requestId, response))
+                await Task.CompletedTask;
         }
 
         public async Task ResponseUpdateSgpClient(string requestId, string response)
