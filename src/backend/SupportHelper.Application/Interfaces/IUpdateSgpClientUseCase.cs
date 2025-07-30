@@ -3,7 +3,7 @@ using SupportHelper.Communication.Responses;
 
 namespace SupportHelper.Application.Interfaces
 {
-    public interface IRequestUpdateSgpClientUseCase
+    public interface IUpdateSgpClientUseCase
     {
         Task<ResponseUpdateSgpClientJson> ExecuteAsync(RequestUpdateSgpClientJson requestJson);
     }

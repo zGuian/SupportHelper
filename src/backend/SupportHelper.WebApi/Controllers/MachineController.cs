@@ -11,7 +11,7 @@ namespace SupportHelper.WebApi.Controllers
     public sealed class MachineController : ControllerBase
     {
         [HttpGet("StatusMachine/{hostname:required}")]
-        public async Task<IActionResult> GetStatusToMachine([FromServices] IRequestStatusMachineUseCase statusMachineUseCase,
+        public async Task<IActionResult> GetStatusToMachine([FromServices] IStatusMachineUseCase statusMachineUseCase,
             [FromRoute] string hostname, CancellationToken cancellationToken)
         {
             var json = await statusMachineUseCase.ExecuteAsync(hostname.ToLower(), cancellationToken);
@@ -19,7 +19,7 @@ namespace SupportHelper.WebApi.Controllers
         }
 
         [HttpPost("LogSgpClient")]
-        public async Task<IActionResult> GetLogsForSgpClientAsync([FromServices] IRequestLogsSgpClientUseCase sgpClientUseCase,
+        public async Task<IActionResult> GetLogsForSgpClientAsync([FromServices] ILogsSgpClientUseCase sgpClientUseCase,
             [FromBody] RequestLogsSgpClientJson request)
         {
             await sgpClientUseCase.ExecuteAsync(request);
@@ -27,7 +27,7 @@ namespace SupportHelper.WebApi.Controllers
         }
 
         [HttpPost("UpdateSgpCliet")]
-        public async Task<IActionResult> UpdateSgpClient([FromServices] IRequestUpdateSgpClientUseCase request,
+        public async Task<IActionResult> UpdateSgpClient([FromServices] IUpdateSgpClientUseCase request,
             [FromBody] RequestUpdateSgpClientJson json)
         {
             await request.ExecuteAsync(json);
@@ -35,7 +35,7 @@ namespace SupportHelper.WebApi.Controllers
         }
 
         [HttpGet("GetMachinesConnected")]
-        public async Task<IActionResult> GetMachinesConnected([FromServices] IRequestGetAllMachinesUseCase request,
+        public async Task<IActionResult> GetMachinesConnected([FromServices] IGetAllMachinesUseCase request,
             [FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             var data = await request.ExecuteAsync(pageNumber, pageSize);

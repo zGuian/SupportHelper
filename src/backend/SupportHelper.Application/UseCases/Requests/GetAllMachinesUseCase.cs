@@ -3,13 +3,13 @@ using SupportHelper.Application.Interfaces;
 using SupportHelper.Communication.Dtos.CouchDbDto;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 
-namespace SupportHelper.Application.UseCases.MachineUC
+namespace SupportHelper.Application.UseCases.Requests
 {
-    public sealed class RequestGetAllMachinesUseCase : IRequestGetAllMachinesUseCase
+    public sealed class GetAllMachinesUseCase : IGetAllMachinesUseCase
     {
         private readonly IMachineRepository _machineRepository;
 
-        public RequestGetAllMachinesUseCase(IMachineRepository machineRepository)
+        public GetAllMachinesUseCase(IMachineRepository machineRepository)
         {
             _machineRepository = machineRepository;
         }

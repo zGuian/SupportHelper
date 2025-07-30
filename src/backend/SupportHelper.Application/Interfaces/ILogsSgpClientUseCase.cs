@@ -2,7 +2,7 @@
 
 namespace SupportHelper.Application.Interfaces
 {
-    public interface IRequestLogsSgpClientUseCase
+    public interface ILogsSgpClientUseCase
     {
         Task ExecuteAsync(RequestLogsSgpClientJson request, CancellationToken cancellationToken = default);
     }

@@ -7,15 +7,15 @@ using SupportHelper.Domain.Interfaces.SignalRContext;
 using SupportHelper.Exceptions.ExceptionsBase;
 using System.Text.Json;
 
-namespace SupportHelper.Application.UseCases.MachineUC
+namespace SupportHelper.Application.UseCases.Requests
 {
-    public class RequestLogsSgpClientUseCase : IRequestLogsSgpClientUseCase
+    public class LogsSgpClientUseCase : ILogsSgpClientUseCase
     {
-        private readonly ILogger<RequestLogsSgpClientUseCase> _logger;
+        private readonly ILogger<LogsSgpClientUseCase> _logger;
         private readonly IMachineSignalRServices _machineSignalR;
         private readonly IMachineRepository _machineRepository;
 
-        public RequestLogsSgpClientUseCase(ILogger<RequestLogsSgpClientUseCase> logger, IMachineSignalRServices machineSignalR, IMachineRepository machineRepository)
+        public LogsSgpClientUseCase(ILogger<LogsSgpClientUseCase> logger, IMachineSignalRServices machineSignalR, IMachineRepository machineRepository)
         {
             _logger = logger;
             _machineSignalR = machineSignalR;

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SupportHelper.Application.Interfaces;
-using SupportHelper.Application.UseCases.MachineUC;
+using SupportHelper.Application.UseCases.Requests;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Domain.Interfaces.Repositories.Memory;
 using SupportHelper.Domain.Interfaces.SignalRContext;
@@ -29,11 +29,11 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
 
         private static void AddUseCases(IServiceCollection services)
         {
-            services.AddScoped<IRequestGetAllMachinesUseCase, RequestGetAllMachinesUseCase>();
-            services.AddScoped<IRequestLogsSgpClientUseCase, RequestLogsSgpClientUseCase>();
-            services.AddScoped<IRequestMachineInformationUseCase, RequestMachineInformationUseCase>();
-            services.AddScoped<IRequestStatusMachineUseCase, RequestStatusMachineUseCase>();
-            services.AddScoped<IRequestUpdateSgpClientUseCase, RequestUpdateSgpClientUseCase>();
+            services.AddScoped<IGetAllMachinesUseCase, GetAllMachinesUseCase>();
+            services.AddScoped<ILogsSgpClientUseCase, LogsSgpClientUseCase>();
+            services.AddScoped<IMachineInformationUseCase, MachineInformationUseCase>();
+            services.AddScoped<IStatusMachineUseCase, StatusMachineUseCase>();
+            services.AddScoped<IUpdateSgpClientUseCase, UpdateSgpClientUseCase>();
         }
 
         private static void AddSignalR(this IServiceCollection services)

@@ -3,14 +3,14 @@ using SupportHelper.Application.Interfaces;
 using SupportHelper.Communication.Requests;
 using SupportHelper.Domain.Interfaces.SignalRContext;
 
-namespace SupportHelper.Application.UseCases.MachineUC
+namespace SupportHelper.Application.UseCases.Requests
 {
-    public class RequestMachineInformationUseCase : IRequestMachineInformationUseCase
+    public class MachineInformationUseCase : IMachineInformationUseCase
     {
-        private readonly ILogger<RequestMachineInformationUseCase> _logger;
+        private readonly ILogger<MachineInformationUseCase> _logger;
         private readonly IMachineSignalRServices _machineSignalR;
 
-        public RequestMachineInformationUseCase(ILogger<RequestMachineInformationUseCase> logger, IMachineSignalRServices machineSignalR)
+        public MachineInformationUseCase(ILogger<MachineInformationUseCase> logger, IMachineSignalRServices machineSignalR)
         {
             _logger = logger;
             _machineSignalR = machineSignalR;

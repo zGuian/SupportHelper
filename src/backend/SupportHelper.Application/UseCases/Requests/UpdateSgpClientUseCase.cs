@@ -2,17 +2,16 @@
 using SupportHelper.Communication.Requests;
 using SupportHelper.Communication.Responses;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
-using SupportHelper.Domain.Interfaces.Repositories.Memory;
 using SupportHelper.Domain.Interfaces.SignalRContext;
 
-namespace SupportHelper.Application.UseCases.MachineUC
+namespace SupportHelper.Application.UseCases.Requests
 {
-    public sealed class RequestUpdateSgpClientUseCase : IRequestUpdateSgpClientUseCase
+    public sealed class UpdateSgpClientUseCase : IUpdateSgpClientUseCase
     {
         private readonly IMachineSignalRServices _signalRService;
         private readonly IMachineRepository _machineRepository;
 
-        public RequestUpdateSgpClientUseCase(IMachineSignalRServices signalRService, IMachineRepository machineRepository)
+        public UpdateSgpClientUseCase(IMachineSignalRServices signalRService, IMachineRepository machineRepository)
         {
             _signalRService = signalRService;
             _machineRepository = machineRepository;
