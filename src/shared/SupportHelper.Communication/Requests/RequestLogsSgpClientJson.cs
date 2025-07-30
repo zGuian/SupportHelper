@@ -1,9 +1,4 @@
 ﻿namespace SupportHelper.Communication.Requests
 {
-    public record RequestLogsSgpClientJson
-    {
-        public required string Hostname { get; init; }
-        public required string ProductionLine { get; init; }
-        public required string DestinyArchive { get; init; }
-    }
+    public record RequestLogsSgpClientJson(string Hostname, string ProductionLine, string DestinyArchive);
 }

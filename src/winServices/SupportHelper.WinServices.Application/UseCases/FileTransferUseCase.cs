@@ -25,7 +25,7 @@ namespace SupportHelper.WinServices.Application.UseCases
             IpServer = configuration["SmbSettings:IpServer"] ?? throw new ArgumentNullException(IpServer, "NÃO ENCONTRADO VALOR DE APPSETTINGS");
         }
 
-        public async Task SendArchiveZipAsync(string filePath, string archiveDestiny)
+        public async Task<bool> SendArchiveZipAsync(string filePath, string archiveDestiny)
         {
             try
             {
@@ -39,11 +39,13 @@ namespace SupportHelper.WinServices.Application.UseCases
                     });
                 var archiveZipLocal = await sourceServer.GetNode(filePath);
                 await archiveZipLocal.Move(archiveDestiny);
+                ValidateFolder(archiveDestiny);
                 sourceServer.Dispose();
+                return true;
             }
             catch (Exception)
             {
-                throw;
+                return false;
             }
         }
 
@@ -66,8 +68,10 @@ namespace SupportHelper.WinServices.Application.UseCases
                 RedirectStandardError = true,
             };
 
-            var process = new Process();
-            process.StartInfo = processInfo;
+            var process = new Process
+            {
+                StartInfo = processInfo
+            };
             process.Start();
 
             process.OutputDataReceived += (sender, args) =>
@@ -82,6 +86,15 @@ namespace SupportHelper.WinServices.Application.UseCases
             {
                 process.BeginErrorReadLine();
             };
+        }
+
+        private void ValidateFolder(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                return;
+            }
+            _logger.LogError("NÃO FOI ENCONTRADO CAMINHO {path}", path);
         }
     }
 }

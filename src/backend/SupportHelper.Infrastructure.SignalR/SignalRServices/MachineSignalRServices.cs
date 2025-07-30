@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using SupportHelper.Communication.Requests;
 using SupportHelper.Communication.Responses;
 using SupportHelper.Domain.Interfaces.SignalRContext;
@@ -12,11 +13,14 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
     {
         private readonly IHubContext<ControlHub> _context;
         private readonly ITaskClientResponses _taskClientResponse;
+        private readonly ILogger<MachineSignalRServices> _logger;
 
-        public MachineSignalRServices(IHubContext<ControlHub> context, ITaskClientResponses taskClientResponse)
+        public MachineSignalRServices(IHubContext<ControlHub> context, ITaskClientResponses taskClientResponse, 
+            ILogger<MachineSignalRServices> logger)
         {
             _context = context;
             _taskClientResponse = taskClientResponse;
+            _logger = logger;
         }
 
         public async Task<ResponseStatusMachineJson> RequestStatusAsync(string connectionId,
@@ -78,8 +82,14 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
                 var response = await tcs.Task.WaitAsync(_taskClientResponse.Time, cancellationToken);
                 return response;
             }
-            catch (Exception)
+            catch (TimeoutException ex)
             {
+                _logger.LogCritical("ERRO DE TIMEOUT {message}", ex.Message);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical("ERROR: {message}", ex.Message);
                 throw;
             }
         }

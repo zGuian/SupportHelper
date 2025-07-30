@@ -18,7 +18,7 @@ namespace SupportHelper.WebApi.Controllers
             return Ok(json);
         }
 
-        [HttpGet("LogSgpClient")]
+        [HttpPost("LogSgpClient")]
         public async Task<IActionResult> GetLogsForSgpClientAsync([FromServices] IRequestLogsSgpClientUseCase sgpClientUseCase,
             [FromBody] RequestLogsSgpClientJson request)
         {

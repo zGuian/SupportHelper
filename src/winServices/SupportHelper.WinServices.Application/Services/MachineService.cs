@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using SupportHelper.Communication.Requests;
+using SupportHelper.Communication.Responses;
 using SupportHelper.WinServices.Application.Interfaces.Services;
 using SupportHelper.WinServices.Application.Interfaces.UseCases;
+using System.Text.Json;
 
 namespace SupportHelper.WinServices.Application.Services
 {
@@ -28,12 +30,27 @@ namespace SupportHelper.WinServices.Application.Services
                 var filePath = string.Empty;
                 _logger.LogInformation("Iniciando processo de copiar arquivos");
                 await Task.Run(() => { _getLoggerUseCase.Execute(request.ProductionLine, out filePath); });
-                if (filePath != "ERROR")
+                if (filePath == "ERROR")
                 {
-                    await _fileTranferHandler.SendArchiveZipAsync(filePath, request.DestinyArchive);
-                    return "OK - Arquivo enviado com sucesso";
+                    return "NOK - NÃO POSSIVEL COLETAR AS LOGS. NÃO ENCONTRADO ARQUIVOS DE LOG";
                 }
-                return "NOK - NÃO POSSIVEL COLETAR AS LOGS. NÃO ENCONTRADO ARQUIVOS DE LOG";
+                var value = await _fileTranferHandler.SendArchiveZipAsync(filePath, request.DestinyArchive);
+                if (value == true)
+                {
+                    var response = new ResponseLogsSgpClientJson
+                    {
+                        IsSuccess = value,
+                        Path = request.DestinyArchive,
+                    };
+                    return JsonSerializer.Serialize(response);
+                }
+                var response2 = new ResponseLogsSgpClientJson
+                {
+                    IsSuccess = value,
+                    Path = request.DestinyArchive,
+                    Message = $"Não foi possivel encontrar o arquivo copiado."
+                };
+                return JsonSerializer.Serialize(response2);
             }
             catch (Exception ex)
             {

@@ -2,7 +2,7 @@
 {
     public interface IFileTransferUseCase
     {
-        Task SendArchiveZipAsync(string filePath, string archiveDestiny);
+        Task<bool> SendArchiveZipAsync(string filePath, string archiveDestiny);
         void SendArchiveZipAsync((string filePath, string destinyArchive) tuple, CancellationToken cancellationToken = default);
     }
 }

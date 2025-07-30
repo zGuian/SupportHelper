@@ -19,6 +19,16 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
             _taskClientResponses = taskClientResponses;
         }
 
+        public async override Task OnConnectedAsync()
+        {
+            HttpContext httpContext = Context.GetHttpContext()
+            ?? throw new GenericErrorException(["NÃO ENCONTRADO VALORES DE URL"]);
+            string hostname = httpContext.Request.Query["hostname"].ToString().ToLower();
+            string connId = Context.ConnectionId;
+            await _machineRepository.InsertOrUpdateAsync(hostname, connId);
+            await base.OnConnectedAsync();
+        }
+
         public async Task ClientHasShutdown(ResponseStatusMachineJson response)
         {
             var connId = await _machineRepository.GetConnectionByHostnameAsync(response.Hostname);
@@ -38,19 +48,7 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
             await Task.CompletedTask;
         }
 
-        public void ResponseGetLogsSgpClient(string requestId, string response)
-        {
+        public void ResponseGetLogsSgpClient(string requestId, string response) =>
             _taskClientResponses.FinalizeTask(requestId, response);
-        }
-
-        public async override Task OnConnectedAsync()
-        {
-            HttpContext httpContext = Context.GetHttpContext()
-            ?? throw new GenericErrorException(["NÃO ENCONTRADO VALORES DE URL"]);
-            string hostname = httpContext.Request.Query["hostname"].ToString().ToLower();
-            string connId = Context.ConnectionId;
-            await _machineRepository.InsertOrUpdateAsync(hostname, connId);
-            await base.OnConnectedAsync();
-        }
     }
 }

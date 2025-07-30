@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using SupportHelper.Application.Interfaces;
 using SupportHelper.Communication.Requests;
-using SupportHelper.Domain.Interfaces.MQServices;
+using SupportHelper.Communication.Responses;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Domain.Interfaces.SignalRContext;
 using SupportHelper.Exceptions.ExceptionsBase;
+using System.Text.Json;
 
 namespace SupportHelper.Application.UseCases.MachineUC
 {
@@ -23,13 +24,18 @@ namespace SupportHelper.Application.UseCases.MachineUC
 
         public async Task ExecuteAsync(RequestLogsSgpClientJson request, CancellationToken cancellationToken = default)
         {
-            var connId = await _machineRepository.GetConnectionByHostnameAsync(request.Hostname);
-            var response = await _machineSignalR.GetLogSgpClientAsync(request, connId, cancellationToken);
-            if (response.StartsWith("NOK -"))
+            var connId = await _machineRepository.GetConnectionByHostnameAsync(request.Hostname, cancellationToken);
+            var responseBase = await _machineSignalR.GetLogSgpClientAsync(request, connId, cancellationToken);
+            if (responseBase.StartsWith("NOK"))
             {
-                throw new GenericErrorException([response]);
+                throw new Exception(responseBase);
             }
-            return;
+            var response = JsonSerializer.Deserialize<ResponseLogsSgpClientJson>(responseBase)
+                ?? throw new Exception();
+            if (!response.IsSuccess)
+            {
+                throw new GenericErrorException([response.Message]);
+            }
         }
     }
 }
