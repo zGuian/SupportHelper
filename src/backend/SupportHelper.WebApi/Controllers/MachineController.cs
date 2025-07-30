@@ -12,9 +12,9 @@ namespace SupportHelper.WebApi.Controllers
     {
         [HttpGet("StatusMachine/{hostname:required}")]
         public async Task<IActionResult> GetStatusToMachine([FromServices] IRequestStatusMachineUseCase statusMachineUseCase,
-            [FromRoute] string hostname)
+            [FromRoute] string hostname, CancellationToken cancellationToken)
         {
-            var json = await statusMachineUseCase.ExecuteAsync(hostname.ToLower());
+            var json = await statusMachineUseCase.ExecuteAsync(hostname.ToLower(), cancellationToken);
             return Ok(json);
         }
 

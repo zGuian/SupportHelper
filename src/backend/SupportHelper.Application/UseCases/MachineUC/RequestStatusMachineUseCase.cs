@@ -17,12 +17,12 @@ namespace SupportHelper.Application.UseCases.MachineUC
             _machineRepository = machineRepository;
         }
 
-        public async Task<ResponseStatusMachineJson> ExecuteAsync(string hostname)
+        public async Task<ResponseStatusMachineJson> ExecuteAsync(string hostname, CancellationToken cancellationToken = default)
         {
-            var connId = await _machineRepository.GetConnectionByHostnameAsync(hostname);
-            var responseJson = await _signalR.RequestStatusAsync(connId);
+            var connId = await _machineRepository.GetConnectionByHostnameAsync(hostname, cancellationToken);
+            var responseJson = await _signalR.RequestStatusAsync(connId, cancellationToken);
             var schema = MachineSchemaJson.Create(responseJson, connId);
-            await _machineRepository.InsertOrUpdateAsync(schema);
+            await _machineRepository.InsertOrUpdateAsync(schema, cancellationToken);
             return responseJson;
         }
     }
