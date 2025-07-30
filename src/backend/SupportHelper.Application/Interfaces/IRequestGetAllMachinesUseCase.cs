@@ -1,15 +1,10 @@
 ﻿using SupportHelper.Application.DTOs;
-using SupportHelper.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SupportHelper.Communication.Dtos.CouchDbDto;
 
 namespace SupportHelper.Application.Interfaces
 {
     public interface IRequestGetAllMachinesUseCase
     {
-        Task<ResponsePageableDto<HashSet<Machine>>> ExecuteAsync(int pageNumber, int pageSize);
+        Task<ResponsePageableDto<HashSet<RowDto>>> ExecuteAsync(int pageNumber, int pageSize);
     }
 }

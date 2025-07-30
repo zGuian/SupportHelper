@@ -12,5 +12,12 @@ namespace SupportHelper.Communication.Dtos.CouchDbDto
 
         [JsonPropertyName("value")]
         public ValueDto Value { get; set; } = new();
+
+        public RowDto(string id, string key, ValueDto value)
+        {
+            Id = id;
+            Key = key;
+            Value = value;
+        }
     }
 }

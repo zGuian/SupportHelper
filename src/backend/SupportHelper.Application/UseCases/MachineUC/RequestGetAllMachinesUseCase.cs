@@ -1,6 +1,6 @@
 ﻿using SupportHelper.Application.DTOs;
 using SupportHelper.Application.Interfaces;
-using SupportHelper.Domain.Entities;
+using SupportHelper.Communication.Dtos.CouchDbDto;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 
 namespace SupportHelper.Application.UseCases.MachineUC
@@ -14,9 +14,22 @@ namespace SupportHelper.Application.UseCases.MachineUC
             _machineRepository = machineRepository;
         }
 
-        public async Task<ResponsePageableDto<HashSet<Machine>>> ExecuteAsync(int pageNumber, int pageSize)
+        public async Task<ResponsePageableDto<HashSet<RowDto>>> ExecuteAsync(int pageNumber, int pageSize)
         {
-            throw new NotImplementedException();
+            (AllDocsDto alldocs, int count) = await _machineRepository.GetAllAsync(pageNumber, pageSize);
+            var hs = new HashSet<RowDto>();
+            foreach (var row in alldocs.Rows)
+            {
+                hs.Add(row);
+            }
+
+            return new ResponsePageableDto<HashSet<RowDto>>
+            {
+                TotalQuantity = count,
+                CurrentPage = pageNumber,
+                PageCount = pageNumber,
+                Datas = hs
+            };
         }
     }
 }

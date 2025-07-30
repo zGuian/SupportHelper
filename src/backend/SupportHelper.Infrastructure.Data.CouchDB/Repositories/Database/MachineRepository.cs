@@ -1,4 +1,5 @@
-﻿using SupportHelper.Communication.Dtos.CouchDbDto;
+﻿using Microsoft.Extensions.Logging;
+using SupportHelper.Communication.Dtos.CouchDbDto;
 using SupportHelper.Domain.Aggregates;
 using SupportHelper.Domain.Entities;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
@@ -16,29 +17,39 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
     public sealed class MachineRepository : IMachineRepository
     {
         private readonly ITokenMemoryRepository _tokenMemoryRepository;
+        private readonly ILogger<MachineRepository> _logger;
         private readonly HttpClient _client;
 
-        public MachineRepository(IHttpClientFactory clientFactory, ITokenMemoryRepository tokenMemoryRepository)
+        public MachineRepository(IHttpClientFactory clientFactory, ITokenMemoryRepository tokenMemoryRepository, ILogger<MachineRepository> logger)
         {
             _tokenMemoryRepository = tokenMemoryRepository;
             _client = clientFactory.CreateClient("CouchDB");
+            _logger = logger;
         }
 
-        public async Task<AllDocsDto> GetAllAsync(int limit, int skip, CancellationToken cancellationToken = default)
+        public async Task<(AllDocsDto, int)> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
         {
             try
             {
-                HttpResponseMessage response = await _client.GetAsync("machine-dev-db/machine_all_docs", cancellationToken);
-                if (!response.IsSuccessStatusCode)
+                var responseTask = _client.GetAsync("machine-dev-db/_all_docs", cancellationToken);
+                var countTask = _client.GetAsync("machine-dv-db/", cancellationToken);
+                var result = await Task.WhenAll(responseTask, countTask);
+                var response = await responseTask;
+                var countObj = await countTask;
+                if (!response.IsSuccessStatusCode && !countObj.IsSuccessStatusCode)
                 {
                     throw new GenericErrorException(["HOUVE UMA RESPOSTA HTTP NEGATIVA"]);
                 }
+                using var doc = JsonDocument.Parse(await countObj.Content.ReadAsByteArrayAsync(cancellationToken));
+               var count = doc.RootElement.GetProperty("doc_count").GetInt32();
+
                 Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-                return await JsonSerializer.DeserializeAsync<AllDocsDto>(stream, cancellationToken: cancellationToken)
-                    ?? throw new GenericErrorException(["Houve um erro"]);
+                return (await JsonSerializer.DeserializeAsync<AllDocsDto>(stream, cancellationToken: cancellationToken)
+                    ?? throw new JsonException("Ocorreu um problema ao deserializar objeto"), count);
             }
             catch (Exception ex)
             {
+                _logger.LogError("ERROR: {ex}", ex.Message);
                 throw;
             }
         }
