@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using SupportHelper.Communication.Responses;
-using SupportHelper.Exceptions;
 using SupportHelper.Exceptions.ExceptionsBase;
 
 namespace SupportHelper.WebApi.Filters
@@ -19,13 +17,23 @@ namespace SupportHelper.WebApi.Filters
         private static void HandleProjectException(SupportHelperException supportHelperException, ExceptionContext context)
         {
             context.HttpContext.Response.StatusCode = (int)supportHelperException.GetStatusCode();
-            context.Result = new ObjectResult(new ResponseErrorJson(supportHelperException.GetErrorMessages()));
+            context.Result = new ObjectResult(new
+            {
+                Message = supportHelperException.GetErrorMessages(),
+                supportHelperException.InnerException,
+                supportHelperException.StackTrace
+            });
         }
 
         private static void ThrowUnknowException(ExceptionContext context)
         {
             context.HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            context.Result = new ObjectResult(new ResponseErrorJson(ResourceMessagesException.UNKNOWN_ERROR));
+            context.Result = new ObjectResult(new
+            {
+                context.Exception.Message,
+                context.Exception.InnerException,
+                context.Exception.StackTrace
+            });
         }
     }
 }
