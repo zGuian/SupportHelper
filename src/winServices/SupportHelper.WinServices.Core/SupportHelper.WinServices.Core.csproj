@@ -13,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\shared\SupportHelper.Communication\SupportHelper.Communication.csproj" />
     <ProjectReference Include="..\..\shared\SupportHelper.Exceptions\SupportHelper.Exceptions.csproj" />
     <ProjectReference Include="..\SupportHelper.WinServices.Application\SupportHelper.WinServices.Application.csproj" />
   </ItemGroup>

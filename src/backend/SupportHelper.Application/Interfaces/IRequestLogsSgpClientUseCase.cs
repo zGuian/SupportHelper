@@ -4,6 +4,6 @@ namespace SupportHelper.Application.Interfaces
 {
     public interface IRequestLogsSgpClientUseCase
     {
-        Task ExecuteAsync(RequestBase<RequestMachine> request, RabbitMQRequest rabbitMQRequest);
+        Task ExecuteAsync(RequestLogsSgpClientJson request, CancellationToken cancellationToken = default);
     }
 }

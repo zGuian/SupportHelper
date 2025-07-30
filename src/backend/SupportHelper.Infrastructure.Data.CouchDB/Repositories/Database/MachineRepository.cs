@@ -24,17 +24,17 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             _client = clientFactory.CreateClient("CouchDB");
         }
 
-        public async Task<AllDocsDto> GetAllAsync(int limit, int skip)
+        public async Task<AllDocsDto> GetAllAsync(int limit, int skip, CancellationToken cancellationToken = default)
         {
             try
             {
-                HttpResponseMessage response = await _client.GetAsync("machine-dev-db/machine_all_docs");
+                HttpResponseMessage response = await _client.GetAsync("machine-dev-db/machine_all_docs", cancellationToken);
                 if (!response.IsSuccessStatusCode)
                 {
                     throw new GenericErrorException(["HOUVE UMA RESPOSTA HTTP NEGATIVA"]);
                 }
-                Stream stream = await response.Content.ReadAsStreamAsync();
-                return await JsonSerializer.DeserializeAsync<AllDocsDto>(stream)
+                Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+                return await JsonSerializer.DeserializeAsync<AllDocsDto>(stream, cancellationToken: cancellationToken)
                     ?? throw new GenericErrorException(["Houve um erro"]);
             }
             catch (Exception ex)
@@ -43,9 +43,9 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             }
         }
 
-        public async Task<Machine> GetByHostname(string hostname)
+        public async Task<Machine> GetByHostnameAsync(string hostname, CancellationToken cancellationToken = default)
         {
-            var findData = await FindByHostnameAsync(hostname);
+            var findData = await FindByHostnameAsync(hostname, cancellationToken);
             if (findData == null || findData.Docs == null)
             {
                 throw new Exception();
@@ -54,14 +54,14 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             return doc.Machine;
         }
 
-        public async Task<string> GetConnectionByHostnameAsync(string hostname)
+        public async Task<string> GetConnectionByHostnameAsync(string hostname, CancellationToken cancellationToken = default)
         {
-            var doc = await FindDocByHostnameAsync(hostname.ToLower());
+            var doc = await FindDocByHostnameAsync(hostname.ToLower(), cancellationToken);
             var connId = doc.SignalR.ConnectionId;
             return connId;
         }
 
-        public async Task InsertAsync(MachineSchemaJson schema)
+        public async Task InsertAsync(MachineSchemaJson schema, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -69,14 +69,15 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
                 httpRequest.Headers.Authorization = new AuthenticationHeaderValue("AuthSession", "");
                 string json = JsonSerializer.Serialize(schema);
                 httpRequest.Content = new StringContent(json, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await _client.SendAsync(httpRequest);
+                HttpResponseMessage response = await _client.SendAsync(httpRequest, cancellationToken);
                 if (!response.IsSuccessStatusCode)
                 {
                     throw new GenericErrorException(["OCORREU UM ERRO GENERICO"]);
                 }
-                Stream stream = await response.Content.ReadAsStreamAsync();
-                ResponseBaseDto content = await JsonSerializer.DeserializeAsync<ResponseBaseDto>(stream)
-                    ?? throw new GenericErrorException(["ERROR!"]);
+                Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+                ResponseBaseDto content =
+                    await JsonSerializer.DeserializeAsync<ResponseBaseDto>(stream, cancellationToken: cancellationToken)
+                        ?? throw new GenericErrorException(["ERROR!"]);
             }
             catch (Exception ex)
             {
@@ -84,11 +85,11 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             }
         }
 
-        public async Task<ResponseBaseDto> InsertOrUpdateAsync(MachineSchemaJson schema)
+        public async Task<ResponseBaseDto> InsertOrUpdateAsync(MachineSchemaJson schema, CancellationToken cancellationToken = default)
         {
             try
             {
-                var doc = await FindDocByHostnameAsync(schema.Machine.Hostname);
+                var doc = await FindDocByHostnameAsync(schema.Machine.Hostname, cancellationToken);
                 doc.Update(schema);
                 string json = JsonSerializer.Serialize(doc);
                 HttpRequestMessage httpRequest = new(HttpMethod.Put, $"machine-dev-db/{doc.Id}")
@@ -96,13 +97,13 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
                     Content = new StringContent(json, Encoding.UTF8, "application/json")
                 };
 
-                HttpResponseMessage response = await _client.SendAsync(httpRequest);
+                HttpResponseMessage response = await _client.SendAsync(httpRequest, cancellationToken);
                 if (!response.IsSuccessStatusCode)
                 {
                     throw new GenericErrorException(["OCORREU UM ERRO GENERICO"]);
                 }
-                Stream stream = await response.Content.ReadAsStreamAsync();
-                return await JsonSerializer.DeserializeAsync<ResponseBaseDto>(stream)
+                Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+                return await JsonSerializer.DeserializeAsync<ResponseBaseDto>(stream, cancellationToken: cancellationToken)
                     ?? throw new GenericErrorException(["ERROR!"]);
             }
             catch (Exception ex)
@@ -111,24 +112,24 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             }
         }
 
-        public async Task InsertOrUpdateAsync(string hostname, string connId)
+        public async Task InsertOrUpdateAsync(string hostname, string connId, CancellationToken cancellationToken = default)
         {
             try
             {
-                var findReponse = await FindByHostnameAsync(hostname);
+                var findReponse = await FindByHostnameAsync(hostname, cancellationToken);
                 if (findReponse != null && findReponse.Docs.Any())
                 {
                     var doc = findReponse.Docs.FirstOrDefault() ?? throw new NotImplementedException();
                     doc.SignalR = new SignalR(connId, "");
                     var content = new StringContent(JsonSerializer.Serialize(doc), Encoding.UTF8, "application/json");
-                    await SendToDatabase(content, doc.Id);
+                    await SendToDatabase(content, doc.Id, cancellationToken);
                     return;
                 }
                 var machine = Machine.Create(hostname);
                 var signalR = new SignalR(connId, "");
                 var machineSchemaJson = MachineSchemaJson.Create(machine, signalR);
                 var json = new StringContent(JsonSerializer.Serialize(machineSchemaJson), Encoding.UTF8, "application/json");
-                await SendToDatabase(json, machine.Hostname);
+                await SendToDatabase(json, machine.Hostname, cancellationToken);
                 return;
             }
             catch (Exception ex)
@@ -137,7 +138,7 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             }
         }
 
-        public async Task UpdateAsync(MachineSchemaJson schema)
+        public async Task UpdateAsync(MachineSchemaJson schema, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -145,22 +146,21 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
                 request.Headers.Authorization = new AuthenticationHeaderValue("AuthSession", "");
                 string json = JsonSerializer.Serialize(schema);
                 request.Content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _client.SendAsync(request);
+                var response = await _client.SendAsync(request, cancellationToken);
                 if (!response.IsSuccessStatusCode)
                 {
-                    var stream = await response.Content.ReadAsStreamAsync();
-                    var errorBaseDto = await JsonSerializer.DeserializeAsync<ErrorBaseDto>(stream)
+                    var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+                    var errorBaseDto = await JsonSerializer.DeserializeAsync<ErrorBaseDto>(stream, cancellationToken: cancellationToken)
                         ?? throw new GenericErrorException(["NÃO FOI POSSIVEL DESERIALIZAR OBJETO"]);
                 }
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
 
-        private async Task<FindDataResponse?> FindByHostnameAsync(string hostname)
+        private async Task<FindDataResponse?> FindByHostnameAsync(string hostname, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -176,13 +176,13 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
                 };
 
                 var content = new StringContent(JsonSerializer.Serialize(query), Encoding.UTF8, "application/json");
-                var response = await _client.PostAsync("machine-dev-db/_find", content);
+                var response = await _client.PostAsync("machine-dev-db/_find", content, cancellationToken);
                 if (!response.IsSuccessStatusCode)
                 {
                     throw new NotImplementedException();
                 }
                 return await JsonSerializer.DeserializeAsync<FindDataResponse>(
-                    await response.Content.ReadAsStreamAsync());
+                    await response.Content.ReadAsStreamAsync(cancellationToken), cancellationToken: cancellationToken);
             }
             catch (Exception ex)
             {
@@ -190,7 +190,7 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             }
         }
 
-        private async Task<Doc> FindDocByHostnameAsync(string hostname)
+        private async Task<Doc> FindDocByHostnameAsync(string hostname, CancellationToken cancellationToken = default)
         {
             var query = new
             {
@@ -204,21 +204,22 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             };
 
             var content = new StringContent(JsonSerializer.Serialize(query), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync("machine-dev-db/_find", content);
+            var response = await _client.PostAsync("machine-dev-db/_find", content, cancellationToken);
             if (!response.IsSuccessStatusCode)
             {
                 throw new NotImplementedException();
             }
             var findResponse = await JsonSerializer.DeserializeAsync<FindDataResponse>(
-                await response.Content.ReadAsStreamAsync()) ?? throw new NotImplementedException();
+                await response.Content.ReadAsStreamAsync(cancellationToken), cancellationToken: cancellationToken)
+                ?? throw new NotImplementedException();
 
             return findResponse.Docs.FirstOrDefault() ?? throw new Exception("Não encontrado nenhum documento");
 
         }
 
-        private async Task SendToDatabase(StringContent content, string? docId = null)
+        private async Task SendToDatabase(StringContent content, string? docId = null, CancellationToken cancellationToken = default)
         {
-            var response = await _client.PutAsync($"machine-dev-db/{docId}", content);
+            var response = await _client.PutAsync($"machine-dev-db/{docId}", content, cancellationToken);
             if (!response.IsSuccessStatusCode)
                 throw new NotImplementedException();
             return;

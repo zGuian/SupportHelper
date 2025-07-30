@@ -28,12 +28,12 @@ namespace SupportHelper.WinServices.Application.UseCases
 
             _process.StartInfo.FileName = pathFile;
             _process.Start();
-            (string version, bool isSuccess) version = GetSgpVersion(pathFile);
-            if (!version.isSuccess)
+            var (version, isSuccess) = GetSgpVersion(pathFile);
+            if (!isSuccess)
             {
-                return "não encontrado versão do programa";
+                return version;
             }
-            return $"Versão atual: {version.version}";
+            return $"Versão atual: {version}";
         }
 
         private void StopSgpIfRunning(Process[] processes)

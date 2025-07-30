@@ -10,18 +10,21 @@ namespace SupportHelper.WinServices.Core.Workers
         private readonly ILogger<SignalRWorker> _logger;
         private readonly IEnumerable<ISignalREventHandler> _signalrHandlers;
         private readonly IWatchForShutdownHandler _watchForShutdownHandler;
+        private readonly IConfiguration _configuration;
 
         public SignalRWorker(ILogger<SignalRWorker> logger, IEnumerable<ISignalREventHandler> signalREventHandlers,
-            IWatchForShutdownHandler watchForShutdownHandler)
+            IWatchForShutdownHandler watchForShutdownHandler, IConfiguration configuration)
         {
             _logger = logger;
             _signalrHandlers = signalREventHandlers;
             _watchForShutdownHandler = watchForShutdownHandler;
+            _configuration = configuration;
         }
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            string url = "http://localhost:5001/SupportHelperConnectionSignalR?hostname=";
+            var url1 = _configuration["SignalrSettings:Url"];
+            string url = "https://tlhq4vgc-5001.brs.devtunnels.ms/SupportHelperConnectionSignalR?hostname=";
 
             _connection = new HubConnectionBuilder()
                 .WithUrl($"{url}{Environment.MachineName}")

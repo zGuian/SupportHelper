@@ -1,0 +1,22 @@
+﻿@model MachineModel
+
+<div class="container-fluid">
+    <div class="modal-body">
+        <dl class="dl-horizontal">
+            <dt>@Html.DisplayNameFor(model => model.Hostname)</dt>
+            <dd>@Html.DisplayFor(model => model.Hostname)</dd>
+
+            <dt>@Html.DisplayNameFor(model => model.DomainName)</dt>
+            <dd>@Html.DisplayFor(model => model.DomainName)</dd>
+
+            <dt>@Html.DisplayNameFor(model => model.CurrentUsername)</dt>
+            <dd>@Html.DisplayFor(model => model.CurrentUsername)</dd>
+
+            <dt>@Html.DisplayNameFor(model => model.UpTime)</dt>
+            <dd>@Html.DisplayFor(model => model.UpTime)</dd>
+        </dl>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+    </div>
+</div>

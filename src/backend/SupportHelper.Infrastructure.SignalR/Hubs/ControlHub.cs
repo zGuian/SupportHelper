@@ -5,6 +5,7 @@ using SupportHelper.Domain.Aggregates;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Exceptions.ExceptionsBase;
 using SupportHelper.Infrastructure.SignalR.Interfaces;
+using System.Text.Json;
 
 namespace SupportHelper.Infrastructure.SignalR.Hubs
 {
@@ -19,25 +20,6 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
             _taskClientResponses = taskClientResponses;
         }
 
-        public async Task ClientHasShutdown(ResponseStatusMachineJson response)
-        {
-            var connId = await _machineRepository.GetConnectionByHostnameAsync(response.Hostname);
-            var schema = MachineSchemaJson.Create(response, connId);
-            await _machineRepository.UpdateAsync(schema);
-        }
-
-        public async Task ResponseStatusAsync(string requestId, string response)
-        {
-            _taskClientResponses.FinalizeTask(requestId, response);
-            await Task.CompletedTask;
-        }
-
-        public async Task ResponseUpdateSgpClient(string requestId, string response)
-        {
-            _taskClientResponses.FinalizeTask(requestId, response);
-            await Task.CompletedTask;
-        }
-
         public async override Task OnConnectedAsync()
         {
             HttpContext httpContext = Context.GetHttpContext()
@@ -47,5 +29,28 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
             await _machineRepository.InsertOrUpdateAsync(hostname, connId);
             await base.OnConnectedAsync();
         }
+
+        public async Task ClientHasShutdown(string response)
+        {
+            var obj = JsonSerializer.Deserialize<ResponseStatusMachineJson>(response);
+            var connId = await _machineRepository.GetConnectionByHostnameAsync(obj.Hostname);
+            var schema = MachineSchemaJson.Create(obj, connId);
+            await _machineRepository.UpdateAsync(schema);
+        }
+
+        public async Task ResponseStatusAsync(string requestId, string response)
+        {
+            if (_taskClientResponses.FinalizeTask(requestId, response))
+                await Task.CompletedTask;
+        }
+
+        public async Task ResponseUpdateSgpClient(string requestId, string response)
+        {
+            _taskClientResponses.FinalizeTask(requestId, response);
+            await Task.CompletedTask;
+        }
+
+        public void ResponseGetLogsSgpClient(string requestId, string response) =>
+            _taskClientResponses.FinalizeTask(requestId, response);
     }
 }

@@ -2,6 +2,6 @@
 {
     public interface IGetLoggerSgpClientUseCase
     {
-        void Execute(string productionLine);
+        void Execute(string productionLine, out string filePath);
     }
 }
