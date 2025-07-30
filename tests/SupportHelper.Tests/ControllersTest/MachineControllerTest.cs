@@ -11,7 +11,7 @@ namespace SupportHelper.Tests.ControllersTest
         [Fact]
         public async Task GetStatusToMachine_ShouldBeOk()
         {
-            var moq = new Mock<IRequestStatusMachineUseCase>();
+            var moq = new Mock<IStatusMachineUseCase>();
             moq.Setup(x => x.ExecuteAsync(It.IsAny<string>()))
                 .ReturnsAsync(new ResponseStatusMachineJson 
                 { 

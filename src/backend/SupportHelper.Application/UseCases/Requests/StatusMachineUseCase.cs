@@ -4,14 +4,14 @@ using SupportHelper.Domain.Aggregates;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Domain.Interfaces.SignalRContext;
 
-namespace SupportHelper.Application.UseCases.MachineUC
+namespace SupportHelper.Application.UseCases.Requests
 {
-    public class RequestStatusMachineUseCase : IRequestStatusMachineUseCase
+    public class StatusMachineUseCase : IStatusMachineUseCase
     {
         private readonly IMachineSignalRServices _signalR;
         private readonly IMachineRepository _machineRepository;
 
-        public RequestStatusMachineUseCase(IMachineSignalRServices signalR, IMachineRepository machineRepository)
+        public StatusMachineUseCase(IMachineSignalRServices signalR, IMachineRepository machineRepository)
         {
             _signalR = signalR;
             _machineRepository = machineRepository;
