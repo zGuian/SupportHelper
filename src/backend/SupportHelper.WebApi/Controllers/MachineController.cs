@@ -18,19 +18,27 @@ namespace SupportHelper.WebApi.Controllers
             return Ok(json);
         }
 
+        [HttpGet("{hostname:required}")]
+        public async Task<IActionResult> GetInformationMachineAsync([FromServices] IMachineInformationUseCase useCase, 
+            string hostname, CancellationToken cancellationToken)
+        {
+            var json = await useCase.ExecuteAsync(hostname, cancellationToken);
+            return Ok(json);
+        }
+
         [HttpPost("LogSgpClient")]
         public async Task<IActionResult> GetLogsForSgpClientAsync([FromServices] ILogsSgpClientUseCase logsSgpClientUseCase,
-            [FromBody] RequestLogsSgpClientJson request)
+            [FromBody] RequestLogsSgpClientJson request, CancellationToken cancellationToken)
         {
-            await logsSgpClientUseCase.ExecuteAsync(request);
+            await logsSgpClientUseCase.ExecuteAsync(request,  cancellationToken);
             return Ok();
         }
 
         [HttpPost("UpdateSgpCliet")]
         public async Task<IActionResult> UpdateSgpClient([FromServices] IUpdateSgpClientUseCase updateSgpClientUseCase,
-            [FromBody] RequestUpdateSgpClientJson request)
+            [FromBody] RequestUpdateSgpClientJson request, CancellationToken cancellationToken)
         {
-            await updateSgpClientUseCase.ExecuteAsync(request);
+            await updateSgpClientUseCase.ExecuteAsync(request, cancellationToken);
             return Ok();
         }
 

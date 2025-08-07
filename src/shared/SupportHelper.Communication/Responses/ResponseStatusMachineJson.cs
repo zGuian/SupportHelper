@@ -2,6 +2,7 @@
 {
     public record ResponseStatusMachineJson
     {
+        public required string Id { get; set; }
         public required bool IsConnected { get; init; }
         public required string Hostname { get; init; }
         public bool? SgpIsRunning { get; init; }
@@ -12,11 +13,12 @@
         public required string UpTime { get; init; }
         public required string LastUpdate { get; init; }
 
-        public static ResponseStatusMachineJson Create(bool isConnected, string hostname, bool sgpIsRunning, string currentUsername,
+        public static ResponseStatusMachineJson Create(string id, bool isConnected, string hostname, bool sgpIsRunning, string currentUsername,
             string domainName, string operationalSystem, IEnumerable<NetworkBoardResponse> networkBoardResponses, string upTime, string lastUpdate)
         {
             return new ResponseStatusMachineJson
             {
+                Id = id,
                 IsConnected = isConnected,
                 Hostname = hostname.ToLower(),
                 SgpIsRunning = sgpIsRunning,

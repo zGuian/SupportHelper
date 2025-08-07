@@ -5,6 +5,7 @@ namespace SupportHelper.Domain.Entities
     public abstract class EntityBase
     {
         public string Id { get; protected set; } = string.Empty;
+        public bool IsConnected { get; protected set; }
 
         public static string GenerateId()
         {

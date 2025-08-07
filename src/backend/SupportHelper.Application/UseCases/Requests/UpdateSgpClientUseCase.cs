@@ -17,10 +17,10 @@ namespace SupportHelper.Application.UseCases.Requests
             _machineRepository = machineRepository;
         }
 
-        public async Task<ResponseUpdateSgpClientJson> ExecuteAsync(RequestUpdateSgpClientJson requestJson)
+        public async Task<ResponseUpdateSgpClientJson> ExecuteAsync(RequestUpdateSgpClientJson requestJson, CancellationToken cancellationToken = default)
         {
-            var connectionId = await _machineRepository.GetConnectionByHostnameAsync(requestJson.Hostname);
-            var response = await _signalRService.UpdateSgpClientAsync(connectionId, requestJson);
+            var connectionId = await _machineRepository.GetConnectionByHostnameAsync(requestJson.Hostname, cancellationToken);
+            var response = await _signalRService.UpdateSgpClientAsync(connectionId, requestJson, cancellationToken);
             return response;
         }
     }

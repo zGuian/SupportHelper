@@ -5,6 +5,6 @@ namespace SupportHelper.Application.Interfaces
 {
     public interface IUpdateSgpClientUseCase
     {
-        Task<ResponseUpdateSgpClientJson> ExecuteAsync(RequestUpdateSgpClientJson requestJson);
+        Task<ResponseUpdateSgpClientJson> ExecuteAsync(RequestUpdateSgpClientJson requestJson, CancellationToken cancellationToken = default);
     }
 }

@@ -41,7 +41,7 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
                     throw new GenericErrorException(["HOUVE UMA RESPOSTA HTTP NEGATIVA"]);
                 }
                 using var doc = JsonDocument.Parse(await countObj.Content.ReadAsByteArrayAsync(cancellationToken));
-               var count = doc.RootElement.GetProperty("doc_count").GetInt32();
+                var count = doc.RootElement.GetProperty("doc_count").GetInt32();
 
                 Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken);
                 return (await JsonSerializer.DeserializeAsync<AllDocsDto>(stream, cancellationToken: cancellationToken)
@@ -54,7 +54,7 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             }
         }
 
-        public async Task<Machine> GetByHostnameAsync(string hostname, CancellationToken cancellationToken = default)
+        public async Task<MachineSchemaJson> GetByHostnameAsync(string hostname, CancellationToken cancellationToken = default)
         {
             var findData = await FindByHostnameAsync(hostname, cancellationToken);
             if (findData == null || findData.Docs == null)
@@ -62,7 +62,7 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
                 throw new Exception();
             }
             var doc = findData.Docs.FirstOrDefault() ?? throw new Exception();
-            return doc.Machine;
+            return MachineSchemaJson.Create(doc.Machine, doc.SignalR);
         }
 
         public async Task<string> GetConnectionByHostnameAsync(string hostname, CancellationToken cancellationToken = default)
@@ -192,8 +192,8 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
                 {
                     throw new NotImplementedException();
                 }
-                return await JsonSerializer.DeserializeAsync<FindDataResponse>(
-                    await response.Content.ReadAsStreamAsync(cancellationToken), cancellationToken: cancellationToken);
+                using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+                return await JsonSerializer.DeserializeAsync<FindDataResponse>(stream, cancellationToken: cancellationToken);
             }
             catch (Exception ex)
             {

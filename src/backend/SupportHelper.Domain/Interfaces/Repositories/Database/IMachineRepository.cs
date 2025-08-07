@@ -7,7 +7,7 @@ namespace SupportHelper.Domain.Interfaces.Repositories.Database
     public interface IMachineRepository
     {
         Task<(AllDocsDto, int)> GetAllAsync(int limit, int skip, CancellationToken cancellationToken = default);
-        Task<Machine> GetByHostnameAsync(string hostname, CancellationToken cancellationToken = default);
+        Task<MachineSchemaJson> GetByHostnameAsync(string hostname, CancellationToken cancellationToken = default);
         Task<string> GetConnectionByHostnameAsync(string hostname, CancellationToken cancellationToken = default);
         Task InsertAsync(MachineSchemaJson schema, CancellationToken cancellationToken = default);
         Task InsertOrUpdateAsync(string hostname, string connId, CancellationToken cancellationToken = default);
