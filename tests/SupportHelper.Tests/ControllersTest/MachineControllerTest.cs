@@ -12,7 +12,7 @@ namespace SupportHelper.Tests.ControllersTest
         public async Task GetStatusToMachine_ShouldBeOk()
         {
             var moq = new Mock<IStatusMachineUseCase>();
-            moq.Setup(x => x.ExecuteAsync(It.IsAny<string>()))
+            moq.Setup(x => x.ExecuteAsync("test", default))
                 .ReturnsAsync(new ResponseStatusMachineJson 
                 { 
                     Hostname = "test", 
@@ -27,7 +27,7 @@ namespace SupportHelper.Tests.ControllersTest
             var controller = new MachineController();
             var hostname = "test";
             
-            var result = await controller.GetStatusToMachine(moq.Object, hostname);
+            var result = await controller.GetStatusToMachine(moq.Object, hostname, default);
             
             Assert.IsType<OkObjectResult>(result);
         }
