@@ -23,13 +23,14 @@ namespace SupportHelper.Domain.Aggregates
         public static MachineSchemaJson Create(ResponseStatusMachineJson responseStatusMachineJson, string connId)
         {
             var machine = new Machine(
+                responseStatusMachineJson.Id,
                 responseStatusMachineJson.Hostname.ToLower(),
                 responseStatusMachineJson.CurrentUsername.ToLower(),
                 responseStatusMachineJson.DomainName.ToLower(),
                 responseStatusMachineJson.OperationalSystem,
                 responseStatusMachineJson.NetworkBoards.Select(nb =>
-                    new NetworkBoard(nb.Description, nb.Ipv4, nb.Ipv6, nb.MacAddress, nb.InUse)),
-                responseStatusMachineJson.UpTime, responseStatusMachineJson.LastUpdate);
+                    NetworkBoard.Create(nb.Description, nb.Ipv4, nb.Ipv6, nb.MacAddress, nb.InUse)),
+                responseStatusMachineJson.IsConnected, responseStatusMachineJson.UpTime, responseStatusMachineJson.LastUpdate);
 
             var signalR = new SignalR(connId, responseStatusMachineJson.LastUpdate);
 

@@ -19,9 +19,9 @@ namespace SupportHelper.Domain.Entities
 
         [JsonConstructor]
         public Machine(string id, string hostname, string currentUsername, string domainName,
-            string operationalSystem, IEnumerable<NetworkBoard> networkBoards, string upTime, string lastUpdate)
+            string operationalSystem, IEnumerable<NetworkBoard> networkBoards, bool isConnected,
+            string upTime, string lastUpdate) : base(id, isConnected)
         {
-            Id = id;
             Hostname = hostname.ToLower();
             CurrentUsername = currentUsername;
             DomainName = domainName;
@@ -31,27 +31,20 @@ namespace SupportHelper.Domain.Entities
             LastUpdate = lastUpdate;
         }
 
-        public Machine(string hostname)
-        {
-            Id = "";
-            Hostname = hostname.ToLower();
-            CurrentUsername = "";
-            DomainName = "";
-            OperationalSystem = "";
-            NetworkBoards = [];
-            UpTime = "";
-            LastUpdate = "";
-        }
-
         public static Machine Create(string hostname)
         {
-            return new Machine(hostname);
+            return new Machine(GenerateId(), hostname, string.Empty, string.Empty, string.Empty, [], false, string.Empty, string.Empty);
         }
 
         public static Machine Create(string id, string hostname, string currentUsername, string domainName,
-            string operationalSystem, IEnumerable<NetworkBoard> networkBoards, string upTime, string lastUpdate)
+            string operationalSystem, IEnumerable<NetworkBoard> networkBoards, bool isConnected, string upTime, string lastUpdate)
         {
-            return new Machine(id, hostname, currentUsername, domainName, operationalSystem, networkBoards, upTime, lastUpdate);
+            return new Machine(id, hostname, currentUsername, domainName, operationalSystem, networkBoards, isConnected, upTime, lastUpdate);
+        }
+
+        public void AddNetworkBoard(IEnumerable<NetworkBoard> networkBoards)
+        {
+            NetworkBoards = networkBoards;
         }
 
         public static Machine Convert(ResponseStatusMachineJson response)
@@ -61,10 +54,10 @@ namespace SupportHelper.Domain.Entities
             for (int i = 0; i < response.NetworkBoards.Count(); i++)
             {
                 var item = array[i];
-                networkBoards[i] = new NetworkBoard(item.Description, item.Ipv4, item.Ipv6, item.MacAddress, item.InUse);
+                networkBoards[i] = NetworkBoard.Create(item.Description, item.Ipv4, item.Ipv6, item.MacAddress, item.InUse);
             }
             return new Machine(response.Id, response.Hostname, response.CurrentUsername, response.DomainName,
-                response.OperationalSystem, networkBoards, response.UpTime, response.LastUpdate);
+                response.OperationalSystem, networkBoards, response.IsConnected, response.UpTime, response.LastUpdate);
         }
     }
 }

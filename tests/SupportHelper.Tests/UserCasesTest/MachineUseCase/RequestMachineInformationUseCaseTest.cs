@@ -18,6 +18,7 @@ namespace SupportHelper.Tests.UserCasesTest.MachineUseCase
             var useCase = CreateUseCase();
             var responseJson = new ResponseStatusMachineJson
             {
+                Id = Guid.NewGuid().ToString(),
                 Hostname = request.Hostname,
                 CurrentUsername = "user",
                 DomainName = "domain",

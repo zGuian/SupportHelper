@@ -20,7 +20,7 @@ namespace SupportHelper.WebApi.Controllers
 
         [HttpGet("{hostname:required}")]
         public async Task<IActionResult> GetInformationMachineAsync([FromServices] IMachineInformationUseCase useCase, 
-            string hostname, CancellationToken cancellationToken)
+            [FromRoute] string hostname, CancellationToken cancellationToken)
         {
             var json = await useCase.ExecuteAsync(hostname, cancellationToken);
             return Ok(json);

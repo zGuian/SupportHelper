@@ -7,6 +7,12 @@ namespace SupportHelper.Domain.Entities
         public string Id { get; protected set; } = string.Empty;
         public bool IsConnected { get; protected set; }
 
+        protected EntityBase(string id, bool isConnected)
+        {
+            Id = id;
+            IsConnected = isConnected;
+        }
+
         public static string GenerateId()
         {
             var guid = Guid.NewGuid();

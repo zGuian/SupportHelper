@@ -11,7 +11,7 @@ namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
         public void Register(HubConnection connection, CancellationToken stoppingToken)
         {
             MachineModel machine = MachineModel.Create();
-            var response = ResponseStatusMachineJson.Create(false, machine.Hostname, false, machine.CurrentUsername,
+            var response = ResponseStatusMachineJson.Create(machine.Id, false, machine.Hostname, false, machine.CurrentUsername,
                 machine.DomainName, machine.OperationalSystem, ConvertToResponse(machine.NetworkBoards.ToArray()), machine.UpTime, 
                 machine.LastUpdate);
             Task.Run(async () =>

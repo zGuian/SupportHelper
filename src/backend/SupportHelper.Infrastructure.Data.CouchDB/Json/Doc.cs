@@ -19,9 +19,15 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Json
         [JsonPropertyName("SignalR")]
         public SignalR SignalR { get; set; }
 
-        public void UpdateMachine(Machine machine)
+        [JsonConstructor]
+        public Doc(string id, string rev, Machine machine, SignalR signalR)
         {
+            Id = id;
+            Rev = rev;
             Machine = machine;
+            Machine.AddNetworkBoard(machine.NetworkBoards.Select(nb => NetworkBoard.Create(nb.Description, nb.Ipv4, 
+                nb.Ipv6, nb.MacAddress, nb.InUse)));
+            SignalR = signalR;
         }
 
         public void Update(MachineSchemaJson machine)

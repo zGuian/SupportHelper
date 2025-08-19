@@ -7,19 +7,20 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Memory
     {
         private ConcurrentDictionary<string, string> _map = new();
 
-        public (string user, string token) GetToken(string userId)
+        public void GetToken(string userId, out string token)
         {
-            throw new NotImplementedException();
+            _map.TryGetValue(userId, out string? tokenTemp);
+            token = tokenTemp ?? string.Empty;
         }
 
         public void RegisterToken(string userId, string token)
         {
-            throw new NotImplementedException();
+            _map[userId] = token;
         }
 
         public void RemoveToken(string userId)
         {
-            throw new NotImplementedException();
+            _map.TryRemove(userId, out string? _);
         }
     }
 }

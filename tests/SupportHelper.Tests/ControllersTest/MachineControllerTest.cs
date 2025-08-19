@@ -15,6 +15,7 @@ namespace SupportHelper.Tests.ControllersTest
             moq.Setup(x => x.ExecuteAsync("test", default))
                 .ReturnsAsync(new ResponseStatusMachineJson 
                 { 
+                    Id = Guid.NewGuid().ToString(),
                     Hostname = "test", 
                     CurrentUsername = "test", 
                     DomainName = "test", 

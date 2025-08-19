@@ -25,6 +25,7 @@ namespace SupportHelper.WinServices.Core.EventHandlers.SignalREvents
                 MachineModel machine = MachineModel.Create();
                 var json = new ResponseStatusMachineJson
                 {
+                    Id =  machine.Id,
                     IsConnected = true,
                     Hostname = machine.Hostname,
                     SgpIsRunning = VerifiySgpIsRunning(),

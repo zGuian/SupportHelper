@@ -30,7 +30,7 @@ namespace SupportHelper.WinServices.Core.EventHandlers.MachineEvents
                 _shutdownEventWatcher = new ManagementEventWatcher(query);
                 _shutdownEventWatcher.EventArrived += async (sender, e) =>
                 {
-                    var response = ResponseStatusMachineJson.Create(false, machine.Hostname, false, machine.CurrentUsername,
+                    var response = ResponseStatusMachineJson.Create(machine.Id, false, machine.Hostname, false, machine.CurrentUsername,
                     machine.DomainName, machine.OperationalSystem,
                         NetworkBoardConvert.EntityToResponse(machine.NetworkBoards), machine.UpTime, machine.LastUpdate);
                     var json = JsonSerializer.Serialize(response);
