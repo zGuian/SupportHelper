@@ -20,7 +20,7 @@ namespace SupportHelper.Communication.Dtos.CouchDbDto
         public string OperationalSystem { get; set; } = string.Empty;
 
         [JsonPropertyName("NetworkBoard")]
-        public ICollection<NetworkBoardDto> NetworkBoard { get; set; } = [];
+        public IEnumerable<NetworkBoardDto> NetworkBoard { get; set; } = [];
 
         [JsonPropertyName("UpTime")]
         public string UpTime { get; set; } = string.Empty;

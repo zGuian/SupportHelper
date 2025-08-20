@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using CouchDB.Driver.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SupportHelper.Application.Interfaces;
 using SupportHelper.Application.UseCases.Requests;
@@ -6,6 +7,7 @@ using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Domain.Interfaces.Repositories.Memory;
 using SupportHelper.Domain.Interfaces.SignalRContext;
 using SupportHelper.Exceptions.ExceptionsBase;
+using SupportHelper.Infrastructure.Data.CouchDB.Context;
 using SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database;
 using SupportHelper.Infrastructure.Data.CouchDB.Repositories.Memory;
 using SupportHelper.Infrastructure.SignalR.Interfaces;
@@ -20,10 +22,9 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
     {
         public static IServiceCollection IoC(this IServiceCollection services, IConfiguration configuration)
         {
+            AddUseCases(services);
             AddDatabase(services, configuration);
             AddSignalR(services);
-            AddUseCases(services);
-            AddHttpClient(services, configuration);
             return services;
         }
 
@@ -46,6 +47,11 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
         {
             services.AddSingleton<ITokenMemoryRepository, TokenMemoryRepository>();
             services.AddScoped<IMachineRepository, MachineRepository>();
+            services.AddCouchContext<AppCouchContext>(options =>
+            {
+                options.UseEndpoint(configuration.GetConnectionString("CouchDB") ?? throw new GenericErrorException(["NÃO ENCONTRADO CONNECTION STRING"]))
+                       .UseBasicAuthentication("admin", "admin");
+            });
         }
 
         private static void AddHttpClient(this IServiceCollection services, IConfiguration configuration)

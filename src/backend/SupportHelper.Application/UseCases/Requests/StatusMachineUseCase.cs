@@ -21,7 +21,7 @@ namespace SupportHelper.Application.UseCases.Requests
         {
             var connId = await _machineRepository.GetConnectionByHostnameAsync(hostname, cancellationToken);
             var responseJson = await _signalR.RequestStatusAsync(connId, cancellationToken);
-            var schema = MachineSchemaJson.Create(responseJson, connId);
+            var schema = MachineAggregates.Create(responseJson, connId);
             await _machineRepository.InsertOrUpdateAsync(schema, cancellationToken);
             return responseJson;
         }

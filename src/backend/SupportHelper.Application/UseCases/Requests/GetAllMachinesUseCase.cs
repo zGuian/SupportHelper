@@ -14,21 +14,36 @@ namespace SupportHelper.Application.UseCases.Requests
             _machineRepository = machineRepository;
         }
 
-        public async Task<ResponsePageableDto<HashSet<RowDto>>> ExecuteAsync(int pageNumber, int pageSize)
+        public async Task<ResponsePageableDto<IEnumerable<MachineDto>>> ExecuteAsync(int pageNumber, int pageSize)
         {
-            (AllDocsDto alldocs, int count) = await _machineRepository.GetAllAsync(pageNumber, pageSize);
-            var hs = new HashSet<RowDto>();
-            foreach (var row in alldocs.Rows)
+            var machines = await _machineRepository.GetAllAsync(pageNumber, pageSize);
+            var count = _machineRepository.GetQuantityMachines();
+            var dto = new List<MachineDto>();
+            foreach (var item in machines)
             {
-                hs.Add(row);
+                dto.Add(new MachineDto
+                {
+                    Id = item.Machine.Id,
+                    Hostname = item.Machine.Hostname,
+                    CurrentUsername = item.Machine.CurrentUsername,
+                    DomainName = item.Machine.DomainName,
+                    OperationalSystem = item.Machine.OperationalSystem,
+                    NetworkBoard = item.Machine.NetworkBoards.Select(x => 
+                        new NetworkBoardDto { Description = x.Description,
+                                              Ipv4 = x.Ipv4,
+                                              Ipv6 = x.Ipv6,
+                                              MacAddress = x.MacAddress,
+                                              InUse = x.InUse }),
+                    UpTime = item.Machine.UpTime,
+                    LastUpdate = item.Machine.LastUpdate
+                });
             }
-
-            return new ResponsePageableDto<HashSet<RowDto>>
+            return new ResponsePageableDto<IEnumerable<MachineDto>>
             {
                 TotalQuantity = count,
                 CurrentPage = pageNumber,
                 PageCount = pageNumber,
-                Datas = hs
+                Datas = dto
             };
         }
     }
