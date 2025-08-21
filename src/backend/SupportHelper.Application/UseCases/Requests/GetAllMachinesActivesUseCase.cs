@@ -5,18 +5,18 @@ using SupportHelper.Domain.Interfaces.Repositories.Database;
 
 namespace SupportHelper.Application.UseCases.Requests
 {
-    public sealed class GetAllMachinesUseCase : IGetAllMachinesUseCase
+    public sealed class GetAllMachinesActivesUseCase : IGetAllMachinesActivesUseCase
     {
         private readonly IMachineRepository _machineRepository;
 
-        public GetAllMachinesUseCase(IMachineRepository machineRepository)
+        public GetAllMachinesActivesUseCase(IMachineRepository machineRepository)
         {
             _machineRepository = machineRepository;
         }
 
-        public async Task<ResponsePageableDto<IEnumerable<MachineDto>>> ExecuteAsync(int pageNumber, int pageSize)
+        public async Task<IEnumerable<MachineDto>> ExecuteAsync(CancellationToken ct = default)
         {
-            var machines = await _machineRepository.GetAllAsync(pageNumber, pageSize);
+            var machines = await _machineRepository.GetAllAsync(ct);
             var count = _machineRepository.GetQuantityMachines();
             var dto = new List<MachineDto>();
             foreach (var item in machines)
@@ -38,13 +38,8 @@ namespace SupportHelper.Application.UseCases.Requests
                     LastUpdate = item.Machine.LastUpdate
                 });
             }
-            return new ResponsePageableDto<IEnumerable<MachineDto>>
-            {
-                TotalQuantity = count,
-                CurrentPage = pageNumber,
-                PageCount = pageNumber,
-                Datas = dto
-            };
+            return dto;
+            
         }
     }
 }

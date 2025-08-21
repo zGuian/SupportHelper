@@ -11,8 +11,6 @@ namespace SupportHelper.Domain.Entities
         public string DomainName { get; private set; }
         public string OperationalSystem { get; private set; }
         public bool SgpIsRunning { get; private set; }
-
-        [JsonPropertyName("NetworkBoards")]
         public IEnumerable<NetworkBoard> NetworkBoards { get; private set; }
         public string UpTime { get; private set; }
         public string LastUpdate { get; private set; }

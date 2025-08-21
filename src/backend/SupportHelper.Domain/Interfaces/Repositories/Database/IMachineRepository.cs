@@ -4,7 +4,7 @@ namespace SupportHelper.Domain.Interfaces.Repositories.Database
 {
     public interface IMachineRepository
     {
-        Task<IEnumerable<MachineAggregates>> GetAllAsync(int limit, int skip, CancellationToken cancellationToken = default);
+        Task<IEnumerable<MachineAggregates>> GetAllAsync(CancellationToken cancellationToken = default);
         Task<MachineAggregates> GetByHostnameAsync(string hostname, CancellationToken cancellationToken = default);
         Task<string> GetConnectionByHostnameAsync(string hostname, CancellationToken cancellationToken = default);
         int GetQuantityMachines();

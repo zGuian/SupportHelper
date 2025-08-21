@@ -34,8 +34,8 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
         {
             var obj = JsonSerializer.Deserialize<ResponseStatusMachineJson>(response);
             var connId = await _machineRepository.GetConnectionByHostnameAsync(obj.Hostname);
-            var schema = MachineAggregates.Create(obj, connId);
-            await _machineRepository.InsertOrUpdateAsync(schema);
+            var aggregate = MachineAggregates.Converters.ToAggregate(obj, connId, false);
+            await _machineRepository.InsertOrUpdateAsync(aggregate);
         }
 
         public async Task ResponseStatusAsync(string requestId, string response)

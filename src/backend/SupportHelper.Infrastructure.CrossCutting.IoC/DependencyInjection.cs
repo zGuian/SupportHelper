@@ -30,7 +30,7 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
 
         private static void AddUseCases(IServiceCollection services)
         {
-            services.AddScoped<IGetAllMachinesUseCase, GetAllMachinesUseCase>();
+            services.AddScoped<IGetAllMachinesActivesUseCase, GetAllMachinesActivesUseCase>();
             services.AddScoped<ILogsSgpClientUseCase, LogsSgpClientUseCase>();
             services.AddScoped<IMachineInformationUseCase, MachineInformationUseCase>();
             services.AddScoped<IStatusMachineUseCase, StatusMachineUseCase>();

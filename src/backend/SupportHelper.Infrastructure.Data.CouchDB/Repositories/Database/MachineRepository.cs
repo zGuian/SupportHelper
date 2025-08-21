@@ -15,10 +15,10 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             _context = context;
         }
 
-        public async Task<IEnumerable<MachineAggregates>> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<MachineAggregates>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var machineQuery = _context.Machines.Where(m => m.SignalR.IsActive).Skip(pageNumber).Take(pageSize);
-            var machineList = await machineQuery.ToListAsync();
+            var machineQuery = _context.Machines.Where(m => m.SignalR.IsActive);
+            var machineList = await machineQuery.ToListAsync(cancellationToken);
             var machines = new HashSet<MachineAggregates>();
             foreach (var item in machineList)
             {
@@ -29,8 +29,9 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
 
         public async Task<MachineAggregates> GetByHostnameAsync(string hostname, CancellationToken cancellationToken = default)
         {
-            var model = await _context.Machines.FirstOrDefaultAsync(m => m.Machine.Hostname == hostname, cancellationToken);
-            return MachineAggregates.Create(model.Machine, model.SignalR);
+            var model = await _context.Machines.FindAsync(hostname, cancellationToken: cancellationToken);
+            var aggregate = MachineAggregates.Converters.ToAggregate(model.Machine, model.SignalR);
+            return aggregate;
         }
 
         public async Task<string> GetConnectionByHostnameAsync(string hostname, CancellationToken cancellationToken = default)
@@ -43,7 +44,9 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
 
         public async Task InsertOrUpdateAsync(MachineAggregates aggregate, CancellationToken cancellationToken = default)
         {
-            var model = MachineModel.Converters.ToModel(aggregate.Machine, aggregate.SignalR);
+            var model = await _context.Machines.Where(m => m.Machine.Hostname == aggregate.Machine.Hostname)
+                .FirstAsync(cancellationToken);
+            model.Update(aggregate.Machine, aggregate.SignalR);
             await _context.Machines.AddOrUpdateAsync(model, cancellationToken: cancellationToken);
         }
 
@@ -52,7 +55,8 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
             var model = await _context.Machines.FindAsync(hostname, cancellationToken: cancellationToken);
             if (model == null)
             {
-                await _context.Machines.AddAsync(MachineModel.Factories.CreateNullMachine(hostname, connId), cancellationToken: cancellationToken);
+                model = MachineModel.Factories.CreateNullMachine(hostname, connId);
+                await _context.Machines.AddOrUpdateAsync(model, cancellationToken: cancellationToken);
                 return;
             }
             model.UpdateSignalR(connId);

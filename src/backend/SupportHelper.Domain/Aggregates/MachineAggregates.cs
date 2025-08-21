@@ -46,28 +46,27 @@ namespace SupportHelper.Domain.Aggregates
             {
                 return new MachineAggregates(machine, signalR);
             }
+
+            public static MachineAggregates ToAggregate(ResponseStatusMachineJson responseStatusMachineJson, string connId, bool isActive)
+            {
+                var machine = new Machine(
+                    responseStatusMachineJson.Id,
+                    responseStatusMachineJson.Hostname.ToLower(),
+                    responseStatusMachineJson.CurrentUsername.ToLower(),
+                    responseStatusMachineJson.DomainName.ToLower(),
+                    responseStatusMachineJson.OperationalSystem,
+                    responseStatusMachineJson.NetworkBoards.Select(nb =>
+                        NetworkBoard.Create(nb.Description, nb.Ipv4, nb.Ipv6, nb.MacAddress, nb.InUse)),
+                    responseStatusMachineJson.IsConnected, responseStatusMachineJson.UpTime, responseStatusMachineJson.LastUpdate);
+
+                var signalR = new SignalR(connId, responseStatusMachineJson.LastUpdate, isActive);
+                return new MachineAggregates(machine, signalR);
+            }
         }
 
-        public static MachineAggregates Create(Machine machine, SignalR signalR)
+        public void UpdateSignalR(string connId, bool isActive)
         {
-            return new MachineAggregates(machine, signalR);
-        }
-
-        public static MachineAggregates Create(ResponseStatusMachineJson responseStatusMachineJson, string connId)
-        {
-            var machine = new Machine(
-                responseStatusMachineJson.Id,
-                responseStatusMachineJson.Hostname.ToLower(),
-                responseStatusMachineJson.CurrentUsername.ToLower(),
-                responseStatusMachineJson.DomainName.ToLower(),
-                responseStatusMachineJson.OperationalSystem,
-                responseStatusMachineJson.NetworkBoards.Select(nb =>
-                    NetworkBoard.Create(nb.Description, nb.Ipv4, nb.Ipv6, nb.MacAddress, nb.InUse)),
-                responseStatusMachineJson.IsConnected, responseStatusMachineJson.UpTime, responseStatusMachineJson.LastUpdate);
-
-            var signalR = new SignalR(connId, responseStatusMachineJson.LastUpdate, true);
-
-            return new MachineAggregates(machine, signalR);
+            SignalR = new SignalR(connId, isActive);
         }
     }
 }

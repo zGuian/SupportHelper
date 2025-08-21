@@ -13,7 +13,6 @@ builder.Services.IoC(builder.Configuration);
 builder.Services.AddSignalR();
 builder.Services.AddConfigurationApiVersioning();
 builder.Services.AddControllers()
-    
     .AddJsonOptions(opts =>
     {
         opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
