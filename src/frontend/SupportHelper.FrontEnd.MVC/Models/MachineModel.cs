@@ -26,7 +26,7 @@ namespace SupportHelper.FrontEnd.MVC.Models
         }
 
         public MachineModel(string id, string hostname, string currentUsername, string domainName, 
-            string operationalSystem, IEnumerable<NetworkBoardVO> networkBoards, string upTime, string lastUpdate)
+            string operationalSystem, string upTime, string lastUpdate)
         {
             Id = id;
             Hostname = hostname;

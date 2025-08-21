@@ -31,12 +31,6 @@ namespace SupportHelper.FrontEnd.MVC.Services
                                         content.CurrentUsername,
                                         content.DomainName,
                                         content.OperationalSystem,
-                                        content.NetworkBoards.Select(
-                                            vo => new ValueObjects.NetworkBoardVO(vo.Description,
-                                                                                  vo.Ipv4,
-                                                                                  vo.Ipv6,
-                                                                                  vo.MacAddress,
-                                                                                  vo.InUse)),
                                         content.UpTime,
                                         content.LastUpdate);
             }
