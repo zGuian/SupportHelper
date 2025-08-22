@@ -1,5 +1,4 @@
 ﻿using Moq;
-using SupportHelper.Domain.Interfaces.MQServices;
 using SupportHelper.Domain.Interfaces.SignalRContext;
 
 namespace SupportHelper.Test.Common.Utilities.Services
