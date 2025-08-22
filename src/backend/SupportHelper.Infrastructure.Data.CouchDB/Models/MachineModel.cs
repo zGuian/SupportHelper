@@ -1,12 +1,14 @@
 ﻿using CouchDB.Driver.Types;
 using Newtonsoft.Json;
 using SupportHelper.Domain.Entities;
+using SupportHelper.Domain.Interfaces.Models;
 using SupportHelper.Domain.ValueObjects;
 
 namespace SupportHelper.Infrastructure.Data.CouchDB.Models
 {
-    public class MachineModel : CouchDocument
+    public class MachineModel : CouchDocument, IMachineModel
     {
+        
         [JsonProperty(nameof(Machine))]
         public Machine? Machine { get; private set; }
 
@@ -22,7 +24,7 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Models
 
         private MachineModel(string hostname, string connectionId) 
         {
-            Machine = Machine.Create(hostname);
+            Machine = Machine.Factories.CreateNullMachine(hostname);
             SignalR = new SignalR(connectionId, DateTime.Now.ToString("dd/MM/yyyy"), true);
         }
 

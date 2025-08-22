@@ -1,4 +1,6 @@
-﻿namespace SupportHelper.Domain.ValueObjects
+﻿using System.Text.Json.Serialization;
+
+namespace SupportHelper.Domain.ValueObjects
 {
     public struct NetworkBoard
     {
@@ -8,6 +10,7 @@
         public string MacAddress { get; private set; }
         public bool InUse { get; private set; }
 
+        [JsonConstructor]
         private NetworkBoard(string description, string ipv4, string? ipv6, string macAddress, bool inUse)
         {
             Description = description;

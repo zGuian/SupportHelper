@@ -29,33 +29,45 @@ namespace SupportHelper.Domain.Entities
             LastUpdate = lastUpdate;
         }
 
-        public static Machine Create(string hostname)
+        public static class Factories
         {
-            return new Machine(GenerateId(), hostname, string.Empty, string.Empty, string.Empty, [], false, string.Empty, string.Empty);
+            public static Machine CreateNullMachine(string hostname)
+            {
+                return new Machine(GenerateId(), hostname, string.Empty, string.Empty, string.Empty, [], false, string.Empty, string.Empty);
+            }
+
+            public static Machine Create(string hostname, string currentUsername, string domainName,
+                string operationalSystem, IEnumerable<NetworkBoard> networkBoards, bool isConnected, string upTime, string lastUpdate)
+            {
+                return new Machine(GenerateId(), hostname, currentUsername, domainName, operationalSystem, networkBoards, isConnected, upTime, lastUpdate);
+            }
         }
 
-        public static Machine Create(string id, string hostname, string currentUsername, string domainName,
-            string operationalSystem, IEnumerable<NetworkBoard> networkBoards, bool isConnected, string upTime, string lastUpdate)
+        public static class Converters
         {
-            return new Machine(id, hostname, currentUsername, domainName, operationalSystem, networkBoards, isConnected, upTime, lastUpdate);
+            public static Machine ToMachine(string id, string hostname, string currentUsername, string domainName,
+                string operationalSystem, IEnumerable<NetworkBoard> networkBoards, bool isConnected, string upTime, string lastUpdate)
+            {
+                return new Machine(id, hostname, currentUsername, domainName, operationalSystem, networkBoards, isConnected, upTime, lastUpdate);
+            }
+
+            public static Machine ToMachine(ResponseStatusMachineJson response)
+            {
+                var networkBoards = new NetworkBoard[response.NetworkBoards.Count()];
+                var array = response.NetworkBoards.ToArray();
+                for (int i = 0; i < response.NetworkBoards.Count(); i++)
+                {
+                    var item = array[i];
+                    networkBoards[i] = NetworkBoard.Create(item.Description, item.Ipv4, item.Ipv6, item.MacAddress, item.InUse);
+                }
+                return new Machine(response.Id, response.Hostname, response.CurrentUsername, response.DomainName,
+                    response.OperationalSystem, networkBoards, response.IsConnected, response.UpTime, response.LastUpdate);
+            }
         }
 
         public void AddNetworkBoard(IEnumerable<NetworkBoard> networkBoards)
         {
             NetworkBoards = networkBoards;
-        }
-
-        public static Machine Convert(ResponseStatusMachineJson response)
-        {
-            var networkBoards = new NetworkBoard[response.NetworkBoards.Count()];
-            var array = response.NetworkBoards.ToArray();
-            for (int i = 0; i < response.NetworkBoards.Count(); i++)
-            {
-                var item = array[i];
-                networkBoards[i] = NetworkBoard.Create(item.Description, item.Ipv4, item.Ipv6, item.MacAddress, item.InUse);
-            }
-            return new Machine(response.Id, response.Hostname, response.CurrentUsername, response.DomainName,
-                response.OperationalSystem, networkBoards, response.IsConnected, response.UpTime, response.LastUpdate);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using SupportHelper.Communication.Dtos.CouchDbDto;
+﻿using SupportHelper.Application.DTOs;
 
 namespace SupportHelper.Application.Interfaces
 {

@@ -1,11 +1,12 @@
 ﻿using SupportHelper.Domain.Aggregates;
+using SupportHelper.Domain.Interfaces.Models;
 
 namespace SupportHelper.Domain.Interfaces.Repositories.Database
 {
     public interface IMachineRepository
     {
-        Task<IEnumerable<MachineAggregates>> GetAllAsync(CancellationToken cancellationToken = default);
-        Task<MachineAggregates> GetByHostnameAsync(string hostname, CancellationToken cancellationToken = default);
+        Task<IEnumerable<IMachineModel>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<IMachineModel> GetByHostnameAsync(string hostname, CancellationToken cancellationToken = default);
         Task<string> GetConnectionByHostnameAsync(string hostname, CancellationToken cancellationToken = default);
         int GetQuantityMachines();
         Task InsertOrUpdateAsync(MachineAggregates aggregate, CancellationToken cancellationToken = default);

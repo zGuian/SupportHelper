@@ -24,8 +24,7 @@ namespace SupportHelper.Domain.Aggregates
 
             public static MachineAggregates Create(ResponseStatusMachineJson responseStatusMachineJson, string connId)
             {
-                var machine = new Machine(
-                    responseStatusMachineJson.Id,
+                var machine = Machine.Factories.Create(
                     responseStatusMachineJson.Hostname.ToLower(),
                     responseStatusMachineJson.CurrentUsername.ToLower(),
                     responseStatusMachineJson.DomainName.ToLower(),
@@ -49,7 +48,7 @@ namespace SupportHelper.Domain.Aggregates
 
             public static MachineAggregates ToAggregate(ResponseStatusMachineJson responseStatusMachineJson, string connId, bool isActive)
             {
-                var machine = new Machine(
+                var machine = Machine.Converters.ToMachine(
                     responseStatusMachineJson.Id,
                     responseStatusMachineJson.Hostname.ToLower(),
                     responseStatusMachineJson.CurrentUsername.ToLower(),

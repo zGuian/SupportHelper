@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace SupportHelper.Communication.Dtos.CouchDbDto
+namespace SupportHelper.Application.DTOs
 {
     public sealed class NetworkBoardDto
     {
