@@ -1,6 +1,5 @@
 ﻿using SupportHelper.Application.DTOs;
 using SupportHelper.Application.Interfaces;
-using SupportHelper.Communication.Dtos.CouchDbDto;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 
 namespace SupportHelper.Application.UseCases.Requests
