@@ -5,6 +5,7 @@ using SupportHelper.Domain.Aggregates;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Exceptions.ExceptionsBase;
 using SupportHelper.Infrastructure.SignalR.Interfaces;
+using System.Collections.Concurrent;
 using System.Text.Json;
 
 namespace SupportHelper.Infrastructure.SignalR.Hubs
@@ -13,11 +14,14 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
     {
         private readonly IMachineRepository _machineRepository;
         private readonly ITaskClientResponses _taskClientResponses;
+        private readonly IQueueProcess _queue;
 
-        public ControlHub(IMachineRepository machineRepository, ITaskClientResponses taskClientResponses)
+        public ControlHub(IMachineRepository machineRepository, ITaskClientResponses taskClientResponses, 
+            IQueueProcess queue)
         {
             _machineRepository = machineRepository;
             _taskClientResponses = taskClientResponses;
+            _queue = queue;
         }
 
         public async override Task OnConnectedAsync()
@@ -38,19 +42,13 @@ namespace SupportHelper.Infrastructure.SignalR.Hubs
             await _machineRepository.InsertOrUpdateAsync(aggregate);
         }
 
-        public async Task ResponseStatusAsync(string requestId, string response)
-        {
-            if (_taskClientResponses.FinalizeTask(requestId, response))
-                await Task.CompletedTask;
-        }
+        public void ResponseStatusAsync(string requestId, string response) => 
+            _queue.Enqueue(requestId, response);
 
-        public async Task ResponseUpdateSgpClient(string requestId, string response)
-        {
-            _taskClientResponses.FinalizeTask(requestId, response);
-            await Task.CompletedTask;
-        }
+        public void ResponseUpdateSgpClient(string requestId, string response) => 
+            _queue.Enqueue(requestId, response);
 
         public void ResponseGetLogsSgpClient(string requestId, string response) =>
-            _taskClientResponses.FinalizeTask(requestId, response);
+            _queue.Enqueue(requestId, response);
     }
 }
