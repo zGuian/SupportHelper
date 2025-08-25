@@ -13,6 +13,8 @@ using SupportHelper.Infrastructure.Data.CouchDB.Repositories.Memory;
 using SupportHelper.Infrastructure.SignalR.Interfaces;
 using SupportHelper.Infrastructure.SignalR.SignalRServices;
 using SupportHelper.Infrastructure.SignalR.Tasks;
+using SupportHelper.Infrastructure.SignalR.Utils;
+using SupportHelper.Infrastructure.SignalR.Workers;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -25,6 +27,7 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
             AddUseCases(services);
             AddDatabase(services, configuration);
             AddSignalR(services);
+            CreateQueueProcess(services);
             return services;
         }
 
@@ -52,6 +55,12 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
                 options.UseEndpoint(configuration.GetConnectionString("CouchDB") ?? throw new GenericErrorException(["NÃO ENCONTRADO CONNECTION STRING"]))
                        .UseBasicAuthentication("admin", "admin");
             });
+        }
+
+        private static void CreateQueueProcess(IServiceCollection services)
+        {
+            services.AddSingleton<IQueueProcess, QueueProcess>();
+            services.AddHostedService<QueueProcessWorker>();
         }
 
         private static void AddHttpClient(this IServiceCollection services, IConfiguration configuration)
