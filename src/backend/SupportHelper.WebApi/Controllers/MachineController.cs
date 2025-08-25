@@ -12,9 +12,9 @@ namespace SupportHelper.WebApi.Controllers
     {
         [HttpGet("StatusMachine/{hostname:required}")]
         public async Task<IActionResult> GetStatusToMachine([FromServices] IStatusMachineUseCase statusMachineUseCase,
-            [FromRoute] string hostname, CancellationToken cancellationToken)
+            [FromRoute] string hostname, CancellationToken ct)
         {
-            var json = await statusMachineUseCase.ExecuteAsync(hostname.ToLower().Trim(), cancellationToken);
+            var json = await statusMachineUseCase.ExecuteAsync(hostname.ToLower().Trim(), ct);
             return Ok(new
             {
                 IsSuccess = true,
@@ -25,9 +25,9 @@ namespace SupportHelper.WebApi.Controllers
 
         [HttpGet("{hostname:required}")]
         public async Task<IActionResult> GetInformationMachineAsync([FromServices] IMachineInformationUseCase useCase,
-            [FromRoute] string hostname, CancellationToken cancellationToken)
+            [FromRoute] string hostname, CancellationToken ct)
         {
-            var json = await useCase.ExecuteAsync(hostname.ToLower().Trim(), cancellationToken);
+            var json = await useCase.ExecuteAsync(hostname.ToLower().Trim(), ct);
             return Ok(new
             {
                 IsSuccess = true,
@@ -38,9 +38,9 @@ namespace SupportHelper.WebApi.Controllers
 
         [HttpPost("LogSgpClient")]
         public async Task<IActionResult> GetLogsForSgpClientAsync([FromServices] ILogsSgpClientUseCase logsSgpClientUseCase,
-            [FromBody] RequestLogsSgpClientJson request, CancellationToken cancellationToken)
+            [FromBody] RequestLogsSgpClientJson request, CancellationToken ct)
         {
-            await logsSgpClientUseCase.ExecuteAsync(request, cancellationToken);
+            await logsSgpClientUseCase.ExecuteAsync(request, ct);
             return Ok(new
             {
                 IsSuccess = true,
@@ -50,9 +50,9 @@ namespace SupportHelper.WebApi.Controllers
 
         [HttpPost("UpdateSgpCliet")]
         public async Task<IActionResult> UpdateSgpClient([FromServices] IUpdateSgpClientUseCase updateSgpClientUseCase,
-        [FromBody] RequestUpdateSgpClientJson request, CancellationToken cancellationToken)
+        [FromBody] RequestUpdateSgpClientJson request, CancellationToken ct)
         {
-            await updateSgpClientUseCase.ExecuteAsync(request, cancellationToken);
+            await updateSgpClientUseCase.ExecuteAsync(request, ct);
             return Ok(new
             {
                 IsSuccess = true,
@@ -61,9 +61,10 @@ namespace SupportHelper.WebApi.Controllers
         }
 
         [HttpGet("GetMachinesConnected")]
-        public async Task<IActionResult> GetMachinesConnected([FromServices] IGetAllMachinesActivesUseCase getAllMachinesUseCase)
+        public async Task<IActionResult> GetMachinesConnected([FromServices] IGetAllMachinesActivesUseCase getAllMachinesUseCase,
+            CancellationToken ct)
         {
-            var json = await getAllMachinesUseCase.ExecuteAsync();
+            var json = await getAllMachinesUseCase.ExecuteAsync(ct);
             return Ok(new
             {
                 IsSuccess = true,
