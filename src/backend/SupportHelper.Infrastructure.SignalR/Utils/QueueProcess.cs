@@ -1,24 +1,28 @@
 ﻿using SupportHelper.Infrastructure.SignalR.Interfaces;
 using System.Collections.Concurrent;
 
-namespace SupportHelper.Infrastructure.SignalR
+namespace SupportHelper.Infrastructure.SignalR.Utils
 {
     public class QueueProcess : IQueueProcess
     {
         private readonly ConcurrentQueue<(string requestId, string response)> _queue = new();
+        private readonly SemaphoreSlim _semaphore = new(0);
 
         public void Enqueue(string requestId, string response)
         {
+            _semaphore.Release();
             _queue.Enqueue((requestId, response));
         }
 
-        public (string requestId, string response) Dequeue()
+        public async Task<(string requestId, string response)?> DequeueAsync()
         {
-            if (_queue.TryDequeue(out (string requestId, string response) result))
+            await _semaphore.WaitAsync();
+            var hasDequeue = _queue.TryDequeue(out var result);
+            if (!hasDequeue)
             {
-                return (result.requestId, result.response);
+                return null;
             }
-            throw new InvalidOperationException();
+            return result;
         }
 
         public void Dequeue(out string requestId, out string response)
@@ -30,15 +34,6 @@ namespace SupportHelper.Infrastructure.SignalR
                 return;
             }
             throw new InvalidOperationException();
-        }
-
-        public bool HasValue()
-        {
-            if (_queue.IsEmpty)
-            {
-                return false;
-            }
-            return true;
         }
     }
 }

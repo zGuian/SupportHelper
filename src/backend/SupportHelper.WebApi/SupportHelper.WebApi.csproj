@@ -17,8 +17,4 @@
     <ProjectReference Include="..\SupportHelper.Infrastructure.CrossCutting.IoC\SupportHelper.Infrastructure.CrossCutting.IoC.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Workers\" />
-  </ItemGroup>
-
 </Project>
