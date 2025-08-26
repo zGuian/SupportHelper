@@ -1,7 +1,4 @@
 ﻿namespace SupportHelper.Communication.Responses
 {
-    public record ResponseUpdateSgpClientJson
-    {
-        public required string VersionSgp { get; init; }
-    }
+    public record ResponseUpdateSgpClientJson(string Hostname, string VersionSgp);
 }

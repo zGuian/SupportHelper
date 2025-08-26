@@ -3,6 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SupportHelper.Application.Interfaces;
 using SupportHelper.Application.UseCases.Requests;
+using SupportHelper.Application.Utils;
+using SupportHelper.Domain.Interfaces.ApplicationContext;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Domain.Interfaces.Repositories.Memory;
 using SupportHelper.Domain.Interfaces.SignalRContext;
@@ -27,7 +29,7 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
             AddUseCases(services);
             AddDatabase(services, configuration);
             AddSignalR(services);
-            CreateQueueProcess(services);
+            UtilsSingleton(services);
             return services;
         }
 
@@ -57,10 +59,12 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
             });
         }
 
-        private static void CreateQueueProcess(IServiceCollection services)
+        private static void UtilsSingleton(IServiceCollection services)
         {
             services.AddSingleton<IQueueProcess, QueueProcess>();
             services.AddHostedService<QueueProcessWorker>();
+
+            services.AddScoped<IQueueUpdateSgpClient, QueueUpdateSgpClient>();
         }
 
         private static void AddHttpClient(this IServiceCollection services, IConfiguration configuration)
