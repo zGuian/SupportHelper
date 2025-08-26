@@ -37,7 +37,7 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
             {
                 await _context.Clients.Clients(connectionId).SendAsync("RequestStatusMachine", requestId, cancellationToken);
                 var response = await tcs.Task.WaitAsync(_taskClientResponse.Time, cancellationToken);
-                return JsonSerializer.Deserialize<ResponseStatusMachineJson>(response) ??
+                return JsonConvert.DeserializeObject<ResponseStatusMachineJson>(response) ??
                     throw new NotImplementedException();
             }
             catch (TimeoutException)
@@ -88,7 +88,7 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
             {
                 await _context.Clients.Clients(connectionId).SendAsync("UpdateSgpClient", requestId, requestJson, cancellationToken);
                 var response = await tcs.Task.WaitAsync(TimeSpan.FromMinutes(2), cancellationToken);
-                return JsonSerializer.Deserialize<ResponseUpdateSgpClientJson>(response) ??
+                return JsonConvert.DeserializeObject<ResponseUpdateSgpClientJson>(response) ??
                     throw new NotImplementedException();
             }
             catch (TimeoutException ex)
