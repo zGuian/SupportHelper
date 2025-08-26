@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using SupportHelper.Communication.Requests;
 using SupportHelper.Communication.Responses;
 using SupportHelper.Domain.Interfaces.ApplicationContext;
 using SupportHelper.Domain.Interfaces.SignalRContext;
 using SupportHelper.Infrastructure.SignalR.Hubs;
 using SupportHelper.Infrastructure.SignalR.Interfaces;
+using System.Collections.Immutable;
 using System.Text.Json;
 
 namespace SupportHelper.Infrastructure.SignalR.SignalRServices
@@ -15,6 +17,9 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
         private readonly IHubContext<ControlHub> _context;
         private readonly ITaskClientResponses _taskClientResponse;
         private readonly ILogger<MachineSignalRServices> _logger;
+        private ImmutableList<Task<string>> _tasks = [];
+        private List<ResponseUpdateSgpClientJson> _responsesJson = [];
+        private List<ResponseBase<ResponseUpdateSgpClientJson>> _responseFinal = [];
 
         public MachineSignalRServices(IHubContext<ControlHub> context, ITaskClientResponses taskClientResponse,
             ILogger<MachineSignalRServices> logger)
@@ -104,7 +109,6 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
         public async Task<IEnumerable<ResponseBase<ResponseUpdateSgpClientJson>>> UpdateManySgpClientAsync(
             IQueueUpdateSgpClient queueUpdateSgpClient, CancellationToken cancellationToken = default)
         {
-            var responses = new List<ResponseBase<ResponseUpdateSgpClientJson>>();
             while (queueUpdateSgpClient.QueueValues.Count > 0)
             {
                 queueUpdateSgpClient.Dequeue(out var item);
@@ -112,27 +116,50 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
                 try
                 {
                     await _context.Clients.Clients(item.connId).SendAsync("UpdateSgpClient", requestId, item.request, cancellationToken);
-                    var response = await tcs.Task.WaitAsync(TimeSpan.FromMinutes(2), cancellationToken);
-                    var objResponse = JsonSerializer.Deserialize<ResponseUpdateSgpClientJson>(response) ??
-                        throw new NotImplementedException();
-                    responses.Add(ResponseBase<ResponseUpdateSgpClientJson>.Factories.Success(objResponse));
-                }
-                catch (TimeoutException ex)
-                {
-                    _logger.LogCritical("ERRO DE TIMEOUT {message}", ex.Message);
-                    responses.Add(ResponseBase<ResponseUpdateSgpClientJson>.Factories.Error("Timeout da resposta do cliente."));
+                    _tasks.Add(tcs.Task.WaitAsync(TimeSpan.FromMinutes(2), cancellationToken));
                 }
                 catch (Exception ex)
                 {
                     _logger.LogCritical("ERROR: {message}", ex.Message);
-                    responses.Add(ResponseBase<ResponseUpdateSgpClientJson>.Factories.Error("Erro inesperado ao processar o item."));
+                    _responseFinal.Add(ResponseBase<ResponseUpdateSgpClientJson>.Factories.Error("Erro inesperado ao processar o item."));
                 }
                 finally
                 {
                     _taskClientResponse.Unregister(requestId);
                 }
             }
-            return responses;
+
+            await ProcessResponsesSignalR();
+            _responsesJson.ForEach(r => _responseFinal.Add(ResponseBase<ResponseUpdateSgpClientJson>.Factories.Success(r)));
+            return _responseFinal;
+        }
+
+        private async Task ProcessResponsesSignalR()
+        {
+            try
+            {
+                await Task.WhenAll(_tasks);
+            }
+            catch (Exception) { }
+
+            foreach (var task in _tasks)
+            {
+                if (task.IsCompletedSuccessfully)
+                {
+                    var response = await task;
+                    var objResponse = JsonConvert.DeserializeObject<ResponseUpdateSgpClientJson>(response) ?? throw new Exception();
+                    _responsesJson.Add(objResponse);
+                    continue;
+                }
+                var exception = task.Exception?.InnerException;
+                if (exception is TimeoutException)
+                {
+                    _responseFinal.Add(ResponseBase<ResponseUpdateSgpClientJson>.Factories.Error("Timeout da resposta do cliente."));
+                    continue;
+                }
+                _responseFinal.Add(ResponseBase<ResponseUpdateSgpClientJson>.Factories.Error($"Erro inesperado: {exception?.Message}"));
+                _logger.LogError(exception, "Falha ao processar tarefa.");
+            }
         }
 
         private (string requestId, TaskCompletionSource<string> tcs) RegisterTcs()
