@@ -11,10 +11,11 @@ namespace SupportHelper.Tests.ControllersTest
         [Fact]
         public async Task GetStatusToMachine_ShouldBeOk()
         {
-            var moq = new Mock<IRequestStatusMachineUseCase>();
-            moq.Setup(x => x.ExecuteAsync(It.IsAny<string>()))
+            var moq = new Mock<IStatusMachineUseCase>();
+            moq.Setup(x => x.ExecuteAsync("test", default))
                 .ReturnsAsync(new ResponseStatusMachineJson 
                 { 
+                    Id = Guid.NewGuid().ToString(),
                     Hostname = "test", 
                     CurrentUsername = "test", 
                     DomainName = "test", 
@@ -27,7 +28,7 @@ namespace SupportHelper.Tests.ControllersTest
             var controller = new MachineController();
             var hostname = "test";
             
-            var result = await controller.GetStatusToMachine(moq.Object, hostname);
+            var result = await controller.GetStatusToMachine(moq.Object, hostname, default);
             
             Assert.IsType<OkObjectResult>(result);
         }

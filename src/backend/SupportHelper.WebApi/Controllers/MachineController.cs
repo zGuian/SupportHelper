@@ -11,35 +11,66 @@ namespace SupportHelper.WebApi.Controllers
     public sealed class MachineController : ControllerBase
     {
         [HttpGet("StatusMachine/{hostname:required}")]
-        public async Task<IActionResult> GetStatusToMachine([FromServices] IRequestStatusMachineUseCase statusMachineUseCase,
-            [FromRoute] string hostname)
+        public async Task<IActionResult> GetStatusToMachine([FromServices] IStatusMachineUseCase statusMachineUseCase,
+            [FromRoute] string hostname, CancellationToken ct)
         {
-            var json = await statusMachineUseCase.ExecuteAsync(hostname.ToLower());
-            return Ok(json);
+            var json = await statusMachineUseCase.ExecuteAsync(hostname.ToLower().Trim(), ct);
+            return Ok(new
+            {
+                IsSuccess = true,
+                OnDate = DateTime.Now.ToString("dd/MM/yyyy | hh:mm"),
+                Data = json
+            });
+        }
+
+        [HttpGet("{hostname:required}")]
+        public async Task<IActionResult> GetInformationMachineAsync([FromServices] IMachineInformationUseCase useCase,
+            [FromRoute] string hostname, CancellationToken ct)
+        {
+            var json = await useCase.ExecuteAsync(hostname.ToLower().Trim(), ct);
+            return Ok(new
+            {
+                IsSuccess = true,
+                OnDate = DateTime.Now.ToString("dd/MM/yyyy | hh:mm"),
+                Data = json
+            });
         }
 
         [HttpPost("LogSgpClient")]
-        public async Task<IActionResult> GetLogsForSgpClientAsync([FromServices] IRequestLogsSgpClientUseCase sgpClientUseCase,
-            [FromBody] RequestLogsSgpClientJson request)
+        public async Task<IActionResult> GetLogsForSgpClientAsync([FromServices] ILogsSgpClientUseCase logsSgpClientUseCase,
+            [FromBody] RequestLogsSgpClientJson request, CancellationToken ct)
         {
-            await sgpClientUseCase.ExecuteAsync(request);
-            return Ok();
+            await logsSgpClientUseCase.ExecuteAsync(request, ct);
+            return Ok(new
+            {
+                IsSuccess = true,
+                OnDate = DateTime.Now.ToString("dd/MM/yyyy | hh:mm"),
+            });
         }
 
         [HttpPost("UpdateSgpCliet")]
-        public async Task<IActionResult> UpdateSgpClient([FromServices] IRequestUpdateSgpClientUseCase request,
-            [FromBody] RequestUpdateSgpClientJson json)
+        public async Task<IActionResult> UpdateSgpClient([FromServices] IUpdateSgpClientUseCase updateSgpClientUseCase,
+        [FromBody] RequestUpdateSgpClientJson request, CancellationToken ct)
         {
-            await request.ExecuteAsync(json);
-            return Ok();
+            await updateSgpClientUseCase.ExecuteAsync(request, ct);
+            return Ok(new
+            {
+                IsSuccess = true,
+                OnDate = DateTime.Now.ToString("dd/MM/yyyy | hh:mm"),
+            });
         }
 
         [HttpGet("GetMachinesConnected")]
-        public async Task<IActionResult> GetMachinesConnected([FromServices] IRequestGetAllMachinesUseCase request,
-            [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<IActionResult> GetMachinesConnected([FromServices] IGetAllMachinesActivesUseCase getAllMachinesUseCase,
+            CancellationToken ct)
         {
-            var data = await request.ExecuteAsync(pageNumber, pageSize);
-            return Ok(data);
+            var json = await getAllMachinesUseCase.ExecuteAsync(ct);
+            return Ok(new
+            {
+                IsSuccess = true,
+                OnDate = DateTime.Now.ToString("dd/MM/yyyy | hh:mm"),
+                Data = json
+            });
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace SupportHelper.Application.DTOs
 {
-    public sealed class ResponsePageableDto<T> where T : class
+    public sealed record ResponsePageableDto<T> where T : class
     {
         public int TotalQuantity { get; init; }
         public int CurrentPage { get; init; }

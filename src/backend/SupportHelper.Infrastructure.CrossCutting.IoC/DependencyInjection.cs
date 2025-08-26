@@ -1,16 +1,20 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using CouchDB.Driver.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SupportHelper.Application.Interfaces;
-using SupportHelper.Application.UseCases.MachineUC;
+using SupportHelper.Application.UseCases.Requests;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
 using SupportHelper.Domain.Interfaces.Repositories.Memory;
 using SupportHelper.Domain.Interfaces.SignalRContext;
 using SupportHelper.Exceptions.ExceptionsBase;
+using SupportHelper.Infrastructure.Data.CouchDB.Context;
 using SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database;
 using SupportHelper.Infrastructure.Data.CouchDB.Repositories.Memory;
 using SupportHelper.Infrastructure.SignalR.Interfaces;
 using SupportHelper.Infrastructure.SignalR.SignalRServices;
 using SupportHelper.Infrastructure.SignalR.Tasks;
+using SupportHelper.Infrastructure.SignalR.Utils;
+using SupportHelper.Infrastructure.SignalR.Workers;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -20,20 +24,20 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
     {
         public static IServiceCollection IoC(this IServiceCollection services, IConfiguration configuration)
         {
+            AddUseCases(services);
             AddDatabase(services, configuration);
             AddSignalR(services);
-            AddUseCases(services);
-            AddHttpClient(services, configuration);
+            CreateQueueProcess(services);
             return services;
         }
 
         private static void AddUseCases(IServiceCollection services)
         {
-            services.AddScoped<IRequestGetAllMachinesUseCase, RequestGetAllMachinesUseCase>();
-            services.AddScoped<IRequestLogsSgpClientUseCase, RequestLogsSgpClientUseCase>();
-            services.AddScoped<IRequestMachineInformationUseCase, RequestMachineInformationUseCase>();
-            services.AddScoped<IRequestStatusMachineUseCase, RequestStatusMachineUseCase>();
-            services.AddScoped<IRequestUpdateSgpClientUseCase, RequestUpdateSgpClientUseCase>();
+            services.AddScoped<IGetAllMachinesActivesUseCase, GetAllMachinesActivesUseCase>();
+            services.AddScoped<ILogsSgpClientUseCase, LogsSgpClientUseCase>();
+            services.AddScoped<IMachineInformationUseCase, MachineInformationUseCase>();
+            services.AddScoped<IStatusMachineUseCase, StatusMachineUseCase>();
+            services.AddScoped<IUpdateSgpClientUseCase, UpdateSgpClientUseCase>();
         }
 
         private static void AddSignalR(this IServiceCollection services)
@@ -46,6 +50,17 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
         {
             services.AddSingleton<ITokenMemoryRepository, TokenMemoryRepository>();
             services.AddScoped<IMachineRepository, MachineRepository>();
+            services.AddCouchContext<AppCouchContext>(options =>
+            {
+                options.UseEndpoint(configuration.GetConnectionString("CouchDB") ?? throw new GenericErrorException(["NÃO ENCONTRADO CONNECTION STRING"]))
+                       .UseBasicAuthentication("admin", "admin");
+            });
+        }
+
+        private static void CreateQueueProcess(IServiceCollection services)
+        {
+            services.AddSingleton<IQueueProcess, QueueProcess>();
+            services.AddHostedService<QueueProcessWorker>();
         }
 
         private static void AddHttpClient(this IServiceCollection services, IConfiguration configuration)
@@ -58,7 +73,7 @@ namespace SupportHelper.Infrastructure.CrossCutting.IoC
             {
                 client.BaseAddress = new Uri(configuration.GetConnectionString("CouchDB")
                     ?? throw new GenericErrorException(["NÃO ENCONTRADO CONNECTION STRING"]));
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Credentials);
             });
         }

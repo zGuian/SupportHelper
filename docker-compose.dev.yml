@@ -1,20 +1,6 @@
-version: '3.9'
+version: '2.39.2'
 
 services:
-    postgres:
-        image: postgres
-        container_name: postgres_developed
-        environment:
-            POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: postgres
-            POSTGRES_DB: postgres_database
-        ports:
-            - "5432:5432"
-        volumes:
-            - postgres_data:/opt/postgres/data
-        networks:
-            - backend_dev_network
- 
     couchdb:
         image: couchdb:3.5.0
         container_name: couchdb_developed
@@ -29,7 +15,6 @@ services:
             - backend_dev_network
 
 volumes:
-    postgres_data:
     couchdb_data:
 
 networks:

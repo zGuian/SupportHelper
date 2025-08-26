@@ -23,8 +23,11 @@ namespace SupportHelper.WinServices.Core.Workers
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var url1 = _configuration["SignalrSettings:Url"];
-            string url = "https://tlhq4vgc-5001.brs.devtunnels.ms/SupportHelperConnectionSignalR?hostname=";
+            var url = _configuration["SignalrSettings:Url"];
+            if (string.IsNullOrEmpty(url))
+            {
+                throw new ArgumentException(nameof(url)); 
+            }
 
             _connection = new HubConnectionBuilder()
                 .WithUrl($"{url}{Environment.MachineName}")

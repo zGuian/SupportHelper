@@ -61,6 +61,7 @@ namespace SupportHelper.Infrastructure.SignalR.SignalRServices
             }
             catch (TimeoutException ex)
             {
+                _logger.LogError("EXCEDEU LIMITE DE REQUISIÇÃO. RECEBIDO TIMEOUT {message}", ex.Message);
                 throw new TimeoutException($"Aguardando resposta do cliente '{connectionId}' excedeu o tempo limite.");
             }
             catch (Exception ex)

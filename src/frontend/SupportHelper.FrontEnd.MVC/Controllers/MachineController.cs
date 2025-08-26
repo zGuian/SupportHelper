@@ -14,10 +14,7 @@ namespace SupportHelper.FrontEnd.MVC.Controllers
             var machines = new List<MachineModel>();
             for (int i = 0; i < 50; i++)
             {
-                machines.Add(new MachineModel(i.ToString(), "HOSTNAME", "GUIAN", "TBAD", "WIN 10",
-                [
-                    new NetworkBoardVO("TESTE", $"10.162.38.{i*24}", "NOT IPV6", "ASDAWQNVKA", true)
-                ], "10:00:20", "AGORA"));
+                machines.Add(new MachineModel(i.ToString(), "HOSTNAME", "GUIAN", "TBAD", "WIN 10", "10:00:20", "AGORA"));
             }
             return View(machines);
         }

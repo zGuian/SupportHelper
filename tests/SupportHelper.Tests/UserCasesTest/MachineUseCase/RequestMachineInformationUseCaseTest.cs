@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using SupportHelper.Application.UseCases.MachineUC;
+using SupportHelper.Application.UseCases.Requests;
 using SupportHelper.Communication.Responses;
 using SupportHelper.Test.Common.Utilities.Repositories;
 using SupportHelper.Test.Common.Utilities.Requests;
@@ -18,6 +18,7 @@ namespace SupportHelper.Tests.UserCasesTest.MachineUseCase
             var useCase = CreateUseCase();
             var responseJson = new ResponseStatusMachineJson
             {
+                Id = Guid.NewGuid().ToString(),
                 Hostname = request.Hostname,
                 CurrentUsername = "user",
                 DomainName = "domain",
@@ -36,12 +37,12 @@ namespace SupportHelper.Tests.UserCasesTest.MachineUseCase
             Assert.Equal(responseJson, result);
         }
 
-        private static RequestStatusMachineUseCase CreateUseCase()
+        private static StatusMachineUseCase CreateUseCase()
         {
-            var log = new NullLogger<RequestMachineInformationUseCase>();
+            var log = new NullLogger<MachineInformationUseCase>();
             var signalRService = MachineSignalRServiceBuilder.Build();
             var machineRepository = MachineRepositoryBuilder.Build();
-            return new RequestStatusMachineUseCase(signalRService, machineRepository);
+            return new StatusMachineUseCase(signalRService, machineRepository);
         }
     }
 }

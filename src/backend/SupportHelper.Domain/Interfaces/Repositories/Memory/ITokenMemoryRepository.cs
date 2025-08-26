@@ -2,7 +2,7 @@
 {
     public interface ITokenMemoryRepository
     {
-        (string user, string token) GetToken(string userId);
+        void GetToken(string userId, out string token);
         void RegisterToken(string userId, string token);
         void RemoveToken(string userId);
     }
