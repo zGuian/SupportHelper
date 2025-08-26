@@ -31,7 +31,7 @@ namespace SupportHelper.WebApi.Controllers
             return Ok(new
             {
                 IsSuccess = true,
-                OnDate = DateTime.Now.ToString("dd/MM/yyyy | hh:mm"),
+                OnDate = DateTime.Now.ToString("dd/MM/yyyy-hh:mm:ss"),
                 Data = json
             });
         }
@@ -44,7 +44,7 @@ namespace SupportHelper.WebApi.Controllers
             return Ok(new
             {
                 IsSuccess = true,
-                OnDate = DateTime.Now.ToString("dd/MM/yyyy | hh:mm"),
+                OnDate = DateTime.Now.ToString("dd/MM/yyyy-hh:mm:ss"),
             });
         }
 
@@ -56,7 +56,7 @@ namespace SupportHelper.WebApi.Controllers
             return Ok(new
             {
                 IsSuccess = true,
-                OnDate = DateTime.Now.ToString("dd/MM/yyyy | hh:mm"),
+                OnDate = DateTime.Now.ToString("dd/MM/yyyy-hh:mm:ss"),
             });
         }
 
@@ -68,7 +68,7 @@ namespace SupportHelper.WebApi.Controllers
             return Ok(new
             {
                 IsSuccess = true,
-                OnDate = DateTime.Now.ToString("dd/MM/yyyy | hh:mm"),
+                OnDate = DateTime.Now.ToString("dd/MM/yyyy-hh:mm:ss"),
                 Data = json
             });
         }
