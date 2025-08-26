@@ -1,4 +1,5 @@
 ﻿using CouchDB.Driver.Extensions;
+using SupportHelper.Communication.Requests;
 using SupportHelper.Domain.Aggregates;
 using SupportHelper.Domain.Interfaces.Models;
 using SupportHelper.Domain.Interfaces.Repositories.Database;
@@ -35,6 +36,11 @@ namespace SupportHelper.Infrastructure.Data.CouchDB.Repositories.Database
         {
             var model = await GetByHostnameAsync(hostname, cancellationToken).ConfigureAwait(false);
             return model.SignalR.ConnectionId;
+        }
+
+        public Task<Dictionary<RequestUpdateSgpClientJson, string>> GetManyConnectionAsync(IEnumerable<RequestUpdateSgpClientJson> requests, CancellationToken ct = default)
+        {
+            throw new NotImplementedException();
         }
 
         public int GetQuantityMachines() => _context.Machines.Count();

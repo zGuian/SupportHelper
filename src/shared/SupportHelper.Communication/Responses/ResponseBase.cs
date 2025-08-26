@@ -6,12 +6,30 @@
         public string? MessageError { get; private set; }
         public T? Value { get; private set; }
 
-        public ResponseBase(bool isSuccess, T? value)
+        public ResponseBase(T value)
         {
-            IsSuccess = isSuccess;
-            if (value != null)
+            IsSuccess = true;
+            MessageError = null;
+            Value = value;
+        }
+
+        public ResponseBase(string message)
+        {
+            IsSuccess = false;
+            MessageError = message;
+            Value = default;
+        }
+
+        public static class Factories
+        {
+            public static ResponseBase<T> Success(T value)
             {
-                Value = value;
+                return new ResponseBase<T>(value);
+            }
+
+            public static ResponseBase<T> Error(string message)
+            {
+                return new ResponseBase<T>(message);
             }
         }
     }

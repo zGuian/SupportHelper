@@ -25,7 +25,7 @@ namespace SupportHelper.Application.UseCases.Requests
         public async Task ExecuteAsync(RequestLogsSgpClientJson request, CancellationToken cancellationToken = default)
         {
             var connId = await _machineRepository.GetConnectionByHostnameAsync(request.Hostname, cancellationToken);
-            var responseBase = await _machineSignalR.GetLogSgpClientAsync(request, connId, cancellationToken);
+            var responseBase = await _machineSignalR.GetLogSgpClientAsync(connId, request, cancellationToken);
             if (responseBase.StartsWith("NOK"))
             {
                 throw new Exception(responseBase);

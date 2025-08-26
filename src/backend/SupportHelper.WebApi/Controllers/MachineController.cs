@@ -48,15 +48,29 @@ namespace SupportHelper.WebApi.Controllers
             });
         }
 
-        [HttpPost("UpdateSgpCliet")]
+        [HttpPost("UpdateSgpClient")]
         public async Task<IActionResult> UpdateSgpClient([FromServices] IUpdateSgpClientUseCase updateSgpClientUseCase,
         [FromBody] RequestUpdateSgpClientJson request, CancellationToken ct)
         {
-            await updateSgpClientUseCase.ExecuteAsync(request, ct);
+            var json = await updateSgpClientUseCase.ExecuteAsync(request, ct);
             return Ok(new
             {
                 IsSuccess = true,
                 OnDate = DateTime.Now.ToString("dd/MM/yyyy-hh:mm:ss"),
+                Data = json
+            });
+        }
+
+        [HttpPost("UpdateManySgpClient")]
+        public async Task<IActionResult> UpdateSgpClient([FromServices] IUpdateManySgpClientUseCase useCase, 
+            [FromBody] IEnumerable<RequestUpdateSgpClientJson> request, CancellationToken ct)
+        {
+            var json = await useCase.ExecuteAsync(request, ct);
+            return Ok(new
+            {
+                IsSuccess = true,
+                OnDate = DateTime.Now.ToString("dd/MM/yyyy-hh:mm:ss"),
+                Data = json
             });
         }
 
