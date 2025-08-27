@@ -1,4 +1,4 @@
-﻿using SupportHelper.FrontEnd.MVC.ValueObjects;
+﻿using SupportHelper.FrontEnd.MVC.Models.ValueObjects;
 
 namespace SupportHelper.FrontEnd.MVC.Models
 {

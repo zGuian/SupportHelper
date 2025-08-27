@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SupportHelper.FrontEnd.MVC.Interfaces;
 using SupportHelper.FrontEnd.MVC.Models;
-using SupportHelper.FrontEnd.MVC.ValueObjects;
 
 namespace SupportHelper.FrontEnd.MVC.Controllers
 {
@@ -16,6 +15,7 @@ namespace SupportHelper.FrontEnd.MVC.Controllers
             {
                 machines.Add(new MachineModel(i.ToString(), "HOSTNAME", "GUIAN", "TBAD", "WIN 10", "10:00:20", "AGORA"));
             }
+            ViewBag.Machine = new MachineModel();
             return View(machines);
         }
 

@@ -14,4 +14,10 @@
             }
         });
     });
+
+    $('.btn-clear').on('click', () => {
+        let hostname = $(this).attr('valueHostname');
+
+        
+    })
 });

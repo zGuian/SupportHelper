@@ -18,7 +18,7 @@ namespace SupportHelper.FrontEnd.MVC.Services
         {
             try
             {
-                var response = await _client.GetAsync($"api/v1/Machine/{hostname}");
+                var response = await _client.GetAsync($"api/v1/Machine/StatusMachine/{hostname}");
                 if (!response.IsSuccessStatusCode)
                 {
 
