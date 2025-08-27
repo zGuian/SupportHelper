@@ -26,14 +26,14 @@ namespace SupportHelper.FrontEnd.MVC.Models
         }
 
         public MachineModel(string id, string hostname, string currentUsername, string domainName, 
-            string operationalSystem, string upTime, string lastUpdate)
+            string operationalSystem, IEnumerable<NetworkBoardVO> networkBoards, string upTime, string lastUpdate)
         {
             Id = id;
             Hostname = hostname;
             CurrentUsername = currentUsername;
             DomainName = domainName;
             OperationalSystem = operationalSystem;
-            NetworkBoards = [];
+            NetworkBoards = networkBoards;
             UpTime = upTime;
             LastUpdate = lastUpdate;
         }

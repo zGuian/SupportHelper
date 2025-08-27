@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\backend\SupportHelper.Application\SupportHelper.Application.csproj" />
-    <ProjectReference Include="..\..\shared\SupportHelper.Communication\SupportHelper.Communication.csproj" />
   </ItemGroup>
 
 </Project>
