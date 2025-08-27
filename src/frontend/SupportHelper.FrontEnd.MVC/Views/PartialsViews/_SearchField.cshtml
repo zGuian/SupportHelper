@@ -1,0 +1,53 @@
+﻿<style>
+    #teste {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+    }
+
+    .row {
+        margin-bottom: 15px;
+    }
+
+    .col-3 {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+    .form-control {
+        border-radius: 5px;
+        border-color: #ced4da;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+</style>
+
+<form>
+    <div class="container-md text-center" id="teste">
+        <h4>Campo de pesquisa</h4>
+        <div class="row">
+            <div class="col-3">
+                <input class="form-control" type="text" placeholder="Hostname" />
+            </div>
+            <div class="col-3">
+                <select class="form-control">
+                    <option value="@null">Selecione um dominio</option>
+                    <option value="">Tbad</option>
+                    <option value="">Americas</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <input class="form-control" type="text" placeholder="Sistema Operacional" />
+            </div>
+            <div class="col-3">
+                <input class="form-control" type="date" placeholder="Ultima atualização" />
+            </div>
+        </div>
+        <div class="row-cols-md-auto">
+            <div class="col-3">
+                <button type="submit" id="buttonSearch" class="btn btn-primary">Pesquisar</button>
+                <button type="submit" id="buttonClear" class="btn btn-danger">Limpar</button>
+            </div>
+        </div>
+    </div>
+</form>

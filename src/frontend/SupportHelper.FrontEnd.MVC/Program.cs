@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews()
     .AddRazorOptions(opts =>
     {
-        opts.ViewLocationFormats.Add("/Views/Shared/Partials/{0}" + RazorViewEngine.ViewExtension);
+        opts.ViewLocationFormats.Add("/Views/PartialsViews/{0}" + RazorViewEngine.ViewExtension);
     });
 
 var app = builder.Build();
