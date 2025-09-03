@@ -13,7 +13,7 @@ namespace SupportHelper.FrontEnd.MVC.Controllers
             var machines = new List<MachineModel>();
             for (int i = 0; i < 50; i++)
             {
-                machines.Add(new MachineModel(i.ToString(), "HOSTNAME", "GUIAN", "TBAD", "WIN 10", "10:00:20", "AGORA"));
+                machines.Add(new MachineModel(i.ToString(), "HOSTNAME", "GUIAN", "TBAD", "WIN 10", null,"10:00:20", "AGORA"));
             }
             ViewBag.Machine = new MachineModel();
             return View(machines);
