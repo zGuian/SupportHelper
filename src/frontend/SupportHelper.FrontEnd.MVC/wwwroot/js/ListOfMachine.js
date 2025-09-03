@@ -4,7 +4,7 @@
         console.log('Capturado id:', id);
         $.ajax({
             type: 'GET',
-            url: '/Maquinas/InfoMachine/',
+            url: '/Maquinas/InfoMachine',
             data: { id: id },
             success: (result) => {
                 $('#infoPane').html(result);
