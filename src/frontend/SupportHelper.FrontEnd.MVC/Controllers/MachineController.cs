@@ -11,7 +11,7 @@ namespace SupportHelper.FrontEnd.MVC.Controllers
         public IActionResult ListOfMachines()
         {
             var machines = new List<MachineModel>();
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 11; i++)
             {
                 machines.Add(new MachineModel(i.ToString(), "HOSTNAME", "GUIAN", "TBAD", "WIN 10", null,"10:00:20", "AGORA"));
             }
@@ -19,11 +19,11 @@ namespace SupportHelper.FrontEnd.MVC.Controllers
             return View(machines);
         }
 
-        [HttpGet("Info")]
-        public async Task<IActionResult> InfoMachine([FromServices] IMachineServices services, string hostname)
+        [HttpGet("InfoMaquina")]
+        public async Task<IActionResult> InfoMachine([FromServices] IMachineServices services, string id)
         {
-            var data = await services.GetMachineByHostnameAsync(hostname);
-            return View(data);
+            var data = await services.GetMachineByHostnameAsync(id);
+            return PartialView("_InfoMachine", data);
         }
     }
 }

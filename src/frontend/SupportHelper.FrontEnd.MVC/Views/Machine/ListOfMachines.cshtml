@@ -3,67 +3,51 @@
 <partial name="_SearchField" model="@ViewBag.Machine" />
 
 <br/>
-<div class="container-fluid text-center" style="background-color: lightblue;">
-    Minha DIV
+<div class="container-fluid text-center" style="padding: 20px; border: 1px solid #dee2e6; border-radius: 8px;">
     <div class="row">
-        <div class="col-6 text-center" style="background-color: cornflowerblue;">
-            MEU TESTE
-        </div>
-    </div>
-
-
-</div>
-
-<br/>
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Hostname</th>
-            <th scope="col">Dominio</th>
-            <th scope="col">Usuario</th>
-            <th scope="col">Dominio</th>
-            <th scope="col">Sistema Operacional</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model) {
-        <tr>
-            <td>@Html.DisplayFor(modelItem => item.Id)</td>
-            <td>@Html.DisplayFor(modelItem => item.Hostname)</td>
-            <td>@Html.DisplayFor(modelItem => item.CurrentUsername)</td>
-            <td>@Html.DisplayFor(modelItem => item.DomainName)</td>
-            <td>@Html.DisplayFor(modelItem => item.OperationalSystem)</td>
-            <td>
-                <button class="btn btn-primary btn-sm btn-detalhes" idEquipamento="@item.Hostname">Detalhes do equipamento</button> |
-                <button class="btn btn-secondary btn-sm" valueHostname="@item.Hostname">Rede</button>
-            </td>
-        </tr>
-        }
-    </tbody>
-</table>
-<div class="pagination">
-    <a href="#">&laquo;</a>
-    <a href="#">1</a>
-    <a class="active" href="#">2</a>
-    <a href="#">3</a>
-    <a href="#">4</a>
-    <a href="#">5</a>
-    <a href="#">6</a>
-    <a href="#">&raquo;</a>
-</div>
-
-<div id="modalDetalhesEquipamentos" class="modal" tabindex="-1">
-    <div class="modal-dialog modal-1g">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Detalhes</h3>
+        <div class="col-5 text-center">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Hostname</th>
+                        <th scope="col">Usuário login</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Hostname)</td>
+                            <td>@Html.DisplayFor(modelItem => item.CurrentUsername)</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm btn-detalhes" data-id="@item.Hostname">Selecionar</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="pagination">
+                <a href="#">&laquo;</a>
+                <a href="#">1</a>
+                <a class="active" href="#">2</a>
+                <a href="#">3</a>
+                <a href="#">4</a>
+                <a href="#">5</a>
+                <a href="#">6</a>
+                <a href="#">&raquo;</a>
             </div>
-            <div class="modal-body">
-                <div id="detalhesEquipamento"></div>
+        </div>
+        <div class="col text-center">
+            <div id="infoPane" class="border rounded" style="height:600px; overflow:auto;">
+                Selecione uma máquina para mais informações...
             </div>
         </div>
     </div>
+
+
 </div>
 
 @section scripts {
