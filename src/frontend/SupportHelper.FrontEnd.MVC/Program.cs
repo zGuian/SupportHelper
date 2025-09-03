@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc.Razor;
+using SupportHelper.FrontEnd.MVC;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.IoC(builder.Configuration);
+
 builder.Services.AddControllersWithViews()
     .AddRazorOptions(opts =>
     {

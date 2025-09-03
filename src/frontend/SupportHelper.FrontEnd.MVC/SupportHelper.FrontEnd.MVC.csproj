@@ -10,8 +10,4 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\backend\SupportHelper.Application\SupportHelper.Application.csproj" />
-  </ItemGroup>
-
 </Project>

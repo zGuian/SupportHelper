@@ -1,54 +1,72 @@
-﻿@model IEnumerable<MachineModel>
+﻿@model ResponseBase<IEnumerable<MachineModel>>
+@{
+    ViewData["Title"] = "Maquinas";
+}
 
-<partial name="_SearchField" model="@ViewBag.Machine" />
+<partial name="_SearchField" model="@ViewBag.SearchModel" />
 
 <br/>
-<div class="container-fluid text-center" style="padding: 20px; border: 1px solid #dee2e6; border-radius: 8px;">
-    <div class="row">
-        <div class="col-5 text-center">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Hostname</th>
-                        <th scope="col">Usuário login</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
+@if (Model.Data == null)
+{
+    <h1>@Model.Message</h1>
+}
+else 
+{
+    <div class="container-fluid text-center" style="padding: 20px; border: 1px solid #dee2e6; border-radius: 8px;">
+        <div class="row">
+            <div class="col-5 text-center">
+                <table class="table">
+                   <thead>
                         <tr>
-                            <td>@Html.DisplayFor(modelItem => item.Id)</td>
-                            <td>@Html.DisplayFor(modelItem => item.Hostname)</td>
-                            <td>@Html.DisplayFor(modelItem => item.CurrentUsername)</td>
-                            <td>
-                                <button class="btn btn-primary btn-sm btn-detalhes" data-id="@item.Hostname">Selecionar</button>
-                            </td>
+                            <th scope="col">#</th>
+                            <th scope="col">Hostname</th>
+                            <th scope="col">IPV4</th>
+                            <th></th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-            <div class="pagination">
-                <a href="#">&laquo;</a>
-                <a href="#">1</a>
-                <a class="active" href="#">2</a>
-                <a href="#">3</a>
-                <a href="#">4</a>
-                <a href="#">5</a>
-                <a href="#">6</a>
-                <a href="#">&raquo;</a>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Data)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Hostname)</td>
+                                <td>@Html.DisplayFor(modelItem => item.NetworkBoards.Where(i => i.InUse == true).First().Ipv4)</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm btn-detalhes" data-id="@item.Id">Selecionar</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <br/>
+                <div>
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
-        </div>
-        <div class="col text-center">
-            <div id="infoPane" class="border rounded" style="height:600px; overflow:auto;">
-                Selecione uma máquina para mais informações...
+            <div class="col text-center">
+                <div id="infoPane" class="border rounded" style="height:600px; overflow:auto;">
+                    Selecione uma máquina para mais informações...
+                </div>
             </div>
-        </div>
+        </div>    
     </div>
-
-
-</div>
+}
 
 @section scripts {
     <script src="~/js/ListOfMachine.js"></script>

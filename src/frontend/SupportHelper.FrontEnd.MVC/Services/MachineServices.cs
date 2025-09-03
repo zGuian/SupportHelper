@@ -1,40 +1,66 @@
-﻿using SupportHelper.Application.Interfaces;
-using SupportHelper.Communication.Responses;
+﻿using Newtonsoft.Json;
+using SupportHelper.FrontEnd.MVC.DTOs;
 using SupportHelper.FrontEnd.MVC.Interfaces;
 using SupportHelper.FrontEnd.MVC.Models;
-using SupportHelper.FrontEnd.MVC.Models.ValueObjects;
-using System.Text.Json;
 
 namespace SupportHelper.FrontEnd.MVC.Services
 {
     public class MachineServices : IMachineServices
     {
-        private readonly ILogger<MachineServices> logger;
-        private readonly IStatusMachineUseCase statusMachineUseCase;
+        private readonly HttpClient _httpClient;
+        private readonly ILogger<MachineServices> _logger;
 
-        public MachineServices(ILogger<MachineServices> logger, IStatusMachineUseCase statusMachineUseCase)
+        public MachineServices(ILogger<MachineServices> logger, IHttpClientFactory httpClient)
         {
-            this.statusMachineUseCase = statusMachineUseCase;
-            this.logger = logger;
+            _logger = logger;
+            _httpClient = httpClient.CreateClient("Default");
         }
 
-        public async Task<MachineModel> GetMachineByHostnameAsync(string hostname, CancellationToken ct = default)
+        public async Task<ResponseBase<IEnumerable<MachineModel>>> GetMachineAsync(CancellationToken ct = default)
         {
             try
             {
-                var response = await statusMachineUseCase.ExecuteAsync(hostname, ct);
-                return new MachineModel(response.Id,
-                                        response.Hostname,
-                                        response.CurrentUsername,
-                                        response.DomainName,
-                                        response.OperationalSystem,
-                                        response.NetworkBoards.Select(n => NetworkBoardVO.Create(n.Description, n.Ipv4, n.Ipv6, n.MacAddress, n.InUse)),
-                                        response.UpTime,
-                                        response.LastUpdate);
+                var response = await _httpClient.GetAsync("Machine/GetMachineConnected", ct);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return ResponseBase<IEnumerable<MachineModel>>.ReturnFalse("Não foi possivel fazer requisição para a API. tente novamente");
+                }
+                var jsonString = await response.Content.ReadAsStringAsync(ct);
+                var obj = JsonConvert.DeserializeObject<JsonBaseDto<IEnumerable<MachineModel>>>(jsonString);
+                if (obj != null && obj.Data != null)
+                {
+                    return ResponseBase<IEnumerable<MachineModel>>.ReturnSuccess(obj.Data);
+                }
+                throw new Exception("Não foi encontrado nenhuma informação.");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                _logger.LogError("Houve um erro não rastreado");
+                return ResponseBase<IEnumerable<MachineModel>>.ReturnFalse(ex.Message);
+            }
+        }
+
+        public async Task<ResponseBase<MachineModel>> GetMachineAsync(string hostname, CancellationToken ct = default)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync(hostname, ct);
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception();
+                }
+                var jsonString = await response.Content.ReadAsStringAsync(ct);
+                var obj = JsonConvert.DeserializeObject<JsonBaseDto<MachineModel>>(jsonString);
+                if (obj != null && obj.Data != null)
+                {
+                    return ResponseBase<MachineModel>.ReturnSuccess(obj.Data);
+                }
+                return ResponseBase<MachineModel>.ReturnFalse(string.Empty);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Houve um erro não rastreado");
+                return ResponseBase<MachineModel>.ReturnFalse(ex.Message);
             }
         }
     }

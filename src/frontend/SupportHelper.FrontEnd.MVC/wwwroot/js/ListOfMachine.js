@@ -1,11 +1,11 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
-    $('.btn-detalhes').on('click', () => {
+    $('.btn-detalhes').on('click', function () {
         var id = $(this).data('id');
         console.log('Capturado id:', id);
+
         $.ajax({
             type: 'GET',
-            url: '/Maquinas/InfoMachine',
-            data: { id: id },
+            url: 'InfoMaquina/' + id,
             success: (result) => {
                 $('#infoPane').html(result);
             }, error: (xhr) => {
@@ -14,6 +14,6 @@
             }
         });
 
-        /*$('#infoPane').load('/Maquinas/InfoMaquina', { id: id });*/
     });
 });
+        /*$('#infoPane').load('/Maquinas/InfoMaquina', { id: id });*/

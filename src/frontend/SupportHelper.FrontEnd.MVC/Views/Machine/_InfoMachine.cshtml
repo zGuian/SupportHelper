@@ -1,58 +1,72 @@
 ﻿@model MachineModel
 
 <div class="p-3 text-muted">
-    <h5>INFORMAÇÕES DA MAQUINA</h5>
+    <h6>INFORMAÇÕES DA MAQUINA</h6>
     <div class="row">
         <div class="col">
             <label class="form-label">Hostname</label>
-            <input class="form-control" readonly />
+            <input asp-for="@Model.Hostname" class="form-control" readonly />
         </div>
         <div class="col">
             <label class="form-label">Ultimo login</label>
-            <input class="form-control" readonly />
+            <input asp-for="@Model.CurrentUsername" class="form-control" readonly />
+        </div>
+        <div class="col">
+            <label class="form-label">Dominio</label>
+            <input asp-for="@Model.DomainName" class="form-control" readonly />
         </div>
     </div>
     <div class="row">
         <div class="col">
             <label class="form-label">Sistema Operacional</label>
-            <input class="form-control" readonly />
-        </div>
-        <div class="col">
-            <label class="form-label">Dominio</label>
-            <input class="form-control" readonly />
+            <input asp-for="@Model.OperationalSystem" class="form-control" readonly />
         </div>
         <div class="col">
             <label class="form-label">Tempo ativo</label>
-            <input class="form-control" readonly />
+            <input asp-for="@Model.UpTime" class="form-control" readonly />
         </div>
         <div class="col">
             <label class="form-label">Ultima atualização</label>
-            <input class="form-control" readonly />
+            <input asp-for="@Model.LastUpdate" class="form-control" readonly />
         </div>
     </div>
-    <h6>REDE</h6>
-    <div class="row">
-        <div class="col">
-            <label class="form-label">Descrição</label>
-            <input class="form-control" readonly />
+    <br/>
+    <h5>INFORMAÇÕES DE REDE</h5>
+    @foreach (var item in Model.NetworkBoards)
+    {
+        <h6>Placa de rede</h6>
+        <div class="row">
+            <div class="col">
+                <label class="form-label">Descrição</label>
+                <input asp-for="@item.Description" class="form-control" readonly />
+            </div>
+            <div class="col">
+                <label class="form-label">Mac Address</label>
+                <input asp-for="@item.MacAddress" class="form-control" readonly />
+            </div>
+            <div class="col">
+                <label class="form-label">Status</label>
+                <div class="row-cols-lg-auto">
+                    @if (item.InUse)
+                    {
+                        <span class="badge bg-success">Ativo</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Inativo</span>
+                    }
+                </div>
+            </div>
         </div>
-        <div class="col">
-            <label class="form-label">Mac Address</label>
-            <input class="form-control" readonly />
+        <div class="row">
+            <div class="col">
+                <label class="form-label">Ipv4</label>
+                <input asp-for="@item.Ipv4" class="form-control" readonly />
+            </div>
+            <div class="col">
+                <label class="form-label">Ipv6</label>
+                <input asp-for="@item.Ipv6" class="form-control" readonly />
+            </div>
         </div>
-        <div class="col">
-            <label class="form-label">Em uso</label>
-            <input class="form-control" readonly />
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <label class="form-label">Ipv4</label>
-            <input class="form-control" readonly />
-        </div>
-        <div class="col">
-            <label class="form-label">Ipv6</label>
-            <input class="form-control" readonly />
-        </div>
-    </div>
+    }
 </div>
