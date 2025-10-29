@@ -1,0 +1,13 @@
+services:
+    redis:
+        container_name: redis
+        image: redis:bookworm
+        command: >
+            redis-server --port 6379 --appendonly yes
+        volumes:
+            - redis_data:/data
+        ports:
+            - "6379:6379"
+
+volumes:
+    redis_data:
