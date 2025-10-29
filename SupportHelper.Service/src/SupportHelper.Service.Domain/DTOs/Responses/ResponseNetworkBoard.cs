@@ -1,12 +1,12 @@
 ﻿namespace SupportHelper.Service.Domain.DTOs.Responses
 {
-    public record ResponseNetworkBoard
+    public class ResponseNetworkBoard
     {
-        public required string Description { get; init; }
-        public required string Ipv4 { get; init; }
-        public string? Ipv6 { get; init; }
-        public required string MacAddress { get; init; }
-        public bool InUse { get; init; }
+        public string Description { get; set; } = string.Empty;
+        public string Ipv4 { get; set; } = string.Empty;
+        public string? Ipv6 { get; set; } = string.Empty;
+        public string MacAddress { get; set; } = string.Empty;
+        public bool InUse { get; set; }
 
         public ResponseNetworkBoard() { }
 

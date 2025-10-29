@@ -51,11 +51,9 @@ namespace SupportHelper.API.Domain.Entities
             SignalR = signalR;
         }
 
-        public Machine SignalDesconnect()
+        public void ResetId()
         {
-            SignalR.ConnectionId = "OFF";
-            SignalR.IsActive = false;
-            return this;
+            Id = 0;
         }
     }
 }

@@ -64,8 +64,8 @@ namespace SupportHelper.API.Infra.Data.Context.Map
                 .HasMaxLength(35)
                 .HasColumnName("COL_OPERATIONALSYSTEM")
                 .HasColumnOrder(7)
-                .HasColumnType("VARCHAR(30)")
-                .IsRequired(true);
+                .HasColumnType("VARCHAR(45)")
+                .IsRequired(false);
 
             builder.OwnsOne(x => x.SignalR, signal =>
             {

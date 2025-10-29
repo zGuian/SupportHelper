@@ -7,7 +7,7 @@ namespace SupportHelper.API.Domain.Interfaces.Services
 {
     public interface IMachineServices
     {
-        Task<MachineDto> GetInformationAndUpdateDatabaseAsync(string hostname, bool hasNewMachine, CancellationToken ct = default);
+        Task<MachineDto> GetInformationAndUpdateDatabaseAsync(string hostname, bool isRegistered, string? connId = null, CancellationToken ct = default);
         Task<MachineDto> GetInformationMachineInDatabaseAsync(string hostname, CancellationToken ct = default);
         Task<FileDataDto> GetLogsSgpClientAsync(RequestLogsSgpClientJson request, CancellationToken ct = default);
         Task<IEnumerable<ResponseBase<ResponseUpdateSgpClientJson>>> UpdateManySgpClientAsync(IEnumerable<RequestUpdateSgpClientJson> requests, CancellationToken ct = default);

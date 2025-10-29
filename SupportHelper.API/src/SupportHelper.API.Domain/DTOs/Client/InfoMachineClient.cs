@@ -1,5 +1,6 @@
 ﻿using SupportHelper.API.Domain.DTOs.Responses;
 using SupportHelper.API.Domain.Entities.ValueObjects;
+using System.Text.Json.Serialization;
 
 namespace SupportHelper.API.Domain.DTOs.Client
 {
@@ -15,9 +16,10 @@ namespace SupportHelper.API.Domain.DTOs.Client
         public required string UpTime { get; set; }
         public SignalR SignalR { get; set; }
 
+        [JsonConstructor]
         public InfoMachineClient(bool isConnected, string hostname, bool? sgpIsRunning, string currentUsername
             , string domainName, string operationalSystem, IEnumerable<NetworkBoardJson> networkBoards
-            , string upTime, string connId)
+            , string upTime, string connId, bool isActive)
         {
             IsConnected = isConnected;
             Hostname = hostname;
@@ -27,7 +29,7 @@ namespace SupportHelper.API.Domain.DTOs.Client
             OperationalSystem = operationalSystem;
             NetworkBoardsJ = networkBoards;
             UpTime = upTime;
-            SignalR = new SignalR(connId, true);
+            SignalR = new SignalR(connId, isActive);
         }
     }
 }

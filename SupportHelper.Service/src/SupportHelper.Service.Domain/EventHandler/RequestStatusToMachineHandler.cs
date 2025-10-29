@@ -19,7 +19,7 @@ namespace SupportHelper.Service.Domain.EventHandler
             {
                 var response = await _services.GetStatusToMachine();
                 var node = JsonNode.Parse(response) ?? throw new Exception();
-                node["ConnectionId"] = connection.ConnectionId;
+                node["SignalR"] = connection.ConnectionId;
                 response = JsonSerializer.Serialize(node);
 
                 await connection.InvokeAsync("ResponseBase", receivedRequestId, response);

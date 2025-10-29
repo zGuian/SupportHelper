@@ -70,8 +70,11 @@ namespace SupportHelper.API.Infra.CrossCutting.Bootstrapper
         private static void AddDbContext(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<AppDbContext>(opts =>
+            {
                 opts.UseSqlServer(configuration.GetConnectionString("SQLServer")
-                    ?? throw new ArgumentNullException(nameof(configuration))));
+                    ?? throw new ArgumentNullException(nameof(configuration)));
+                opts.EnableSensitiveDataLogging();
+            });
         }
 
         private static void AddServices(this IServiceCollection services)

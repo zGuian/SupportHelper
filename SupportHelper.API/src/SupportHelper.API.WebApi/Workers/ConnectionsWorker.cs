@@ -15,6 +15,7 @@ namespace SupportHelper.API.WebApi.Workers
             while (!stoppingToken.IsCancellationRequested)
             {
                 var result = await _queue.DequeueConnectionsAsync();
+
                 using var scope = _scopeFactory.CreateScope();
                 var machineServices = scope.ServiceProvider.GetRequiredService<IMachineServices>();
                 var query = scope.ServiceProvider.GetRequiredService<IMachineRepositoryQuery>();
@@ -22,7 +23,7 @@ namespace SupportHelper.API.WebApi.Workers
                 if (result.HasValue)
                 {
                     var isRegistered = await query.ExistHostname(result.Value.hostname);
-                    await machineServices.GetInformationAndUpdateDatabaseAsync(result.Value.hostname, isRegistered, stoppingToken);
+                    await machineServices.GetInformationAndUpdateDatabaseAsync(result.Value.hostname, isRegistered, result.Value.connId, stoppingToken);
                 }
                 continue;
             }

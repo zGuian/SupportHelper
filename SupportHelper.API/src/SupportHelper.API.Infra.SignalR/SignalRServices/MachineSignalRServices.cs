@@ -36,8 +36,7 @@ namespace SupportHelper.API.Infra.SignalR.SignalRServices
             {
                 await _context.Clients.Clients(connectionId).SendAsync("StatusMachine", requestId, cancellationToken);
                 var response = await tcs.Task.WaitAsync(_taskClientResponse.Time, cancellationToken);
-                return JsonConvert.DeserializeObject<InfoMachineClient>(response) ??
-                    throw new NotImplementedException();
+                return JsonConvert.DeserializeObject<InfoMachineClient>(response) ?? throw new NotImplementedException();
             }
             catch (TimeoutException)
             {

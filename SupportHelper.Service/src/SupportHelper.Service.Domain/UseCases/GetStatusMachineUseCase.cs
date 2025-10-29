@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32;
-using SupportHelper.Service.Domain.DTOs.Responses;
+﻿using SupportHelper.Service.Domain.DTOs.Responses;
 using SupportHelper.Service.Domain.Interface.UseCases;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
@@ -8,12 +7,6 @@ namespace SupportHelper.Service.Domain.UseCases
 {
     public class GetStatusMachineUseCase : IGetStatusMachineUseCase
     {
-        private bool InUse { get; set; }
-        private string Description { get; set; } = string.Empty;
-        private string MacAddress { get; set; } = string.Empty;
-        private string Ipv4 { get; set; } = string.Empty;
-        public string Ipv6 { get; set; } = string.Empty;
-
         public ResponseStatusMachineJson Execute()
         {
             return new ResponseStatusMachineJson
@@ -22,10 +15,10 @@ namespace SupportHelper.Service.Domain.UseCases
                 DomainName = Environment.UserDomainName,
                 CurrentUsername = Environment.UserName,
                 OperationalSystem = Environment.OSVersion.VersionString,
-                NetworkBoards = GetAllInformationNetwork(),
+                NetworkBoards = GetAllInformation(),
                 UpTime = GetUpTime(),
                 IsConnected = true,
-                LastUpdate = DateTime.Now.ToString("dd/MM/yyy-HH:mm:ss")
+                LastUpdate = DateTimeOffset.Now.LocalDateTime.ToString()
             };
         }
 
@@ -35,44 +28,54 @@ namespace SupportHelper.Service.Domain.UseCases
             return TimeSpan.FromMilliseconds(upTime).ToString();
         }
 
-        private IEnumerable<ResponseNetworkBoard> GetAllInformationNetwork()
+        public static IEnumerable<ResponseNetworkBoard> GetAllInformation()
         {
-            var networkBoard = new HashSet<ResponseNetworkBoard>();
             var nics = NetworkInterface.GetAllNetworkInterfaces();
-            foreach (var adpter in nics)
+            var filtered = nics
+                .Where(a =>
+                    a.OperationalStatus != OperationalStatus.Unknown &&
+                    a.NetworkInterfaceType != NetworkInterfaceType.Loopback &&
+                    a.NetworkInterfaceType != NetworkInterfaceType.Tunnel &&
+                    a.NetworkInterfaceType != NetworkInterfaceType.Unknown &&
+                    !a.Description.Contains("Virtual", StringComparison.OrdinalIgnoreCase) &&
+                    !a.Description.Contains("Hyper-V", StringComparison.OrdinalIgnoreCase) &&
+                    !a.Description.Contains("WAN Miniport", StringComparison.OrdinalIgnoreCase)
+                );
+
+            var result = new HashSet<ResponseNetworkBoard>();
+            var macs = new HashSet<string>();
+
+            foreach (var adapter in filtered)
             {
-                if (adpter.OperationalStatus != OperationalStatus.Up ||
-                    adpter.NetworkInterfaceType == NetworkInterfaceType.Loopback)
-                {
-                    InUse = false;
+                var mac = adapter.GetPhysicalAddress().ToString();
+                if (string.IsNullOrWhiteSpace(mac) || mac.Length < 8)
                     continue;
-                }
-                Description = adpter.Description;
-                MacAddress = adpter.GetPhysicalAddress().ToString();
-                var props = adpter.GetIPProperties();
+
+                if (!macs.Add(mac))
+                    continue;
+
+                var entity = new ResponseNetworkBoard
+                {
+                    Description = adapter.Description,
+                    MacAddress = mac,
+                    InUse = adapter.OperationalStatus == OperationalStatus.Up
+                };
+
+                var props = adapter.GetIPProperties();
                 foreach (var ip in props.UnicastAddresses)
                 {
                     if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
-                    {
-                        Ipv4 = ip.Address.ToString();
-                    }
-                    if (ip.Address.AddressFamily == AddressFamily.InterNetworkV6)
-                    {
-                        Ipv6 = ip.Address.ToString();
-                    }
+                        entity.Ipv4 = ip.Address.ToString();
+                    else if (ip.Address.AddressFamily == AddressFamily.InterNetworkV6)
+                        entity.Ipv6 = ip.Address.ToString();
                 }
-                networkBoard.Add(ResponseNetworkBoard.Create(Description, Ipv4, Ipv6, MacAddress, InUse));
-                CleanProperties();
-            }
-            return [.. networkBoard];
-        }
 
-        private void CleanProperties()
-        {
-            Description = string.Empty;
-            MacAddress = string.Empty;
-            Ipv4 = string.Empty;
-            Ipv6 = string.Empty;
+                if (!string.IsNullOrEmpty(entity.Ipv4))
+                    entity.InUse = true;
+
+                result.Add(entity);
+            }
+            return result;
         }
     }
 }

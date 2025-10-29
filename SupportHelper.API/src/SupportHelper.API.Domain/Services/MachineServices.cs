@@ -30,10 +30,12 @@ namespace SupportHelper.API.Domain.Services
             return machine.Adapt<MachineDto>();
         }
 
-        public async Task<MachineDto> GetInformationAndUpdateDatabaseAsync(string hostname, bool isRegistered, CancellationToken ct = default)
+        public async Task<MachineDto> GetInformationAndUpdateDatabaseAsync(string hostname, bool isRegistered, string? connId = null, CancellationToken ct = default)
         {
-            // SE NÃO TIVER REGISTRADO NÃO PRECISO BUSCAR CONNECTIONID NO BANCO.
-            var connId = await _machineQuery.GetConnectionByHostnameAsync(hostname, ct);
+            if (isRegistered || connId == null)
+            {
+                connId = await _machineQuery.GetConnectionByHostnameAsync(hostname, ct);
+            }
             var responseJson = await _signalR.RequestStatusAsync(connId, ct);
             var machine = responseJson.Adapt<Machine>();
             if (isRegistered)
@@ -43,6 +45,7 @@ namespace SupportHelper.API.Domain.Services
             }
             else
             {
+                machine.ResetId();
                 await _machineCommand.RegisterAsync(machine, ct);
                 await _unitOfWork.CommitAsync();
             }
