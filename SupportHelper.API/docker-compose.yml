@@ -1,4 +1,17 @@
 services:
+    supporthelper-api:
+        build: 
+            context: .
+            dockerfile: src/SupportHelper.API.WebApi/Dockerfile
+        container_name: suppoerhelper-api
+        ports:
+            - "8085:8085"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ASPNETCORE_URLS=http://+:8085
+            - ConnectionStrings__SQLServer=Server=${SQL_SERVER};Database=DB_SUPPORTHELPER;User Id=${SQL_USER};Password=${SQL_PASSWORD};TrustServerCertificate=True;
+            - ConnectionStrings__Redis=${REDIS_SERVER}
+
     redis:
         container_name: redis
         image: redis:bookworm
