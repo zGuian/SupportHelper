@@ -57,6 +57,7 @@ namespace SupportHelper.API.Domain.Entities
             {
                 item.PrepareForEntity();
             }
+            LastUpdate = DateTimeOffset.Now.LocalDateTime;
         }
 
         public void ResetId()

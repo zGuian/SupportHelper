@@ -8,7 +8,7 @@ namespace SupportHelper.API.Domain.DTOs.Client
     {
         public required bool IsConnected { get; set; }
         public required string Hostname { get; set; }
-        public bool? SgpIsRunning { get; set; }
+        public bool SgpIsRunning { get; set; }
         public required string CurrentUsername { get; set; }
         public required string DomainName { get; set; }
         public required string OperationalSystem { get; set; }
@@ -17,7 +17,7 @@ namespace SupportHelper.API.Domain.DTOs.Client
         public SignalR SignalR { get; set; }
 
         [JsonConstructor]
-        public InfoMachineClient(bool isConnected, string hostname, bool? sgpIsRunning, string currentUsername
+        public InfoMachineClient(bool isConnected, string hostname, bool sgpIsRunning, string currentUsername
             , string domainName, string operationalSystem, IEnumerable<NetworkBoardJson> networkBoards
             , string upTime, string connId, bool isActive)
         {

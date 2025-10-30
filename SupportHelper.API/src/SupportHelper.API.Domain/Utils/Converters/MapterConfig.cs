@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using SupportHelper.API.Domain.DTOs.Client;
+using SupportHelper.API.Domain.DTOs.Entities;
 using SupportHelper.API.Domain.DTOs.Responses;
 using SupportHelper.API.Domain.Entities;
 using SupportHelper.API.Domain.Entities.ValueObjects;
@@ -36,6 +37,18 @@ namespace SupportHelper.API.Domain.Utils.Converters
                     , json.IsConnected
                     , json.UpTime
                     , json.SignalR));
+
+            TypeAdapterConfig<InfoMachineClient, MachineDto>.NewConfig()
+                .ConstructUsing(m => new MachineDto(
+                    m.Hostname
+                  , m.IsConnected
+                  , m.SgpIsRunning
+                  , m.CurrentUsername
+                  , m.DomainName
+                  , m.UpTime
+                  , m.OperationalSystem
+                  , m.NetworkBoardsJ.Select(n => new NetworkBoardDto(n.Description, n.Ipv4, n.Ipv6, n.MacAddress, n.InUse))
+                  , DateTimeOffset.Now.LocalDateTime));
         }
     }
 }

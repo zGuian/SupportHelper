@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using MapsterMapper;
 using SupportHelper.API.Domain.DTOs.Entities;
 using SupportHelper.API.Domain.DTOs.Generics;
 using SupportHelper.API.Domain.DTOs.Requests;
@@ -13,16 +14,18 @@ namespace SupportHelper.API.Domain.Services
     public class MachineServices(IMachineRepositoryCommand machineCommand
         , IMachineRepositoryQuery machineQuery
         , IMachineSignalRServices signalR
-        , IUnitOfWork unitOfWork
         , IQueueUpdateSgpClient queue
-        , ICacheTemp cache) : IMachineServices
+        , IUnitOfWork unitOfWork
+        , ICacheTemp cache
+        , IMapper mapper) : IMachineServices
     {
         private readonly IMachineRepositoryCommand _machineCommand = machineCommand;
         private readonly IMachineRepositoryQuery _machineQuery = machineQuery;
         private readonly IMachineSignalRServices _signalR = signalR;
         private readonly IQueueUpdateSgpClient _queue = queue;
-        private readonly ICacheTemp _cache = cache;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly ICacheTemp _cache = cache;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<MachineDto> GetInformationMachineInDatabaseAsync(string hostname, CancellationToken ct = default)
         {
@@ -33,11 +36,17 @@ namespace SupportHelper.API.Domain.Services
         public async Task<MachineDto> GetInformationAndUpdateDatabaseAsync(string hostname, CancellationToken ct = default)
         {
             var connId = await _machineQuery.GetConnectionByHostnameAsync(hostname, ct);
-            var responseJson = await _signalR.RequestStatusAsync(connId, ct);
-            var machine = responseJson.Adapt<Machine>();
 
-            machine.PrepareForEntity(await _machineQuery.GetIdByHostnameAsync(hostname));
-            _machineCommand.Update(machine);
+            var responseTask = _signalR.RequestStatusAsync(connId, ct);
+            var idTask = _machineQuery.GetIdByHostnameAsync(hostname);
+            await Task.WhenAll(responseTask, idTask);
+
+            var responseJson = await responseTask;
+            var idMachine = await idTask;
+
+            var machine = responseJson.Adapt<Machine>();
+            machine.PrepareForEntity(idMachine);
+            await _machineCommand.UpdateAsync(machine);
             await _unitOfWork.CommitAsync();
 
             return responseJson.Adapt<MachineDto>();
