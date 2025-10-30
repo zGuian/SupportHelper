@@ -1,5 +1,4 @@
 ﻿using Mapster;
-using MapsterMapper;
 using SupportHelper.API.Domain.DTOs.Entities;
 using SupportHelper.API.Domain.DTOs.Generics;
 using SupportHelper.API.Domain.DTOs.Requests;
@@ -16,8 +15,7 @@ namespace SupportHelper.API.Domain.Services
         , IMachineSignalRServices signalR
         , IQueueUpdateSgpClient queue
         , IUnitOfWork unitOfWork
-        , ICacheTemp cache
-        , IMapper mapper) : IMachineServices
+        , ICacheTemp cache) : IMachineServices
     {
         private readonly IMachineRepositoryCommand _machineCommand = machineCommand;
         private readonly IMachineRepositoryQuery _machineQuery = machineQuery;
@@ -25,7 +23,6 @@ namespace SupportHelper.API.Domain.Services
         private readonly IQueueUpdateSgpClient _queue = queue;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly ICacheTemp _cache = cache;
-        private readonly IMapper _mapper = mapper;
 
         public async Task<MachineDto> GetInformationMachineInDatabaseAsync(string hostname, CancellationToken ct = default)
         {
