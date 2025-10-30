@@ -1,5 +1,6 @@
 ﻿using SupportHelper.Service.Domain.DTOs.Responses;
 using SupportHelper.Service.Domain.Interface.UseCases;
+using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
@@ -18,7 +19,8 @@ namespace SupportHelper.Service.Domain.UseCases
                 NetworkBoards = GetAllInformation(),
                 UpTime = GetUpTime(),
                 IsConnected = true,
-                LastUpdate = DateTimeOffset.Now.LocalDateTime.ToString()
+                LastUpdate = DateTimeOffset.Now.LocalDateTime.ToString(),
+                SgpIsRunning = VerifySgpIsRunning()
             };
         }
 
@@ -28,7 +30,7 @@ namespace SupportHelper.Service.Domain.UseCases
             return TimeSpan.FromMilliseconds(upTime).ToString();
         }
 
-        public static IEnumerable<ResponseNetworkBoard> GetAllInformation()
+        private static IEnumerable<ResponseNetworkBoard> GetAllInformation()
         {
             var nics = NetworkInterface.GetAllNetworkInterfaces();
             var filtered = nics
@@ -76,6 +78,17 @@ namespace SupportHelper.Service.Domain.UseCases
                 result.Add(entity);
             }
             return result;
+        }
+
+        private static bool VerifySgpIsRunning()
+        {
+            var process = Process.GetProcesses();
+
+            foreach (var item in process)
+            {
+                if (item.ProcessName.StartsWith("DCX.ITLC")) return true;
+            }
+            return false;
         }
     }
 }
