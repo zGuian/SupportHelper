@@ -19,7 +19,8 @@ namespace SupportHelper.Service.Domain.EventHandler
             {
                 var response = await _services.GetStatusToMachine();
                 var node = JsonNode.Parse(response) ?? throw new Exception();
-                node["SignalR"] = connection.ConnectionId;
+                node["connId"] = connection.ConnectionId;
+                node["isActive"] = true;
                 response = JsonSerializer.Serialize(node);
 
                 await connection.InvokeAsync("ResponseBase", receivedRequestId, response);
