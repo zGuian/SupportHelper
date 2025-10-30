@@ -9,6 +9,7 @@ namespace SupportHelper.API.Domain.Interfaces.Repositories
         Task<bool> ExistHostname(string hostname);
         Task<Machine> GetByHostnameAsync(string hostname, CancellationToken cancellationToken = default);
         Task<string> GetConnectionByHostnameAsync(string hostname, CancellationToken cancellationToken = default);
+        Task<int> GetIdByHostnameAsync(string hostname);
         Task<Dictionary<RequestUpdateSgpClientJson, string>> GetManyConnectionAsync(IEnumerable<RequestUpdateSgpClientJson> requests, CancellationToken ct = default);
         Task<(IEnumerable<Machine> models, int count)> GetPageAsync(int page, int pageSize);
     }

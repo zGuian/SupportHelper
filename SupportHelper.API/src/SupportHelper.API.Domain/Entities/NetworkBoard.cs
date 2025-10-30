@@ -37,5 +37,10 @@ namespace SupportHelper.API.Domain.Entities
         {
             return new NetworkBoard(description, ipv4, ipv6, macAddress, inUse);
         }
+
+        public void PrepareForEntity()
+        {
+            MacAddress = string.Empty;
+        }
     }
 }

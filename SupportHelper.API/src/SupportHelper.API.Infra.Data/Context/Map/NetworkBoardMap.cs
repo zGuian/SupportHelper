@@ -25,7 +25,7 @@ namespace SupportHelper.API.Infra.Data.Context.Map
                 .HasColumnName("COL_IPV4")
                 .HasColumnOrder(2)
                 .HasColumnType("CHAR(15)")
-                .IsRequired(true);
+                .IsRequired(false);
 
             builder.HasAlternateKey(x => x.MacAddress);
             builder.Property(x => x.MacAddress)

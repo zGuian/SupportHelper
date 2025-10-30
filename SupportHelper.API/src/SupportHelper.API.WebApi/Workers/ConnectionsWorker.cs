@@ -20,12 +20,11 @@ namespace SupportHelper.API.WebApi.Workers
                 var machineServices = scope.ServiceProvider.GetRequiredService<IMachineServices>();
                 var query = scope.ServiceProvider.GetRequiredService<IMachineRepositoryQuery>();
 
-                if (result.HasValue)
+                if (!result.HasValue)
                 {
-                    var isRegistered = await query.ExistHostname(result.Value.hostname);
-                    await machineServices.GetInformationAndUpdateDatabaseAsync(result.Value.hostname, isRegistered, result.Value.connId, stoppingToken);
+                    continue;
                 }
-                continue;
+                await machineServices.RegisterConnectionAsync(result.Value.hostname, result.Value.connId, stoppingToken);
             }
         }
     }

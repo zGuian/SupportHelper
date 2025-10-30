@@ -20,7 +20,7 @@ namespace SupportHelper.API.WebApi.Controllers
         //[ProducesErrorResponseType(typeof(ResponseErrorJson))]
         public async Task<IActionResult> GetStatusToMachine([FromRoute] string hostname, CancellationToken ct)
         {
-            var dto = await _machineServices.GetInformationAndUpdateDatabaseAsync(hostname.ToLower().Trim(), true, ct: ct);
+            var dto = await _machineServices.GetInformationAndUpdateDatabaseAsync(hostname.ToLower().Trim(), ct);
             return Ok(new
             {
                 IsSuccess = true,

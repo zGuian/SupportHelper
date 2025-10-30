@@ -30,34 +30,42 @@ namespace SupportHelper.API.Domain.Services
             return machine.Adapt<MachineDto>();
         }
 
-        public async Task<MachineDto> GetInformationAndUpdateDatabaseAsync(string hostname, bool isRegistered, string? connId = null, CancellationToken ct = default)
+        public async Task<MachineDto> GetInformationAndUpdateDatabaseAsync(string hostname, CancellationToken ct = default)
         {
-            if (isRegistered || connId == null)
-            {
-                connId = await _machineQuery.GetConnectionByHostnameAsync(hostname, ct);
-            }
+            var connId = await _machineQuery.GetConnectionByHostnameAsync(hostname, ct);
             var responseJson = await _signalR.RequestStatusAsync(connId, ct);
             var machine = responseJson.Adapt<Machine>();
-            if (isRegistered)
-            {
-                _machineCommand.Update(machine);
-                _unitOfWork.Commit();
-            }
-            else
-            {
-                machine.ResetId();
-                await _machineCommand.RegisterAsync(machine, ct);
-                await _unitOfWork.CommitAsync();
-            }
+
+            machine.PrepareForEntity(await _machineQuery.GetIdByHostnameAsync(hostname));
+            _machineCommand.Update(machine);
+            await _unitOfWork.CommitAsync();
+
             return responseJson.Adapt<MachineDto>();
         }
 
-        public async Task<MachineDto> GetInformationFirstConnection(string connId, CancellationToken ct = default)
+        public async Task RegisterConnectionAsync(string hostname, string connId, CancellationToken ct = default)
         {
-            var responseJson = await _signalR.RequestStatusAsync(connId, ct);
-            var machine = responseJson.Adapt<Machine>();
-            await _machineCommand.InsertOrUpdateNewConnectionsAsync(machine, ct);
-            return responseJson.Adapt<MachineDto>();
+            var existTask = _machineQuery.ExistHostname(hostname);
+            var statusTask = _signalR.RequestStatusAsync(connId, ct);
+            await Task.WhenAll(existTask, statusTask);
+
+            var existHostname = await existTask;
+            var infoMachine = await statusTask;
+            var machine = infoMachine.Adapt<Machine>();
+
+            if (existHostname)
+            {
+                await _machineQuery.GetIdByHostnameAsync(hostname);
+
+                machine.PrepareForEntity(await _machineQuery.GetIdByHostnameAsync(hostname));
+                await _machineCommand.UpdateAsync(machine);
+                await _unitOfWork.CommitAsync();
+                return;
+            }
+
+            machine.ResetId();
+            await _machineCommand.RegisterAsync(machine, ct);
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task<FileDataDto> GetLogsSgpClientAsync(RequestLogsSgpClientJson request, CancellationToken ct = default)

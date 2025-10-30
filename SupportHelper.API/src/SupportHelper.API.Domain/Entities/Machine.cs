@@ -1,5 +1,4 @@
 ﻿using SupportHelper.API.Domain.Entities.ValueObjects;
-using SupportHelper.API.Domain.Interfaces.Entities;
 using System.Text.Json.Serialization;
 
 namespace SupportHelper.API.Domain.Entities
@@ -49,6 +48,15 @@ namespace SupportHelper.API.Domain.Entities
             UpTime = upTime;
             LastUpdate = DateTimeOffset.Now.LocalDateTime;
             SignalR = signalR;
+        }
+
+        public void PrepareForEntity(int id)
+        {
+            Id = id;
+            foreach (var item in NetworkBoards)
+            {
+                item.PrepareForEntity();
+            }
         }
 
         public void ResetId()

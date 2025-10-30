@@ -4,10 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using SupportHelper.API.Domain.DTOs.Requests;
 using SupportHelper.API.Domain.Entities;
+using SupportHelper.API.Domain.Entities.ValueObjects;
 using SupportHelper.API.Domain.Interfaces.Repositories;
 using SupportHelper.API.Infra.Data.Context;
 using System.Data;
-using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace SupportHelper.API.Infra.Data.Repositories.Database
@@ -19,6 +19,17 @@ namespace SupportHelper.API.Infra.Data.Repositories.Database
         private readonly AppDbContext _context = context;
         private readonly string _connectionString = configuration.GetConnectionString("SQLServer")
                 ?? throw new ArgumentNullException("ConnectionString:SQLServer");
+
+        public async Task<bool> ExistHostname(string hostname)
+            => await _context.Machines.AnyAsync(h => h.Hostname.Equals(hostname));
+
+        public async Task<int> GetIdByHostnameAsync(string hostname)
+        {
+            return await _context.Machines.AsNoTracking()
+                .Where(m => m.Hostname.Equals(hostname))
+                .Select(m => m.Id)
+                .FirstOrDefaultAsync();
+        }
 
         public async Task<Machine> GetByHostnameAsync(string hostname, CancellationToken cancellationToken = default)
         {
@@ -82,44 +93,52 @@ namespace SupportHelper.API.Infra.Data.Repositories.Database
             throw new NotImplementedException();
         }
 
-        public async Task InsertOrUpdateNewConnectionsAsync(Machine machine, CancellationToken cancellationToken = default)
+        public async Task UpdateAsync(Machine entity)
         {
-            await _context.Machines.AddAsync(machine, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            await using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+            await using var transaction = await conn.BeginTransactionAsync();
+            try
+            {
+                var sqlMachine = @"UPDATE TB_MACHINE
+                               SET COL_ISCONNECTED = @IsConnected
+                               	, COL_SGPISRUNNING = @SgpIsRunning
+                               	, COL_UPTIME = @UpTime
+                                , COL_CURRENTUSERNAME = @CurrentUsername
+                               	, COL_SIGNALR_CONNECTIONID = @SignalR_ConnectionId
+                               	, COL_SIGNALR_ISACTIVE = @SignalR_IsActive
+                               	, COL_LASTUPDATE = @LastUpdate
+                               WHERE COL_HOSTNAME = @Hostname";
+
+                var machineParameters = new
+                {
+                    entity.Hostname,
+                    entity.IsConnected,
+                    entity.SgpIsRunning,
+                    entity.UpTime,
+                    entity.CurrentUsername,
+                    SignalR_ConnectionId = entity.SignalR.ConnectionId,
+                    SignalR_IsActive = entity.SignalR.IsActive,
+                    entity.LastUpdate
+                };
+                await conn.ExecuteAsync(sqlMachine, machineParameters, transaction);
+
+                var sqlNetwork = @"UPDATE TB_NETWORKBOARD
+                                   SET COL_IPV4 = @Ipv4
+                                   	, COL_INUSE = @InUse
+                                   	, COL_IPV6 = @Ipv6
+                                    , COL_DESCRIPTION = @Description
+                                   WHERE COL_MACADRESS = @MacAddress";
+                await conn.ExecuteAsync(sqlNetwork, entity.NetworkBoards, transaction);
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
-
-        public async Task<bool> ExistHostname(string hostname) 
-            => await _context.Machines.AnyAsync(h => h.Hostname.Equals(hostname));
-
-        //public async Task InsertOrUpdateNewConnectionsAsync(Machine machine, CancellationToken cancellationToken = default)
-        //{
-        //    try
-        //    {
-        //        var procedureName = @"sp_insert_or_update_machine";
-        //        var parameters = new
-        //        {
-        //            @hostname = values.FirstOrDefault(x => x.Key.Equals("X-Hostname")).Value,
-        //            @isConnected = true,
-        //            @lastUpdate = DateTimeOffset.Now.LocalDateTime,
-        //            @signalR_connectedId = values.FirstOrDefault(x => x.Key.Equals("X-ConnectionId")).Value,
-        //            @currentUserName = values.FirstOrDefault(x => x.Key.Equals("X-CurrentUsername")).Value,
-        //            @uptime = values.FirstOrDefault(x => x.Key.Equals("X-Uptime")).Value
-        //        };
-        //        await using var conn = new SqlConnection(_connectionString);
-        //        await conn.ExecuteAsync(procedureName, parameters, commandTimeout: 30, commandType: CommandType.StoredProcedure);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        var codeError = ex.Message.Take(5);
-        //        switch (codeError)
-        //        {
-        //            case "50001":
-        //                throw new(ex.Message);
-        //            default:
-        //                break;
-        //        }
-        //    }
-        //}
 
         public async Task UpdateForShutdownAsync(string hostname)
         {
