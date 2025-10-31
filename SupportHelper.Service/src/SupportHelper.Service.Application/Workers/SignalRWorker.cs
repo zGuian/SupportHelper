@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using SupportHelper.Service.Domain.EventHandler;
 using SupportHelper.Service.Domain.Interface.EventHandler;
 
 namespace SupportHelper.Service.Application.Workers
@@ -11,6 +12,7 @@ namespace SupportHelper.Service.Application.Workers
         private readonly ILogger<SignalRWorker> _logger = logger;
         private readonly IEnumerable<ISignalREventHandler> _signalrHandlers = signalREventHandlers;
         private readonly IConfiguration _configuration = configuration;
+        public event MachineShutdownEventHandler? MachineShutdown;
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -54,6 +56,7 @@ namespace SupportHelper.Service.Application.Workers
 
         public override Task StopAsync(CancellationToken cancellationToken)
         {
+            MachineShutdown?.Invoke();
             return base.StopAsync(cancellationToken);
         }
     }
