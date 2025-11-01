@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SupportHelper.Service.Domain.EventHandler;
+using SupportHelper.Service.Domain.Events;
 using SupportHelper.Service.Domain.Interface.EventHandler;
 using SupportHelper.Service.Domain.Interface.Services;
 using SupportHelper.Service.Domain.Interface.UseCases;
@@ -31,6 +32,7 @@ namespace SupportHelper.Service.CrossCutting.Bootstrapper
         private static void AddServices(IServiceCollection services)
         {
             services.AddTransient<IMachineServices, MachineService>();
+            services.AddSingleton<MachineEvents>();
         }
 
         private static void AddUseCases(IServiceCollection services)

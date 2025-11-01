@@ -2,8 +2,6 @@
 using Microsoft.Extensions.Logging;
 using SupportHelper.Service.Domain.Interface.EventHandler;
 using SupportHelper.Service.Domain.Interface.Services;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace SupportHelper.Service.Domain.EventHandler
 {
@@ -29,9 +27,38 @@ namespace SupportHelper.Service.Domain.EventHandler
 
             connection.Closed += async error =>
             {
-                _logger.LogWarning("Conexão com SignalR foi encerrada. Tentando reconectar em 40 segundos...");
-                await Task.Delay(TimeSpan.FromSeconds(40), stoppingToken);
-                await connection.StartAsync();
+                _logger.LogWarning("Conexão com SignalR foi encerrada. Iniciando processo de reconexão manual...");
+                if (stoppingToken.IsCancellationRequested)
+                    return;
+
+                var attempt = 0;
+
+                while (attempt < 50 && !stoppingToken.IsCancellationRequested)
+                {
+                    attempt++;
+                    try
+                    {
+                        await connection.StartAsync(stoppingToken);
+                        _logger.LogInformation("Reconexão manual bem-sucedida!");
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, $"Tentativa [{attempt}]: Erro ao tentar reconectar ao SignalR manualmente.");
+                        _logger.LogError(ex, $"Tentando novamente em 40 segundos...");
+                        for (int i = 0; i < 30; i++)
+                        {
+                            if (stoppingToken.IsCancellationRequested)
+                                return;
+
+                            var delay = TimeSpan.FromSeconds(Math.Min(5 * attempt, 60));
+                            await Task.Delay(delay, CancellationToken.None);
+                        }
+                    }
+                }
+
+                if (attempt >= 50)
+                    _logger.LogCritical("Falha ao reconectar ao SignalR após 50 tentativas. Verifique a conectividade.");
             };
         }
     }

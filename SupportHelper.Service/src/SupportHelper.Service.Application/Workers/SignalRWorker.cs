@@ -1,18 +1,21 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
-using SupportHelper.Service.Domain.EventHandler;
+using SupportHelper.Service.Application.HostedServices;
+using SupportHelper.Service.Domain.Events;
 using SupportHelper.Service.Domain.Interface.EventHandler;
 
 namespace SupportHelper.Service.Application.Workers
 {
     public class SignalRWorker(ILogger<SignalRWorker> logger
-            , IEnumerable<ISignalREventHandler> signalREventHandlers
-            , IConfiguration configuration) : BackgroundService
+        , IEnumerable<ISignalREventHandler> signalREventHandlers
+        , IEnumerable<IMachineEventHandler> machineHandlers
+        , IConfiguration configuration
+        , MachineEvents machineEvents) : BackgroundService
     {
         private HubConnection? _connection;
         private readonly ILogger<SignalRWorker> _logger = logger;
-        private readonly IEnumerable<ISignalREventHandler> _signalrHandlers = signalREventHandlers;
+        private readonly MachineEvents _machineEvents = machineEvents;
+        private EventRegistration? _eventRegistration;
         private readonly IConfiguration _configuration = configuration;
-        public event MachineShutdownEventHandler? MachineShutdown;
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -33,10 +36,7 @@ namespace SupportHelper.Service.Application.Workers
                 .WithStatefulReconnect()
                 .Build();
 
-            foreach (ISignalREventHandler handler in _signalrHandlers)
-            {
-                handler.Register(_connection, stoppingToken);
-            }
+            _eventRegistration = new EventRegistration(signalREventHandlers, machineHandlers, machineEvents, _connection);
 
             try
             {
@@ -50,14 +50,29 @@ namespace SupportHelper.Service.Application.Workers
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(15), stoppingToken);
             }
         }
 
-        public override Task StopAsync(CancellationToken cancellationToken)
+        public override async Task StopAsync(CancellationToken cancellationToken)
         {
-            MachineShutdown?.Invoke();
-            return base.StopAsync(cancellationToken);
+            _machineEvents.MachineShutdown();
+
+            if (_connection is not null)
+            {
+                try
+                {
+                    await _connection.StopAsync(cancellationToken);
+                    await _connection.DisposeAsync();
+                    _logger.LogInformation("Conexão SignalR encerrada com sucesso.");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Erro ao encerrar conexão SignalR.");
+                }
+            }
+
+            await base.StopAsync(cancellationToken);
         }
     }
 }
