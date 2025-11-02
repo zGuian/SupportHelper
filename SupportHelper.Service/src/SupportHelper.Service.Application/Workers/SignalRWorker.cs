@@ -37,6 +37,7 @@ namespace SupportHelper.Service.Application.Workers
                 .Build();
 
             _eventRegistration = new EventRegistration(signalREventHandlers, machineHandlers, machineEvents, _connection);
+            await _eventRegistration.RegisterEvents(stoppingToken);
 
             try
             {
@@ -48,15 +49,28 @@ namespace SupportHelper.Service.Application.Workers
                 _logger.LogError(ex, "Erro ao conectar com o SignalR");
             }
 
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                await Task.Delay(TimeSpan.FromSeconds(15), stoppingToken);
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(15), stoppingToken);
+                }
             }
+            catch(TaskCanceledException)
+            {
+                _logger.LogInformation("Serviço cancelado com segurança.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro inesperado no SignalRWorker.");
+            }
+            
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
             _machineEvents.MachineShutdown();
+            await Task.Delay(TimeSpan.FromSeconds(10));
 
             if (_connection is not null)
             {

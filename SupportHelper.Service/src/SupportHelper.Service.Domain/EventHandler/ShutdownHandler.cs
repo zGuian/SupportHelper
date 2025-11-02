@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using SupportHelper.Service.Domain.Events;
 using SupportHelper.Service.Domain.Interface.EventHandler;
 using SupportHelper.Service.Domain.Interface.UseCases;
-using System.Text.Json;
 
 namespace SupportHelper.Service.Domain.EventHandler
 {
@@ -17,13 +16,21 @@ namespace SupportHelper.Service.Domain.EventHandler
         {
             machineEvents.OnShutdown += async () =>
             {
-                var jsonString = await Task.Run(() =>
+                var hostname = await Task.Run(() =>
                 {
                     var machine = _getStatusMachineUseCase.Execute();
-                    return JsonSerializer.Serialize(machine);
+                    return machine.Hostname;
                 });
 
-                await hubConnection.SendAsync("ClientHasShutdown", jsonString);
+                try
+                {
+                    await hubConnection.SendAsync("ClientHasShutdown", hostname);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning("Não foi possivel enviar comando de desligamento não há conexão com servidor.");
+                    _logger.LogWarning($"{ex.Message}");
+                }
             };
         }
     }

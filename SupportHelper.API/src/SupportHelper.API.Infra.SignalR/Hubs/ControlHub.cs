@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using SupportHelper.API.Domain.Interfaces.Repositories;
 using SupportHelper.API.Infra.SignalR.Interfaces;
 

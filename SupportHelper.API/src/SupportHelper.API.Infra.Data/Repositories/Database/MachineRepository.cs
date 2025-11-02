@@ -117,8 +117,8 @@ namespace SupportHelper.API.Infra.Data.Repositories.Database
                     entity.SgpIsRunning,
                     entity.UpTime,
                     entity.CurrentUsername,
-                    SignalR_ConnectionId = entity.SignalR.ConnectionId,
-                    SignalR_IsActive = entity.SignalR.IsActive,
+                    @SignalR_ConnectionId = entity.SignalR.ConnectionId,
+                    @SignalR_IsActive = entity.SignalR.IsActive,
                     entity.LastUpdate
                 };
                 await conn.ExecuteAsync(sqlMachine, machineParameters, transaction);
@@ -143,7 +143,11 @@ namespace SupportHelper.API.Infra.Data.Repositories.Database
         public async Task UpdateForShutdownAsync(string hostname)
         {
             var procedureName = @"sp_shutdown_client";
-            var parameter = new { @hostname = hostname };
+            var parameter = new
+            {
+                @hostname = hostname,
+                @lastupdate = DateTimeOffset.Now.LocalDateTime
+            };
             try
             {
                 await using var conn = new SqlConnection(_connectionString);

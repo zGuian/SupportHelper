@@ -27,6 +27,8 @@ namespace SupportHelper.Service.CrossCutting.Bootstrapper
             services.AddSingleton<ISignalREventHandler, RequestStatusToMachineHandler>();
             services.AddSingleton<ISignalREventHandler, UpdateSgpClientHandler>();
             services.AddSingleton<IFileTransferUseCase, FileTransferUseCase>();
+
+            services.AddSingleton<IMachineEventHandler, ShutdownHandler>();
         }
 
         private static void AddServices(IServiceCollection services)

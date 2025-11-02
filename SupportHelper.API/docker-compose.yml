@@ -9,8 +9,8 @@ services:
         environment:
             - ASPNETCORE_ENVIRONMENT=Development
             - ASPNETCORE_URLS=http://+:8085
-            - ConnectionStrings__SQLServer=Server=${SQL_SERVER};Database=DB_SUPPORTHELPER;User Id=${SQL_USER};Password=${SQL_PASSWORD};TrustServerCertificate=True;
-            - ConnectionStrings__Redis=${REDIS_SERVER}
+            - ConnectionStrings__SQLServer=Server=181.215.134.154,1433;Database=DB_SUPPORTHELPER;User Id=app;Password=W2knaft@123;TrustServerCertificate=True;
+            - ConnectionStrings__Redis=localhost:6379
 
     redis:
         container_name: redis
