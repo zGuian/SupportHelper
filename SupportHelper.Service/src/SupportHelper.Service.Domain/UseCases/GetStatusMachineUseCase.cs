@@ -30,7 +30,7 @@ namespace SupportHelper.Service.Domain.UseCases
             return TimeSpan.FromMilliseconds(upTime).ToString();
         }
 
-        private static IEnumerable<ResponseNetworkBoard> GetAllInformation()
+        private static HashSet<ResponseNetworkBoard> GetAllInformation()
         {
             var nics = NetworkInterface.GetAllNetworkInterfaces();
             var filtered = nics

@@ -4,7 +4,7 @@ using SupportHelper.Service.Domain.Interface.EventHandler;
 using SupportHelper.Service.Domain.Interface.Services;
 using System.Text.Json;
 
-namespace SupportHelper.Service.Domain.EventHandler
+namespace SupportHelper.Service.Domain.EventsHandlers
 {
     public class UpdateSgpClientHandler : ISignalREventHandler
     {
@@ -15,7 +15,7 @@ namespace SupportHelper.Service.Domain.EventHandler
             _machineService = machineService;
         }
 
-        public void Register(HubConnection connection, CancellationToken stoppingToken)
+        public void On(HubConnection connection, CancellationToken stoppingToken)
         {
             connection.On<string, RequestUpdateSgpClient>("UpdateSgpClient", async (receivedRequestId, request) =>
             {

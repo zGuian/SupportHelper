@@ -4,7 +4,7 @@ using SupportHelper.Service.CrossCutting.Bootstrapper;
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Logging.AddConsole();
-builder.Services.AddDependencies();
+builder.Services.AddDependencies(builder.Configuration);
 builder.Services.AddHostedService<SignalRWorker>();
 
 var host = builder.Build();

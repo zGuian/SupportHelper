@@ -3,15 +3,14 @@ using Microsoft.Extensions.Logging;
 using SupportHelper.Service.Domain.Interface.EventHandler;
 using SupportHelper.Service.Domain.Interface.Services;
 
-namespace SupportHelper.Service.Domain.EventHandler
+namespace SupportHelper.Service.Domain.EventsHandlers
 {
     public class ConnectionHandler(ILogger<ConnectionHandler> logger
         , IMachineServices services) : ISignalREventHandler
     {
         private readonly ILogger<ConnectionHandler> _logger = logger;
-        private readonly IMachineServices _machineServices = services;
 
-        public void Register(HubConnection connection, CancellationToken stoppingToken)
+        public void On(HubConnection connection, CancellationToken stoppingToken)
         {
             connection.Reconnecting += error =>
             {

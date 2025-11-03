@@ -1,44 +1,21 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
-using SupportHelper.Service.Application.HostedServices;
-using SupportHelper.Service.Domain.Events;
-using SupportHelper.Service.Domain.Interface.EventHandler;
+using SupportHelper.Service.CrossCutting.Bootstrapper;
+using SupportHelper.Service.Domain.Interface.Workers;
 
 namespace SupportHelper.Service.Application.Workers
 {
-    public class SignalRWorker(ILogger<SignalRWorker> logger
-        , IEnumerable<ISignalREventHandler> signalREventHandlers
-        , IEnumerable<IMachineEventHandler> machineHandlers
-        , IConfiguration configuration
-        , MachineEvents machineEvents) : BackgroundService
+    public class SignalRWorker(HubConnection connection
+        , ILogger<SignalRWorker> logger
+        , EventRegistrationBootstrapper events) : BackgroundService, ISignalRWorker
     {
-        private HubConnection? _connection;
+        public event EventHandler? OnMachineShutdown;
+        private readonly EventRegistrationBootstrapper _events = events;
+        private readonly HubConnection _connection = connection;
         private readonly ILogger<SignalRWorker> _logger = logger;
-        private readonly MachineEvents _machineEvents = machineEvents;
-        private EventRegistration? _eventRegistration;
-        private readonly IConfiguration _configuration = configuration;
 
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var url = _configuration["SignalrSettings:Url"];
-            if (string.IsNullOrEmpty(url))
-            {
-                throw new ArgumentNullException(nameof(url));
-            }
-
-            _connection = new HubConnectionBuilder()
-                .WithUrl($"{url}{Environment.MachineName}", opts =>
-                {
-                    opts.Headers.Add("X-Hostname", Environment.MachineName);
-                    opts.Headers.Add("X-CurrentUsername", Environment.UserName);
-                    opts.Headers.Add("X-Uptime", TimeSpan.FromMilliseconds(Environment.TickCount64).ToString());
-                })
-                .WithAutomaticReconnect()
-                .WithStatefulReconnect()
-                .Build();
-
-            _eventRegistration = new EventRegistration(signalREventHandlers, machineHandlers, machineEvents, _connection);
-            await _eventRegistration.RegisterEvents(stoppingToken);
-
+            _events.RegisterEvents(stoppingToken);
             try
             {
                 await _connection.StartAsync(stoppingToken);
@@ -56,7 +33,7 @@ namespace SupportHelper.Service.Application.Workers
                     await Task.Delay(TimeSpan.FromSeconds(15), stoppingToken);
                 }
             }
-            catch(TaskCanceledException)
+            catch (TaskCanceledException)
             {
                 _logger.LogInformation("Serviço cancelado com segurança.");
             }
@@ -64,13 +41,12 @@ namespace SupportHelper.Service.Application.Workers
             {
                 _logger.LogError(ex, "Erro inesperado no SignalRWorker.");
             }
-            
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
-            _machineEvents.MachineShutdown();
-            await Task.Delay(TimeSpan.FromSeconds(10));
+            OnMachineShutdown?.Invoke(this, EventArgs.Empty);
+            await Task.Delay(TimeSpan.FromSeconds(15), cancellationToken);
 
             if (_connection is not null)
             {

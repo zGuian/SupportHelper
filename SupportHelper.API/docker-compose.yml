@@ -1,16 +1,16 @@
 services:
-    supporthelper-api:
-        build: 
-            context: .
-            dockerfile: src/SupportHelper.API.WebApi/Dockerfile
-        container_name: suppoerhelper-api
-        ports:
-            - "8085:8085"
-        environment:
-            - ASPNETCORE_ENVIRONMENT=Development
-            - ASPNETCORE_URLS=http://+:8085
-            - ConnectionStrings__SQLServer=Server=181.215.134.154,1433;Database=DB_SUPPORTHELPER;User Id=app;Password=W2knaft@123;TrustServerCertificate=True;
-            - ConnectionStrings__Redis=localhost:6379
+    # supporthelper-api:
+    #     build: 
+    #         context: .
+    #         dockerfile: src/SupportHelper.API.WebApi/Dockerfile
+    #     container_name: suppoerhelper-api
+    #     ports:
+    #         - "8085:8085"
+    #     environment:
+    #         - ASPNETCORE_ENVIRONMENT=Development
+    #         - ASPNETCORE_URLS=http://+:8085
+    #         - ConnectionStrings__SQLServer=Server=181.215.134.154,1433;Database=DB_SUPPORTHELPER;User Id=app;Password=W2knaft@123;TrustServerCertificate=True;
+    #         - ConnectionStrings__Redis=localhost:6379
 
     redis:
         container_name: redis

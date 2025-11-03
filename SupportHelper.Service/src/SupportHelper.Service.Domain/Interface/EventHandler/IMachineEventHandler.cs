@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
-using SupportHelper.Service.Domain.Events;
+using SupportHelper.Service.Domain.Interface.Workers;
 
 namespace SupportHelper.Service.Domain.Interface.EventHandler
 {
     public interface IMachineEventHandler
     {
-        void Register(MachineEvents machineEvents, HubConnection hubConnection);
+        void On(ISignalRWorker worker, HubConnection hubConnection);
     }
 }

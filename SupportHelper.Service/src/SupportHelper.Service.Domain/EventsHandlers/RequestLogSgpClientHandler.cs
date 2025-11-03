@@ -3,13 +3,13 @@ using SupportHelper.Service.Domain.DTOs.Requests;
 using SupportHelper.Service.Domain.Interface.EventHandler;
 using SupportHelper.Service.Domain.Interface.Services;
 
-namespace SupportHelper.Service.Domain.EventHandler
+namespace SupportHelper.Service.Domain.EventsHandlers
 {
     public class RequestLogSgpClientHandler(IMachineServices machineService) : ISignalREventHandler
     {
         private readonly IMachineServices _machineService = machineService;
 
-        public void Register(HubConnection connection, CancellationToken stoppingToken)
+        public void On(HubConnection connection, CancellationToken stoppingToken)
         {
             connection.On("GetLogSgpClient", async (RequestLogsSgpClient request, string requestId) =>
             {

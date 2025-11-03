@@ -5,7 +5,7 @@ using SupportHelper.Service.Domain.Interface.UseCases;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace SupportHelper.Service.Domain.EventHandler
+namespace SupportHelper.Service.Domain.EventsHandlers
 {
     public class RequestStatusToMachineHandler(IGetStatusMachineUseCase useCase
         , ILogger<RequestStatusToMachineHandler> logger) : ISignalREventHandler
@@ -13,7 +13,7 @@ namespace SupportHelper.Service.Domain.EventHandler
         private readonly IGetStatusMachineUseCase _useCase = useCase;
         private readonly ILogger<RequestStatusToMachineHandler> _logger = logger;
 
-        public void Register(HubConnection connection, CancellationToken stoppingToken)
+        public void On(HubConnection connection, CancellationToken stoppingToken)
         {
             connection.On<string>("StatusMachine", async (receivedRequestId) =>
             {
